@@ -28,7 +28,7 @@ public class ProductEntity {
     private String name;
 
     @Column
-    private Double prize;
+    private Double price;
 
     @ManyToMany
     @JoinTable(
