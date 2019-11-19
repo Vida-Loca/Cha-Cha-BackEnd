@@ -24,9 +24,9 @@ public class UserCardEntity {
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "product_id")
-    private UserEntity product;
+    private ProductEntity product;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "event_id")
-    private UserEntity event;
+    private EventEntity event;
 }
