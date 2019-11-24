@@ -65,20 +65,15 @@ public class RegistrationController {
         return new GenericResponse("success");
     }
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) throws UnsupportedEncodingException {
-        Locale locale = request.getLocale();
+    public GenericResponse confirmRegistration(final HttpServletRequest request, @RequestParam("token") final String token){
         final String result = service.validateVerificationToken(token);
         if (result.equals("valid")) {
             final User user = service.getUser(token);
             authWithoutPassword(user);
-            model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
-            return "redirect:/console.html?lang=" + locale.getLanguage();
+            return new GenericResponse("success");
         }
 
-        model.addAttribute("message", messages.getMessage("auth.message." + result, null, locale));
-        model.addAttribute("expired", "expired".equals(result));
-        model.addAttribute("token", token);
-        return "redirect:/badUser.html?lang=" + locale.getLanguage();
+       return  new GenericResponse("fail");
     }
     @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
     @ResponseBody
