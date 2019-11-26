@@ -33,7 +33,7 @@ public class UserDto {
                    @NotNull @NotEmpty String password, String matchingPassword, @NotNull @NotEmpty String email) {
         this.username = username;
         this.name= name;
-        this.surname = name;
+        this.surname = surname;
         this.password = password;
         this.matchingPassword = matchingPassword;
         this.email = email;
@@ -86,5 +86,17 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", matchingPassword='" + matchingPassword + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

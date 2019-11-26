@@ -20,7 +20,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
-    //
+
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
 
@@ -34,24 +34,16 @@ public class MyUserDetailsService implements UserDetailsService {
             boolean accountNonExpired = true;
             boolean credentialsNonExpired = true;
             boolean accountNonLocked = true;
-            List<String> role = new ArrayList<>();
-            role.add(user.getRole().getName());
+            List<GrantedAuthority> role = new ArrayList<>();
+            role.add(new SimpleGrantedAuthority(user.getRole().getName()));
             return new org.springframework.security.core.userdetails.User
                     (user.getEmail(),
-                            user.getPassword().toLowerCase(), enabled, accountNonExpired,
+                            user.getPassword(), enabled, accountNonExpired,
                             credentialsNonExpired, accountNonLocked,
-                            getAuthorities(role));
-        }
-        catch (Exception e) {
+                            role);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static List<GrantedAuthority> getAuthorities (List<String> roles) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role));
-        }
-        return authorities;
-    }
 }

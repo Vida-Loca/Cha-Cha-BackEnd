@@ -40,19 +40,21 @@ public class UserService implements UserServiceInter {
 
         if (emailExists(accountDto.getEmail())) {
             throw new EmailExistsException(
-                    "There is an account with that email address:"  + accountDto.getEmail());
+                    "There is an account with that email address:" + accountDto.getEmail());
         }
         User user = new User();
         user.setUsername(accountDto.getUsername());
         user.setName(accountDto.getName());
         user.setSurname(accountDto.getSurname());
+      //  System.out.println(accountDto.getPassword());
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
         Role role = roleRepository.findById(1).orElse(null);
         user.setRole(role);
-      //  System.out.println("TestPrzedSave");
+        //  System.out.println("TestPrzedSave");
         return userRepository.save(user);
     }
+
     private boolean emailExists(String email) {
         User user = userRepository.findByEmail(email);
         return user != null;
@@ -79,6 +81,7 @@ public class UserService implements UserServiceInter {
         VerificationToken myToken = new VerificationToken(token, user);
         tokenRepository.save(myToken);
     }
+
     @Override
     public String validateVerificationToken(String token) {
         final VerificationToken verificationToken = tokenRepository.findByToken(token);
@@ -97,11 +100,11 @@ public class UserService implements UserServiceInter {
         }
 
         user.setEnabled(true);
-        // tokenRepository.delete(verificationToken);
-
+        tokenRepository.delete(verificationToken);
         userRepository.save(user);
         return TOKEN_VALID;
     }
+
     @Override
     public VerificationToken generateNewVerificationToken(final String existingVerificationToken) {
         VerificationToken vToken = tokenRepository.findByToken(existingVerificationToken);
