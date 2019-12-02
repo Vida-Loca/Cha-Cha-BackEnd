@@ -18,10 +18,6 @@ public class RegistrationListener implements ApplicationListener<RegisterEvent> 
     @Autowired
     private UserServiceInter service;
 
-    @Qualifier("messageSource")
-    @Autowired
-    private MessageSource messages;
-  
     @Autowired
     private JavaMailSender mailSender;
  
@@ -38,7 +34,6 @@ public class RegistrationListener implements ApplicationListener<RegisterEvent> 
         String subject = "Registration Confirmation";
         String confirmationUrl 
           = event.getAppUrl() + "/registrationConfirm?token=" + token;
-     //   String message = messages.getMessage("message.regSucc", null, event.getLocale());
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);
