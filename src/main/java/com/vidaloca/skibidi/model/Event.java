@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -38,5 +39,8 @@ public class Event {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, name="start_date")
+    private Date startDate;
 
 }
