@@ -50,7 +50,7 @@ public class User {
     private String surname;
 
     @Column(unique = true)
-    @ValidEmail
+   // @ValidEmail
     @NotNull
     @NotEmpty
     private String email;

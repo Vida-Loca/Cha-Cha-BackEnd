@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.registration.dto;
 
+import com.vidaloca.skibidi.registration.validation.ValidEmail;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import javax.validation.constraints.NotEmpty;
@@ -25,6 +26,7 @@ public class UserDto {
 
     @NotNull
     @NotEmpty
+    @ValidEmail
     private String email;
 
     public UserDto(){}

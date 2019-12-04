@@ -32,13 +32,11 @@ public class EventController {
     @PostMapping("/event")
     public String addNewEvent(@RequestBody EventDto eventDto){
         Event event = eventService.addNewEvent(eventDto);
-        eventRepository.save(event);
         return "successfully added event";
     }
     @PutMapping("/event/{id}")
     public String updateEvent(@RequestBody EventDto eventDto, @PathVariable Integer id){
         Event event = eventService.updateEvent(eventDto,id);
-        eventRepository.save(event);
         return "successfully updated event";
     }
     @DeleteMapping("/event/{id}")

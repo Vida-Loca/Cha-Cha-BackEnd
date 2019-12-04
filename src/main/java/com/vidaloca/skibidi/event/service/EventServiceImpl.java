@@ -23,7 +23,7 @@ public class EventServiceImpl implements EventService {
         event.setName(eventDto.getName());
         event.setStartDate(eventDto.getStartDate());
         event.setAddress(eventDto.getAddress());
-        return event;
+        return eventRepository.save(event);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class EventServiceImpl implements EventService {
         event.setName(eventDto.getName());
         event.setStartDate(eventDto.getStartDate());
         event.setAddress(eventDto.getAddress());
-        return event;
+        return eventRepository.save(event);
     }
 }
