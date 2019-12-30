@@ -26,4 +26,10 @@ public class AddressDto {
     @NotEmpty
     private String number;
 
+    public AddressDto(@NotEmpty String country, @NotEmpty String city, @NotEmpty String postcode, @NotEmpty String number) {
+        this.country = country;
+        this.city = city;
+        this.postcode = postcode;
+        this.number = number;
+    }
 }

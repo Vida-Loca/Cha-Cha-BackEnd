@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.registration.validation;
+package com.vidaloca.skibidi.exceptions;
 
 
 @SuppressWarnings("serial")

@@ -21,14 +21,14 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserDetails loadUserByUsername(String email)
+    public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
         try {
-            User user = userRepository.findByEmail(email);
+            User user = userRepository.findByUsername(username);
             if (user == null) {
                 throw new UsernameNotFoundException(
-                        "No user found with username: " + email);
+                        "No user found with username: " + username);
             }
             boolean enabled = true;
             boolean accountNonExpired = true;
@@ -37,7 +37,7 @@ public class MyUserDetailsService implements UserDetailsService {
             List<GrantedAuthority> role = new ArrayList<>();
             role.add(new SimpleGrantedAuthority(user.getRole().getName()));
             return new org.springframework.security.core.userdetails.User
-                    (user.getEmail(),
+                    (user.getUsername(),
                             user.getPassword(), enabled, accountNonExpired,
                             credentialsNonExpired, accountNonLocked,
                             role);
@@ -45,5 +45,11 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new RuntimeException(e);
         }
     }
+    @Transactional
+    public User loadUserById(Long id){
+        User user = userRepository.findById(id).orElse(null);
+        if(user==null) new UsernameNotFoundException("User not found");
+        return user;
 
+    }
 }

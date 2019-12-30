@@ -2,11 +2,15 @@ package com.vidaloca.skibidi.registration.controller;
 
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.model.VerificationToken;
+import com.vidaloca.skibidi.registration.dto.LoginDto;
+import com.vidaloca.skibidi.registration.service.MapValidationErrorService;
 import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.registration.utills.RegisterEvent;
 import com.vidaloca.skibidi.registration.dto.UserDto;
 import com.vidaloca.skibidi.registration.service.UserService;
-import com.vidaloca.skibidi.registration.validation.EmailExistsException;
+import com.vidaloca.skibidi.exceptions.EmailExistsException;
+import com.vidaloca.skibidi.registration.utills.JwtLoginSucessResponse;
+import com.vidaloca.skibidi.security.JwtTokenProvider;
 import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,26 +18,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 @Controller
-public class RegistrationController {
+public class UserController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -47,6 +51,31 @@ public class RegistrationController {
     private MailSender mailSender;
     @Autowired
     private Environment env;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+    @Autowired
+    private MapValidationErrorService mapValidationErrorService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto, BindingResult result){
+        ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
+        if(errorMap != null) return errorMap;
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDto.getUsername(),
+                        loginDto.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = "Bearer " +  tokenProvider.generateToken(authentication);
+
+        return ResponseEntity.ok(new JwtLoginSucessResponse(true, jwt));
+    }
 
 
     @RequestMapping(value = "/user/registration", method = RequestMethod.POST)

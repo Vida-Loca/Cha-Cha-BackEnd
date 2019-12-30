@@ -20,18 +20,23 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event addNewEvent(EventDto eventDto) {
         Event event = new Event();
-        event.setName(eventDto.getName());
-        event.setStartDate(eventDto.getStartDate());
-        event.setAddress(eventDto.getAddress());
-        return eventRepository.save(event);
+        return getEvent(eventDto, event);
     }
 
     @Override
     public Event updateEvent(EventDto eventDto, Integer id) {
         Event event = eventRepository.findById(id).orElse(null);
+        return getEvent(eventDto, event);
+    }
+
+    private Event getEvent(EventDto eventDto, Event event) {
         event.setName(eventDto.getName());
         event.setStartDate(eventDto.getStartDate());
-        event.setAddress(eventDto.getAddress());
+        event.getAddress().setCity(eventDto.getAddress().getCity());
+        event.getAddress().setCountry(eventDto.getAddress().getCountry());
+        event.getAddress().setNumber(eventDto.getAddress().getNumber());
+        event.getAddress().setStreet(eventDto.getAddress().getStreet());
+        event.getAddress().setPostcode(eventDto.getAddress().getPostcode());
         return eventRepository.save(event);
     }
 }

@@ -1,8 +1,6 @@
 package com.vidaloca.skibidi.event.dto;
 
 import com.sun.istack.NotNull;
-import com.vidaloca.skibidi.model.Address;
-
 import javax.validation.constraints.NotEmpty;
 import java.sql.Date;
 
@@ -17,9 +15,9 @@ public class EventDto {
 
     @NotNull
     @NotEmpty
-    private Address address;
+    private AddressDto address;
 
-    public EventDto(@NotEmpty String name, @NotEmpty Date startDate, @NotEmpty Address address) {
+    public EventDto(@NotEmpty String name, @NotEmpty Date startDate, @NotEmpty AddressDto address) {
         this.name = name;
         this.startDate = startDate;
         this.address = address;
@@ -41,11 +39,11 @@ public class EventDto {
         this.startDate = startDate;
     }
 
-    public Address getAddress() {
+    public AddressDto getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(AddressDto address) {
         this.address = address;
     }
 }
