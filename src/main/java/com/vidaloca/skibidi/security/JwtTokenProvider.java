@@ -1,6 +1,9 @@
 package com.vidaloca.skibidi.security;
 
 import com.vidaloca.skibidi.model.User;
+import com.vidaloca.skibidi.registration.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
@@ -17,19 +20,20 @@ public class JwtTokenProvider {
     public static final String SECRET ="SecretKeyToGenJWTs";
     public static final long EXPIRATION_TIME = 300_000;
     //Generate the token
+    @Autowired
+    UserRepository userRepository;
 
     public String generateToken(Authentication authentication){
-        User user = (User)authentication.getPrincipal();
+        UserDetails user = (UserDetails) authentication.getPrincipal();
         Date now = new Date(System.currentTimeMillis());
 
         Date expiryDate = new Date(now.getTime()+EXPIRATION_TIME);
-
-        String userId = Long.toString(user.getId());
+        Long userIdLong = userRepository.findByUsername(user.getUsername()).getId();
+        String userId = Long.toString(userIdLong);
 
         Map<String,Object> claims = new HashMap<>();
-        claims.put("id", (Long.toString(user.getId())));
+        claims.put("id", (userId));
         claims.put("username", user.getUsername());
-        claims.put("email", user.getEmail());
 
         return Jwts.builder()
                 .setSubject(userId)
@@ -39,8 +43,6 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
-
-    //Validate the token
     public boolean validateToken(String token){
         try{
             Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
@@ -58,9 +60,6 @@ public class JwtTokenProvider {
         }
         return false;
     }
-
-
-    //Get user Id from token
 
     public Long getUserIdFromJWT(String token){
         Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();

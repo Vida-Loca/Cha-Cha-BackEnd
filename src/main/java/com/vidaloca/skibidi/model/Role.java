@@ -20,7 +20,7 @@ public class Role {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY,
+    @OneToMany(
             mappedBy = "role",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})

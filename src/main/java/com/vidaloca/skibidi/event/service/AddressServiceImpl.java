@@ -25,13 +25,14 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address updateAddress(Integer id, AddressDto addressDto) {
-        Address address =addressRepository.findById(id).orElse(null);
-        address.setCity(addressDto.getCity());
-        address.setCountry(addressDto.getCountry());
-        address.setPostcode(addressDto.getPostcode());
-        address.setStreet(addressDto.getStreet());
-        address.setNumber(addressDto.getNumber());
-        return addressRepository.save(address);
+        Address address = addressRepository.findById(id).orElse(null);
+        if (address != null) {
+            address.setCity(addressDto.getCity());
+            address.setCountry(addressDto.getCountry());
+            address.setPostcode(addressDto.getPostcode());
+            address.setStreet(addressDto.getStreet());
+            address.setNumber(addressDto.getNumber());
+            return addressRepository.save(address);
+        } return null;
     }
-
 }

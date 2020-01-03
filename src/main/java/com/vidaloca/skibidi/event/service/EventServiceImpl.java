@@ -26,7 +26,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event updateEvent(EventDto eventDto, Integer id) {
         Event event = eventRepository.findById(id).orElse(null);
-        return getEvent(eventDto, event);
+        if (event != null) {
+            return getEvent(eventDto, event);
+        }
+        return null;
     }
 
     private Event getEvent(EventDto eventDto, Event event) {

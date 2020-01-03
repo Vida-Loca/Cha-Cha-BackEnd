@@ -1,16 +1,19 @@
 package com.vidaloca.skibidi.event.dto;
 
 import com.sun.istack.NotNull;
+import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Date;
 
 public class EventDto {
     @NotNull
     @NotEmpty
+    @Length(max = 255)
     private String name;
 
     @NotNull
     @NotEmpty
+
     private Date startDate;
 
     @NotNull
