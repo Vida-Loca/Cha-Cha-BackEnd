@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class Role {
 
     @Column(unique = true, nullable = false)
     private String name;
-
+    @JsonBackReference
     @OneToMany(
             mappedBy = "role",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,

@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class Address {
     @Column(name = "address_id")
     private int address_id;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     private List<Event> events;

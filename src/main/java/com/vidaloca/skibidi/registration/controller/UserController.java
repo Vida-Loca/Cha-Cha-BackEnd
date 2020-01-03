@@ -10,6 +10,7 @@ import com.vidaloca.skibidi.registration.dto.UserDto;
 import com.vidaloca.skibidi.registration.service.UserService;
 import com.vidaloca.skibidi.exceptions.EmailExistsException;
 import com.vidaloca.skibidi.registration.utills.JwtLoginSucessResponse;
+import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.security.JwtTokenProvider;
 import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -51,7 +53,8 @@ public class UserController {
     private MailSender mailSender;
     @Autowired
     private Environment env;
-
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
     private JwtTokenProvider tokenProvider;
     @Autowired
@@ -59,6 +62,13 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @RequestMapping(value = "/currentUserId", method = RequestMethod.GET)
+    @ResponseBody
+    public Long currentUserId(HttpServletRequest request) {
+        String token = jwtAuthenticationFilter.getJWTFromRequest(request);
+        return tokenProvider.getUserIdFromJWT(token);
+
+    }
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto, BindingResult result){
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);

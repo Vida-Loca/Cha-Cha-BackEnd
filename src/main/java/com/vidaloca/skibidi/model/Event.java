@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,20 +21,29 @@ public class Event {
     @Column(name = "event_id")
     private int event_id;
 
+    @JsonManagedReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @JsonManagedReference
     @ManyToMany(mappedBy = "events", targetEntity = Game.class)
     private Set<Game> games;
 
+    @JsonManagedReference
     @ManyToMany(mappedBy = "events", targetEntity = Product.class)
     private List<Product> products;
 
-    @ManyToMany(mappedBy = "events", targetEntity = User.class)
-    private Set<User> users;
+    @JsonManagedReference
+    @ManyToMany
+    @JoinTable(
+            name = "event_user",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> users;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "event", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<UserCard> userCards;
 

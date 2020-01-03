@@ -12,15 +12,11 @@ public class EventDto {
     private String name;
 
     @NotNull
-    @NotEmpty
-
     private Date startDate;
-
     @NotNull
-    @NotEmpty
     private AddressDto address;
 
-    public EventDto(@NotEmpty String name, @NotEmpty Date startDate, @NotEmpty AddressDto address) {
+    public EventDto(@NotEmpty String name,  Date startDate, AddressDto address) {
         this.name = name;
         this.startDate = startDate;
         this.address = address;

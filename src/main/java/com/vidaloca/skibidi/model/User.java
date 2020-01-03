@@ -4,6 +4,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vidaloca.skibidi.registration.validation.ValidEmail;
 import lombok.*;
 
@@ -22,18 +24,17 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
+    @JsonManagedReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
-    Set<Event> events;
+    @JsonBackReference
+    @ManyToMany(mappedBy = "users", targetEntity = Event.class)
+    List<Event> events;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<UserCard> userCards;
 
