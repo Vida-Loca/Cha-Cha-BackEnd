@@ -29,7 +29,7 @@ public class Event {
     private Set<Game> games;
 
     @ManyToMany(mappedBy = "events", targetEntity = Product.class)
-    private Set<Product> products;
+    private List<Product> products;
 
     @ManyToMany(mappedBy = "events", targetEntity = User.class)
     private Set<User> users;

@@ -1,5 +1,7 @@
 package com.vidaloca.skibidi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,7 @@ public class ProductCategory {
     @Column(nullable = false)
     private String name;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "productCategory", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     private List<Product> products;

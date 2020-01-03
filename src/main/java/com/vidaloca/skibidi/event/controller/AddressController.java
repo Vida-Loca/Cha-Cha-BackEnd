@@ -7,6 +7,7 @@ import com.vidaloca.skibidi.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,7 +31,7 @@ public class AddressController {
         return  addressRepository.findById(id).orElse(null);
     }
     @PostMapping("/address")
-    public String add(@RequestBody AddressDto addressDto){
+    public String add(@Valid @RequestBody AddressDto addressDto){
         as.addAddress(addressDto);
         return "Successfully added address";
     }
@@ -40,7 +41,7 @@ public class AddressController {
         return "Deleted successfully co nie Daro XD ?";
     }
     @PutMapping("/address/{id}")
-    public String update(@PathVariable Integer id, @RequestBody AddressDto addressDto){
+    public String update(Integer id, @Valid @RequestBody AddressDto addressDto){
         as.updateAddress(id,addressDto);
         return "Successfully update address";
     }
