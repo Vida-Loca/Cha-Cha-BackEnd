@@ -53,66 +53,63 @@ public class EventController {
 
 
     @GetMapping("/event")
-    public List<Event> getEvents(){
+    public List<Event> getEvents() {
         return (List<Event>) eventRepository.findAll();
     }
 
-    @GetMapping ("/event/{id}")
-    public Event getEventById(@PathVariable Integer id){
+    @GetMapping("/event/{id}")
+    public Event getEventById(@PathVariable Integer id) {
         return eventRepository.findById(id).orElse(null);
     }
+
     @PostMapping("/event")
-    public String addNewEvent(@Valid @RequestBody EventDto eventDto,HttpServletRequest request){
+    public String addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        Event event = eventService.addNewEvent(eventDto, currentUserId);
-        return "successfully added event";
+        return eventService.addNewEvent(eventDto,currentUserId);
     }
+
     @PutMapping("/event/{id}")
-    public String updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id){
-        Event event = eventService.updateEvent(eventDto,id);
-        return "successfully updated event";
-    }
-    @DeleteMapping("/event/{id}")
-    public String deleteById(@PathVariable Integer id,HttpServletRequest request){
+    public String updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        User user = userRepository.findById(currentUserId).orElse(null);
-        Event event = eventRepository.findById(id).orElse(null);
-        if (user == null )
-            return "Delete failure";
-        if (event == null)
-            return "This event not exist";
-        Event_User eu = event_userRepository.findByUserAndEvent(user,event);
-        if (eu.isAdmin()) {
-            eventRepository.deleteById(id);
-            return "delete successfully";
-        }
-        else
-            return "user is not allowed to delete event";
+        return eventService.updateEvent(eventDto, id, currentUserId);
     }
-    @GetMapping ("/event/{id}/products")
-    public List<Product> getEventProducts(@PathVariable Integer id){
+
+    @DeleteMapping("/event/{id}")
+    public String deleteById(@PathVariable Integer id, HttpServletRequest request) {
+        Long currentUserId = currentUserId(request);
+        return eventService.deleteEvent(id, currentUserId);
+    }
+
+    @GetMapping("/event/{id}/products")
+    public List<Product> getEventProducts(@PathVariable Integer id) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
             return null;
         return event.getProducts();
     }
-    @PostMapping ("/event/productsNew")
-    public String addProductToEvent(@Valid @RequestBody ProductDto productDto, @RequestParam(required = false)  Integer eventId) {
+
+    @PostMapping("/event/productsNew")
+    public String addProductToEvent(@Valid @RequestBody ProductDto productDto, @RequestParam(required = false) Integer eventId,
+                                    HttpServletRequest request) {
+        Long currentUserId = currentUserId(request);
         Product p = productService.addProduct(productDto);
-        eventService.addProductToEvent(p,eventId);
-        return "Successfully added product";
+        return eventService.addProductToEvent(p, eventId, currentUserId);
     }
-    @PostMapping ("/event/products")
-    public String addProductToEvent(@RequestParam Integer productId, @RequestParam Integer eventId){
-        productRepository.findById(productId).ifPresent(p -> eventService.addProductToEvent(p, eventId));
+
+    @PostMapping("/event/products")
+    public String addProductToEvent(@RequestParam Integer productId, @RequestParam Integer eventId, HttpServletRequest request) {
+        Long currentUserId = currentUserId(request);
+        productRepository.findById(productId).ifPresent(p ->  eventService.addProductToEvent(p, eventId, currentUserId));
         return "Successfully added existing product to event";
     }
-    @PostMapping ("/event/user")
-    public String addUserToEvent(@RequestParam String username, @RequestParam Integer eventId){
-        User user = userRepository.findByUsername(username);
-        eventService.addUserToEvent(user,eventId);
+
+    @PostMapping("/event/user")
+    public String addUserToEvent(@RequestParam String username, @RequestParam Integer eventId,HttpServletRequest request) {
+        Long currentUserId = currentUserId(request);
+        eventService.addUserToEvent(username, eventId,currentUserId);
         return "Successfully added user to event";
     }
+
     private Long currentUserId(HttpServletRequest request) {
         String token = jwtAuthenticationFilter.getJWTFromRequest(request);
         return jwtTokenProvider.getUserIdFromJWT(token);

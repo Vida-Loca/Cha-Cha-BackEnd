@@ -6,8 +6,9 @@ import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.User;
 
 public interface EventService {
-    Event addNewEvent(EventDto eventDto, Long currentUserId);
-    Event updateEvent(EventDto eventDto, Integer id);
-    Event addProductToEvent(Product product, Integer eventId);
-    Event addUserToEvent(User user, Integer eventId);
+    String addNewEvent(EventDto eventDto, Long currentUserId);
+    String updateEvent(EventDto eventDto, Integer id,Long userId);
+    String addProductToEvent(Product product, Integer eventId, Long userId);
+    String addUserToEvent(String username, Integer eventId,Long userId);
+    String deleteEvent(Integer id, Long user_id);
 }
