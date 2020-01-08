@@ -26,4 +26,9 @@ public class Role {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     private List<User> users;
+
+    @Override
+    public String toString() {
+        return name ;
+    }
 }

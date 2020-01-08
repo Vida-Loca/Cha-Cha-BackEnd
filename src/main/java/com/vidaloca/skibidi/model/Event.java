@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class Event {
     @ManyToMany(mappedBy = "events", targetEntity = Game.class)
     private Set<Game> games;
 
-    @JsonManagedReference
+    @JsonBackReference
     @ManyToMany
     @JoinTable(
             name = "event_product",
@@ -39,7 +40,7 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "event", cascade=CascadeType.ALL)
     private List<Event_User> event_user;
 

@@ -6,5 +6,4 @@ import com.vidaloca.skibidi.model.UserCard;
 import org.springframework.data.repository.CrudRepository;
 
 public interface UserCardRepository extends CrudRepository<UserCard,Integer> {
-    UserCard findByEvent_user(Event_User event_user);
 }

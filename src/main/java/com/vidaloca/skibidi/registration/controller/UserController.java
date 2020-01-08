@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@Controller
+@RestController
 public class UserController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -62,8 +62,7 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @RequestMapping(value = "/currentUserId", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping("/currentUserId")
     public Long currentUserId(HttpServletRequest request) {
         String token = jwtAuthenticationFilter.getJWTFromRequest(request);
         return tokenProvider.getUserIdFromJWT(token);
@@ -88,8 +87,7 @@ public class UserController {
     }
 
 
-    @RequestMapping(value = "/user/registration", method = RequestMethod.POST)
-    @ResponseBody
+    @PostMapping ("/user/registration")
     public GenericResponse registerUserAccount(@RequestBody UserDto accountDto, final HttpServletRequest request) throws EmailExistsException {
         System.out.println(accountDto);
         LOGGER.debug("Registering user account with information: {}", accountDto);
@@ -98,13 +96,8 @@ public class UserController {
         eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale(), getAppUrl(request)));
         return new GenericResponse("success");
     }
-    @RequestMapping(value = "/user/registration", method = RequestMethod.GET)
-    @ResponseBody
-    public GenericResponse showUsers() throws EmailExistsException {
 
-        return new GenericResponse("success");
-    }
-    @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
+    @GetMapping("/registrationConfirm")
     public GenericResponse confirmRegistration(final HttpServletRequest request, @RequestParam("token") final String token){
         final String result = service.validateVerificationToken(token);
         if (result.equals("valid")) {
@@ -115,8 +108,7 @@ public class UserController {
 
        return  new GenericResponse("fail");
     }
-    @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping("/user/resendRegistrationToken")
     public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
         final VerificationToken newToken = service.generateNewVerificationToken(existingToken);
         final User user = service.getUser(newToken.getToken());
@@ -125,14 +117,14 @@ public class UserController {
     }
 
 
-
-
-
-    //Non REST
-
-
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
+
+    private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
+        final String confirmationUrl = contextPath + "/registrationConfirm?token=" + newToken.getToken();
+        final String message = messages.getMessage("message.resendToken", null, locale);
+        return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
     public void authWithoutPassword(User user) {
@@ -148,11 +140,6 @@ public class UserController {
             authorities.add(new SimpleGrantedAuthority(role));
         }
         return authorities;
-    }
-    private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
-        final String confirmationUrl = contextPath + "/registrationConfirm.html?token=" + newToken.getToken();
-        final String message = messages.getMessage("message.resendToken", null, locale);
-        return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
 

@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,9 +34,11 @@ public class Product {
     @Column
     private Double price;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "products", targetEntity = Event.class)
     Set<Event> events;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<UserCard> userCards;
 }

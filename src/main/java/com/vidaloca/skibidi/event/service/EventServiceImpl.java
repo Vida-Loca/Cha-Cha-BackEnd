@@ -108,6 +108,38 @@ public class EventServiceImpl implements EventService {
         return "Event delete successfully";
     }
 
+    @Override
+    public List<User> findAllUsers(Integer event_id) {
+        Event event = eventRepository.findById(event_id).orElse(null);
+        if (event==null)
+            return null;
+        List<Event_User> event_users = event_userRepository.findAllByEvent(event);
+        List <User> users = new ArrayList<>();
+        for (Event_User eu: event_users)
+            users.add(eu.getUser());
+        return users;
+    }
+
+    @Override
+    public String deleteUser(Integer id,Long userToDeleteId, Long userId) {
+        Event event = eventRepository.findById(id).orElse(null);
+        User userToDelete = userRepository.findById(userToDeleteId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
+        Event_User event_user = event_userRepository.findByUserAndEvent(user,event);
+        if (event==null)
+            return "Event doesn't exist";
+        if (user==null)
+            return "Unexpected failure";
+        if (userToDelete==null)
+            return "User to delete doesn't exist";
+        if (!event_user.isAdmin())
+            return "You don't have permission to delete user";
+        Event_User eu= event_userRepository.findByUserAndEvent(userToDelete,event);
+        event_userRepository.deleteById(eu.getId());
+        return "Successfully removed user from event";
+
+    }
+
     private Event getEvent(EventDto eventDto, Event event) {
         event.setName(eventDto.getName());
         event.setStartDate(eventDto.getStartDate());
