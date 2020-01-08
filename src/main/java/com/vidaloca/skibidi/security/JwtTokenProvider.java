@@ -18,7 +18,7 @@ import java.util.Map;
 public class JwtTokenProvider {
 
     public static final String SECRET ="SecretKeyToGenJWTs";
-    public static final long EXPIRATION_TIME = 300_000;
+    public static final long EXPIRATION_TIME = 3000_000;
     //Generate the token
     @Autowired
     UserRepository userRepository;

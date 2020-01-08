@@ -3,10 +3,12 @@ package com.vidaloca.skibidi.event.controller;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.EventRepository;
+import com.vidaloca.skibidi.event.repository.Event_UserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.service.ProductService;
 import com.vidaloca.skibidi.model.Event;
+import com.vidaloca.skibidi.model.Event_User;
 import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
@@ -32,10 +34,13 @@ public class EventController {
     private ProductService productService;
     private ProductRepository productRepository;
     private UserRepository userRepository;
+    private Event_UserRepository event_userRepository;
 
     @Autowired
-    public EventController(JwtAuthenticationFilter jwtAuthenticationFilter, JwtTokenProvider jwtTokenProvider, EventRepository eventRepository, EventService eventService,
-                           ProductService productService, ProductRepository productRepository, UserRepository userRepository) {
+    public EventController(JwtAuthenticationFilter jwtAuthenticationFilter, JwtTokenProvider jwtTokenProvider,
+                           EventRepository eventRepository, EventService eventService,
+                           ProductService productService, ProductRepository productRepository,
+                           UserRepository userRepository, Event_UserRepository event_userRepository) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtTokenProvider = jwtTokenProvider;
         this.eventRepository = eventRepository;
@@ -43,7 +48,9 @@ public class EventController {
         this.productService = productService;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.event_userRepository = event_userRepository;
     }
+
 
     @GetMapping("/event")
     public List<Event> getEvents(){
@@ -61,29 +68,41 @@ public class EventController {
         return "successfully added event";
     }
     @PutMapping("/event/{id}")
-    public String updateEvent(@Valid @RequestBody EventDto eventDto, Integer id){
+    public String updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id){
         Event event = eventService.updateEvent(eventDto,id);
         return "successfully updated event";
     }
     @DeleteMapping("/event/{id}")
-    public String deleteById(@PathVariable Integer id){
-        eventRepository.deleteById(id);
-        return "delete successfully";
-    }
-    @GetMapping("/event/products/{id}")
-    public List<Product>  getEventProducts(@PathVariable Integer id){
+    public String deleteById(@PathVariable Integer id,HttpServletRequest request){
+        Long currentUserId = currentUserId(request);
+        User user = userRepository.findById(currentUserId).orElse(null);
         Event event = eventRepository.findById(id).orElse(null);
-        if (event != null)
-            return event.getProducts();
-        return  null;
+        if (user == null )
+            return "Delete failure";
+        if (event == null)
+            return "This event not exist";
+        Event_User eu = event_userRepository.findByUserAndEvent(user,event);
+        if (eu.isAdmin()) {
+            eventRepository.deleteById(id);
+            return "delete successfully";
+        }
+        else
+            return "user is not allowed to delete event";
     }
-    @PostMapping ("/event/products")
-    public String addProductToEvent(@Valid @RequestBody ProductDto productDto, @RequestParam Integer id ){
+    @GetMapping ("/event/{id}/products")
+    public List<Product> getEventProducts(@PathVariable Integer id){
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            return null;
+        return event.getProducts();
+    }
+    @PostMapping ("/event/productsNew")
+    public String addProductToEvent(@Valid @RequestBody ProductDto productDto, @RequestParam(required = false)  Integer eventId) {
         Product p = productService.addProduct(productDto);
-        eventService.addProductToEvent(p,id);
+        eventService.addProductToEvent(p,eventId);
         return "Successfully added product";
     }
-    @PostMapping ("/event/products/")
+    @PostMapping ("/event/products")
     public String addProductToEvent(@RequestParam Integer productId, @RequestParam Integer eventId){
         productRepository.findById(productId).ifPresent(p -> eventService.addProductToEvent(p, eventId));
         return "Successfully added existing product to event";

@@ -25,18 +25,15 @@ public class User {
     private Long id;
 
     @JsonManagedReference
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "users", targetEntity = Event.class)
-    List<Event> events;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "event")
+    private List<Event_User> event_user;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<UserCard> userCards;
 
     @Column(nullable = false, unique = true)
     private String username;

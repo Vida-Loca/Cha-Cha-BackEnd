@@ -32,20 +32,17 @@ public class Event {
     private Set<Game> games;
 
     @JsonManagedReference
-    @ManyToMany(mappedBy = "events", targetEntity = Product.class)
+    @ManyToMany
+    @JoinTable(
+            name = "event_product",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
     @JsonManagedReference
-    @ManyToMany
-    @JoinTable(
-            name = "event_user",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> users;
+    @OneToMany(mappedBy = "event", cascade=CascadeType.ALL)
+    private List<Event_User> event_user;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "event", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<UserCard> userCards;
 
     @Column(nullable = false)
     private String name;

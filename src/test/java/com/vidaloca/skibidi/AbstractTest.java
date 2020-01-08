@@ -25,31 +25,5 @@ import java.io.IOException;
 @SpringBootTest(classes = SkibidiApplication.class)
 @WebAppConfiguration
 public abstract class AbstractTest {
-	protected MockMvc mvc;
-	@Autowired
-	WebApplicationContext webApplicationContext;
-
-	protected void setUp() {
-		mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
-	protected String mapToJson(Object obj) throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		return objectMapper.writeValueAsString(obj);
-	}
-	protected <T> T mapFromJson(String json, Class<T> clazz)
-			throws JsonParseException, JsonMappingException, IOException {
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		return objectMapper.readValue(json, clazz);
-	}
-	@Test
-	public void getProductsList() throws Exception {
-		String uri = "/product";
-		MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-				.accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-
-		int status = mvcResult.getResponse().getStatus();
-		Assert.assertEquals(200, status);
-	}
 
 }

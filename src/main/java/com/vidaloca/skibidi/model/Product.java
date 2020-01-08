@@ -33,11 +33,7 @@ public class Product {
     @Column
     private Double price;
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_product",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
+    @ManyToMany(mappedBy = "products", targetEntity = Event.class)
     Set<Event> events;
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
