@@ -18,15 +18,19 @@ import java.util.UUID;
 
 @Service
 public class UserService implements UserServiceInter {
-    @Autowired
+
     private UserRepository userRepository;
-    @Autowired
     private RoleRepository roleRepository;
-    @Autowired
     private TokenRepository tokenRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public static final String TOKEN_INVALID = "invalidToken";
     public static final String TOKEN_EXPIRED = "expired";
@@ -45,7 +49,7 @@ public class UserService implements UserServiceInter {
         user.setUsername(accountDto.getUsername());
         user.setName(accountDto.getName());
         user.setSurname(accountDto.getSurname());
-      //  System.out.println(accountDto.getPassword());
+        //  System.out.println(accountDto.getPassword());
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
         Role role = roleRepository.findById(1).orElse(null);
@@ -61,8 +65,7 @@ public class UserService implements UserServiceInter {
 
     @Override
     public User getUser(String verificationToken) {
-        User user = tokenRepository.findByToken(verificationToken).getUser();
-        return user;
+        return tokenRepository.findByToken(verificationToken).getUser();
     }
 
     @Override
@@ -99,7 +102,7 @@ public class UserService implements UserServiceInter {
         }
 
         user.setEnabled(true);
-        tokenRepository.delete(verificationToken);
+       // tokenRepository.delete(verificationToken);
         userRepository.save(user);
         return TOKEN_VALID;
     }

@@ -4,14 +4,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.vidaloca.skibidi.registration.validation.ValidEmail;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -33,7 +29,7 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event")
-    private List<Event_User> event_user;
+    private List<EventUser> event_user;
 
 
     @Column(nullable = false, unique = true)

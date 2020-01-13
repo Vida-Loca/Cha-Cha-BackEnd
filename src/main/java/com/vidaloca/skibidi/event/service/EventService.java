@@ -14,6 +14,8 @@ public interface EventService {
     String addUserToEvent(String username, Integer eventId,Long userId);
     String deleteEvent(Integer id, Long user_id);
     List<User> findAllUsers(Integer event_id);
-
-    String deleteUser(Integer id,Long userToDelteId, Long userId);
+    List<Product> findUserEventProducts(Integer event_id, Long user_id);
+    String deleteUser(Integer id,Long userToDeleteId, Long userId);
+    String deleteProduct(Integer id,Integer productToDeleteId, Long userId);
+    String grantUserAdmin(Integer event_id, Long userToGrantId, Long user_id);
 }

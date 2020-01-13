@@ -2,7 +2,8 @@ package com.vidaloca.skibidi.event.service;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.repository.EventRepository;
-import com.vidaloca.skibidi.event.repository.Event_UserRepository;
+import com.vidaloca.skibidi.event.repository.EventUserRepository;
+import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.repository.UserCardRepository;
 import com.vidaloca.skibidi.model.*;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
@@ -10,21 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class EventServiceImpl implements EventService {
 
     private EventRepository eventRepository;
     private UserRepository userRepository;
-    private Event_UserRepository event_userRepository;
+    private EventUserRepository event_userRepository;
     private UserCardRepository userCardRepository;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository,
-                            Event_UserRepository event_userRepository, UserCardRepository userCardRepository) {
+                            EventUserRepository event_userRepository, UserCardRepository userCardRepository,
+                            ProductRepository productRepository){
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.event_userRepository = event_userRepository;
@@ -38,7 +38,7 @@ public class EventServiceImpl implements EventService {
         event.setAddress(new Address());
         Event finalEvent = getEvent(eventDto, event);
         eventRepository.save(finalEvent);
-        Event_User eu = new Event_User(user, event, true);
+        EventUser eu = new EventUser(user, event, true);
         event_userRepository.save(eu);
         return "Successfully added event";
     }
@@ -51,7 +51,9 @@ public class EventServiceImpl implements EventService {
             return "Unexpected failure";
         if (event == null)
             return "Event doesn't exist";
-        Event_User eu = event_userRepository.findByUserAndEvent(user, event);
+        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
+        if (eu == null)
+            return "User is not in that event";
         if (!eu.isAdmin())
             return "User is not allowed to update event";
         eventRepository.save(getEvent(eventDto, event));
@@ -66,9 +68,9 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null)
             return "Event doesn't exist";
-        Event_User eu = event_userRepository.findByUserAndEvent(user, event);
+        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
         UserCard uc = new UserCard();
-        uc.setEvent_user(eu);
+        uc.setEventUser(eu);
         uc.setProduct(product);
         userCardRepository.save(uc);
         event.getProducts().add(product);
@@ -87,10 +89,15 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null)
             return "Event doesn't exist";
-        Event_User eu = event_userRepository.findByUserAndEvent(user, event);
+        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
+        if (eu == null)
+            return "User is not in that event";
+        EventUser eu2 = event_userRepository.findByUserAndEvent(addingUser, event);
+        if (eu2 != null)
+            return  "User is acctually in that event";
         if (!eu.isAdmin())
             return "User don't have permission to add new user to event";
-        Event_User euAdd = new Event_User(addingUser, event, false);
+        EventUser euAdd = new EventUser(addingUser, event, false);
         event_userRepository.save(euAdd);
         return "Successfully added user";
     }
@@ -101,7 +108,9 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
             return "Event doesn't exist";
-        Event_User eu = event_userRepository.findByUserAndEvent(user, event);
+        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
+        if (eu == null)
+            return "User is not in that event";
         if (!eu.isAdmin())
             return "User don't have permission to delete event";
         eventRepository.deleteById(id);
@@ -113,11 +122,30 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(event_id).orElse(null);
         if (event==null)
             return null;
-        List<Event_User> event_users = event_userRepository.findAllByEvent(event);
+        List<EventUser> event_users = event_userRepository.findAllByEvent(event);
         List <User> users = new ArrayList<>();
-        for (Event_User eu: event_users)
+        for (EventUser eu: event_users)
             users.add(eu.getUser());
         return users;
+    }
+
+    @Override
+    public List<Product> findUserEventProducts(Integer event_id, Long user_id) {
+        List<Product> userEventProducts = new ArrayList<>();
+        User user = userRepository.findById(user_id).orElse(null);
+        if (user == null)
+            return null;
+        Event event = eventRepository.findById(event_id).orElse(null);
+        if (event == null)
+            return null;
+        EventUser eu = event_userRepository.findByUserAndEvent(user,event);
+        if (eu == null )
+            return null;
+        List<UserCard> uc = userCardRepository.findAllByEventUser(eu);
+        for (UserCard u : uc){
+            userEventProducts.add(u.getProduct());
+        }
+        return userEventProducts;
     }
 
     @Override
@@ -125,18 +153,71 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id).orElse(null);
         User userToDelete = userRepository.findById(userToDeleteId).orElse(null);
         User user = userRepository.findById(userId).orElse(null);
-        Event_User event_user = event_userRepository.findByUserAndEvent(user,event);
+        EventUser event_user = event_userRepository.findByUserAndEvent(user,event);
         if (event==null)
             return "Event doesn't exist";
         if (user==null)
             return "Unexpected failure";
         if (userToDelete==null)
             return "User to delete doesn't exist";
+        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
+        if (eu == null)
+            return "User is not in that event";
+        EventUser eu2 = event_userRepository.findByUserAndEvent(userToDelete, event);
+        if (eu2 == null)
+            return  "User is not acctually in that event";
         if (!event_user.isAdmin())
             return "You don't have permission to delete user";
-        Event_User eu= event_userRepository.findByUserAndEvent(userToDelete,event);
         event_userRepository.deleteById(eu.getId());
         return "Successfully removed user from event";
+
+    }
+
+    @Override
+    public String deleteProduct(Integer id, Integer productToDeleteId, Long userId) {
+        Event event = eventRepository.findById(id).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
+        EventUser event_user = event_userRepository.findByUserAndEvent(user,event);
+        if (event==null)
+            return "Event doesn't exist";
+        if (user==null)
+            return "Unexpected failure";
+        if (event_user == null)
+            return "User is not in that event";
+        List<UserCard> userCards = userCardRepository.findAllByEventUser(event_user);
+        for (UserCard uc : userCards){
+            Product product = uc.getProduct();
+            if (product.getId() == productToDeleteId )
+                userCardRepository.delete(uc);
+        }
+        event.getProducts().removeIf(p -> p.getId() == productToDeleteId);
+        return "Successfully delete products";
+
+    }
+
+    @Override
+    public String grantUserAdmin(Integer event_id, Long userToGrantId, Long user_id) {
+        Event event = eventRepository.findById(event_id).orElse(null);
+        User userToGrant = userRepository.findById(userToGrantId).orElse(null);
+        User user = userRepository.findById(user_id).orElse(null);
+        EventUser event_user = event_userRepository.findByUserAndEvent(user,event);
+        if (event==null)
+            return "Event doesn't exist";
+        if (user==null)
+            return "Unexpected failure";
+        if (userToGrant==null)
+            return "User to grant doesn't exist";
+        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
+        if (eu == null)
+            return "You are not in that event";
+        EventUser eu2 = event_userRepository.findByUserAndEvent(userToGrant, event);
+        if (eu2 == null)
+            return  "User is not acctually in that event";
+        if (!event_user.isAdmin())
+            return "You don't have permission to grant admin to user";
+        eu2.setAdmin(true);
+        event_userRepository.save(eu2);
+        return "Successfully granted admin to " + user.getUsername();
 
     }
 

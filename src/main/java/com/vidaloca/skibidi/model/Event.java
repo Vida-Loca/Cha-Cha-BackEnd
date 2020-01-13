@@ -42,7 +42,7 @@ public class Event {
 
     @JsonBackReference
     @OneToMany(mappedBy = "event", cascade=CascadeType.ALL)
-    private List<Event_User> event_user;
+    private List<EventUser> eventUsers;
 
 
     @Column(nullable = false)

@@ -3,25 +3,21 @@ package com.vidaloca.skibidi.event.controller;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.EventRepository;
-import com.vidaloca.skibidi.event.repository.Event_UserRepository;
+import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.service.ProductService;
 import com.vidaloca.skibidi.model.Event;
-import com.vidaloca.skibidi.model.Event_User;
 import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
-import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -34,13 +30,13 @@ public class EventController {
     private ProductService productService;
     private ProductRepository productRepository;
     private UserRepository userRepository;
-    private Event_UserRepository event_userRepository;
+    private EventUserRepository event_userRepository;
 
     @Autowired
     public EventController(JwtAuthenticationFilter jwtAuthenticationFilter, JwtTokenProvider jwtTokenProvider,
                            EventRepository eventRepository, EventService eventService,
                            ProductService productService, ProductRepository productRepository,
-                           UserRepository userRepository, Event_UserRepository event_userRepository) {
+                           UserRepository userRepository, EventUserRepository event_userRepository) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtTokenProvider = jwtTokenProvider;
         this.eventRepository = eventRepository;
@@ -113,10 +109,29 @@ public class EventController {
     public List<User> getEventUsers (@PathVariable Integer id,HttpServletRequest request) {
         return eventService.findAllUsers(id);
     }
+    @GetMapping("/event/{event_id}/user/{user_id}/products")
+    public List<Product> getEventUserProducts(@PathVariable Integer event_id, @PathVariable Long user_id){
+        return eventService.findUserEventProducts(event_id,user_id);
+    }
+    @GetMapping("/event/{id}/myproducts")
+    public List<Product> getMyEventUserProducts(@PathVariable Integer id,HttpServletRequest request){
+        Long currentUserId = currentUserId(request);
+        return eventService.findUserEventProducts(id,currentUserId);
+    }
+    @DeleteMapping("/event/{id}/product")
+    public String deleteProductFromEvent (@PathVariable Integer id,@RequestParam Integer productToDeleteId, HttpServletRequest request) {
+        Long currentUserId = currentUserId(request);
+        return eventService.deleteProduct(id,productToDeleteId,currentUserId);
+    }
     @DeleteMapping("/event/{id}/user")
     public String deleteUserFromEvent (@PathVariable Integer id,@RequestParam Long userToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return eventService.deleteUser(id,userToDeleteId,currentUserId);
+    }
+    @PutMapping ("/event/{event_id}/user/{user_id}/grantAdmin")
+    public String grantAdminForUser(@PathVariable Integer event_id, @PathVariable Long user_id, HttpServletRequest request){
+        Long currentUserId = currentUserId(request);
+        return eventService.grantUserAdmin(event_id,user_id,currentUserId);
     }
 
     private Long currentUserId(HttpServletRequest request) {

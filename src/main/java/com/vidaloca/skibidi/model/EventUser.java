@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,8 +13,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event_User {
-    public Event_User(User user, Event event, boolean isAdmin){
+public class EventUser {
+    public EventUser(User user, Event event, boolean isAdmin){
         this.user = user;
         this.event =event;
         this.isAdmin = isAdmin;
@@ -37,7 +36,7 @@ public class Event_User {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToMany(mappedBy = "event_user",cascade ={CascadeType.PERSIST, CascadeType.MERGE,
+    @OneToMany(mappedBy = "eventUser",cascade ={CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH} )
     private List<UserCard> userCard;
 
