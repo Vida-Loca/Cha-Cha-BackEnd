@@ -3,6 +3,7 @@ package com.vidaloca.skibidi.registration.controller;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.model.VerificationToken;
 import com.vidaloca.skibidi.registration.dto.LoginDto;
+import com.vidaloca.skibidi.registration.repository.UserRepository;
 import com.vidaloca.skibidi.registration.service.MapValidationErrorService;
 import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.registration.utills.RegisterEvent;
@@ -61,12 +62,18 @@ public class UserController {
     private MapValidationErrorService mapValidationErrorService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/currentUserId")
     public Long currentUserId(HttpServletRequest request) {
         String token = jwtAuthenticationFilter.getJWTFromRequest(request);
         return tokenProvider.getUserIdFromJWT(token);
 
+    }
+    @GetMapping("/currentUser")
+    public User getCurrentUser(HttpServletRequest request){
+        return userRepository.findById(currentUserId(request)).orElse(null);
     }
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto, BindingResult result){
