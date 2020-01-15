@@ -55,4 +55,8 @@ public class User {
     @Column(columnDefinition = "boolean default false")
     private boolean enabled;
 
+    @Override
+    public String toString() {
+        return username;
+    }
 }
