@@ -29,7 +29,7 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
-    private List<EventUser> event_user;
+    private List<EventUser> eventUsers;
 
 
     @Column(nullable = false, unique = true)

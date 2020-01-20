@@ -10,4 +10,5 @@ import java.util.List;
 public interface EventUserRepository extends CrudRepository<EventUser,Integer> {
     EventUser findByUserAndEvent(User user, Event event);
     List<EventUser> findAllByEvent(Event event);
+    List<EventUser> findAllByUser (User user);
 }

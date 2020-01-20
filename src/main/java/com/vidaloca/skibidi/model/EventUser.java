@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,6 @@ public class EventUser {
     @Column(name = "event_user_id")
     private int id;
 
-    @JsonBackReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
@@ -36,6 +36,7 @@ public class EventUser {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "eventUser",cascade =CascadeType.ALL )
     private List<UserCard> userCard;
 

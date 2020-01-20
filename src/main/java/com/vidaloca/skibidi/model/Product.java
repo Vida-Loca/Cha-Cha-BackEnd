@@ -22,7 +22,6 @@ public class Product {
     @Column(name = "product_id")
     private int id;
 
-    @JsonManagedReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "product_category_id")
@@ -34,7 +33,6 @@ public class Product {
     @Column
     private Double price;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<UserCard> userCards;
 }

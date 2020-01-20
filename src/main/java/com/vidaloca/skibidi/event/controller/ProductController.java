@@ -1,9 +1,12 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.vidaloca.skibidi.event.dto.ProductDto;
+import com.vidaloca.skibidi.event.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.ProductService;
 import com.vidaloca.skibidi.model.Product;
+import com.vidaloca.skibidi.model.ProductCategory;
+import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,18 +20,25 @@ import java.util.List;
 public class ProductController {
     private ProductService productService;
     private ProductRepository productRepository;
+    private ProductCategoryRepository productCategoryRepository;
 
     @Autowired
-    public ProductController(ProductService productService, ProductRepository productRepository) {
+    public ProductController(ProductService productService, ProductRepository productRepository,
+                             ProductCategoryRepository productCategoryRepository) {
         this.productService = productService;
         this.productRepository = productRepository;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     @GetMapping("/product")
     public List<Product> getAllProducts(){return (List<Product>) productRepository.findAll();}
     @PostMapping("/product")
-    public String addNewProductToEvent(@Valid @RequestBody ProductDto productDto ){
+    public GenericResponse addNewProductToEvent(@Valid @RequestBody ProductDto productDto ){
         Product p = productService.addProduct(productDto);
-        return "Successfully added product";
+        return new GenericResponse("added successfully");
+    }
+    @GetMapping("/productCategories")
+    public List<ProductCategory> showAllProducts(){
+        return (List<ProductCategory>) productCategoryRepository.findAll();
     }
 }

@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.service.ProductService;
 import com.vidaloca.skibidi.model.Event;
+import com.vidaloca.skibidi.model.EventUser;
 import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
@@ -138,6 +139,20 @@ public class EventController {
     public GenericResponse grantAdminForUser(@PathVariable Integer event_id, @PathVariable Long user_id, HttpServletRequest request){
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.grantUserAdmin(event_id,user_id,currentUserId));
+    }
+    @GetMapping ("/event/{event_id}/isAdmin")
+    public GenericResponse isAdmin(@PathVariable("event_id") Integer eventId, HttpServletRequest request){
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null)
+            return new GenericResponse("failed");
+        User user = userRepository.findById(currentUserId(request)).orElse(null);
+        if (user == null)
+            return new GenericResponse("failed");
+        EventUser eu = event_userRepository.findByUserAndEvent(user,event);
+        if (eu.isAdmin())
+            return new GenericResponse("true");
+        else
+            return new GenericResponse("false");
     }
 
     private Long currentUserId(HttpServletRequest request) {

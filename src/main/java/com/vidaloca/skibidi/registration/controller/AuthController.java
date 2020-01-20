@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-public class UserController {
+public class AuthController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -69,23 +69,6 @@ public class UserController {
     @Autowired
     private RoleRepository roleRepository;
 
-    @GetMapping("/currentUserId")
-    public Long currentUserId(HttpServletRequest request) {
-        String token = jwtAuthenticationFilter.getJWTFromRequest(request);
-        return tokenProvider.getUserIdFromJWT(token);
-
-    }
-    @GetMapping("/roles")
-    public List<Role> rolesGet(){
-        return (List<Role>) roleRepository.findAll();
-    }
-    @GetMapping("/currentUser")
-    public User getCurrentUser(HttpServletRequest request){
-        System.out.println("\n"  + jwtAuthenticationFilter.getJWTFromRequest(request) + "\n");
-        User user= userRepository.findById(currentUserId(request)).orElse(null);
-        System.out.println("\n"+ user.getRole());
-        return user;
-    }
     @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto, BindingResult result){
@@ -107,7 +90,7 @@ public class UserController {
 
 
     @CrossOrigin
-    @PostMapping ("/user/registration")
+    @PostMapping ("/registration")
     public GenericResponse registerUserAccount(@RequestBody UserDto accountDto, final HttpServletRequest request) throws EmailExistsException {
         System.out.println(accountDto);
         LOGGER.debug("Registering user account with information: {}", accountDto);
@@ -128,7 +111,7 @@ public class UserController {
 
        return  new GenericResponse("fail");
     }
-    @GetMapping("/user/resendRegistrationToken")
+    @GetMapping("/resendRegistrationToken")
     public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
         final VerificationToken newToken = service.generateNewVerificationToken(existingToken);
         final User user = service.getUser(newToken.getToken());
