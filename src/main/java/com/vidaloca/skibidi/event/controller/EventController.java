@@ -60,9 +60,10 @@ public class EventController {
 
     @CrossOrigin
     @PostMapping("/event")
-    public String addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
+    public Event addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        return eventService.addNewEvent(eventDto,currentUserId);
+        eventService.addNewEvent(eventDto,currentUserId);
+        return new Event();
     }
 
     @CrossOrigin
@@ -99,6 +100,7 @@ public class EventController {
     @PostMapping("/event/{id}/product")
     public String addProductToEvent(@RequestParam Integer productId, @PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
+
         productRepository.findById(productId).ifPresent(p ->  eventService.addProductToEvent(p, id, currentUserId));
         return "Successfully added existing product to event";
     }

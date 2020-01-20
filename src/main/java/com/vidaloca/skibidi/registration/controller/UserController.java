@@ -81,8 +81,11 @@ public class UserController {
     }
     @GetMapping("/currentUser")
     public User getCurrentUser(HttpServletRequest request){
+        System.out.println("\n"  + jwtAuthenticationFilter.getJWTFromRequest(request) + "\n");
         return userRepository.findById(currentUserId(request)).orElse(null);
+
     }
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto, BindingResult result){
         ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
@@ -102,6 +105,7 @@ public class UserController {
     }
 
 
+    @CrossOrigin
     @PostMapping ("/user/registration")
     public GenericResponse registerUserAccount(@RequestBody UserDto accountDto, final HttpServletRequest request) throws EmailExistsException {
         System.out.println(accountDto);
