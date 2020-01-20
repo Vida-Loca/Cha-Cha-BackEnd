@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.registration.service;
 
+import com.vidaloca.skibidi.exceptions.UsernameExistsException;
 import com.vidaloca.skibidi.model.Role;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.model.VerificationToken;
@@ -40,11 +41,15 @@ public class UserService implements UserServiceInter {
     @Transactional
     @Override
     public User registerNewUserAccount(UserDto accountDto)
-            throws EmailExistsException {
+            throws EmailExistsException, UsernameExistsException {
 
         if (emailExists(accountDto.getEmail())) {
             throw new EmailExistsException(
                     "There is an account with that email address:" + accountDto.getEmail());
+        }
+        if (userRepository.findByUsername(accountDto.getUsername())!=null) {
+            throw new UsernameExistsException(
+                    "There is an account with that username: " + accountDto.getUsername());
         }
         User user = new User();
         user.setUsername(accountDto.getUsername());

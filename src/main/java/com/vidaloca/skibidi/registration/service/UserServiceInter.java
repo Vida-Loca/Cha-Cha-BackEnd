@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.registration.service;
 
+import com.vidaloca.skibidi.exceptions.UsernameExistsException;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.model.VerificationToken;
 import com.vidaloca.skibidi.registration.dto.UserDto;
@@ -7,7 +8,7 @@ import com.vidaloca.skibidi.exceptions.EmailExistsException;
 
 public interface UserServiceInter {
         User registerNewUserAccount(UserDto accountDto)
-                throws EmailExistsException;
+                throws EmailExistsException, UsernameExistsException;
         User getUser(String verificationToken);
 
         void saveRegisteredUser(User user);

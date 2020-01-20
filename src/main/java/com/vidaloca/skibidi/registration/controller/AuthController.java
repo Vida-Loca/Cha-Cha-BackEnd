@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.registration.controller;
 
+import com.vidaloca.skibidi.exceptions.UsernameExistsException;
 import com.vidaloca.skibidi.model.Role;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.model.VerificationToken;
@@ -91,13 +92,19 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping ("/registration")
-    public GenericResponse registerUserAccount(@RequestBody UserDto accountDto, final HttpServletRequest request) throws EmailExistsException {
-        System.out.println(accountDto);
-        LOGGER.debug("Registering user account with information: {}", accountDto);
-        System.out.println(accountDto);
-        final User registered = service.registerNewUserAccount(accountDto);
-        eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale(), getAppUrl(request)));
-        return new GenericResponse("success");
+    public GenericResponse registerUserAccount(@RequestBody UserDto accountDto, final HttpServletRequest request) throws EmailExistsException, UsernameExistsException {
+       try {
+           LOGGER.debug("Registering user account with information: {}", accountDto);
+           final User registered = service.registerNewUserAccount(accountDto);
+           eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale(), getAppUrl(request)));
+           return new GenericResponse("success");
+       }
+       catch (EmailExistsException ex){
+           return new GenericResponse("Email exists",ex.getMessage());
+       }
+       catch (UsernameExistsException ex){
+           return new GenericResponse("Username exists",ex.getMessage());
+       }
     }
 
     @GetMapping("/registrationConfirm")

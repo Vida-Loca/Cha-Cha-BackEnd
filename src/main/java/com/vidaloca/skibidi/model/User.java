@@ -5,6 +5,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vidaloca.skibidi.registration.validation.ValidEmail;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -54,7 +55,7 @@ public class User {
     private LocalDateTime joined;
 
     @Column(unique = true)
-   // @ValidEmail
+    @ValidEmail
     @NotNull
     @NotEmpty
     private String email;
