@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.security;
 
+import com.google.common.collect.ImmutableList;
 import com.vidaloca.skibidi.registration.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -62,8 +63,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(ImmutableList.of("*"));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedMethods(ImmutableList.of("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(ImmutableList.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
     @Override
