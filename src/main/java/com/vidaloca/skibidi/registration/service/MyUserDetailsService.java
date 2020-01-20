@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.registration.service;
 
+import com.vidaloca.skibidi.model.Role;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -30,17 +33,12 @@ public class MyUserDetailsService implements UserDetailsService {
                 throw new UsernameNotFoundException(
                         "No user found with username: " + username);
             }
-            boolean enabled = true;
-            boolean accountNonExpired = true;
-            boolean credentialsNonExpired = true;
-            boolean accountNonLocked = true;
-            List<GrantedAuthority> role = new ArrayList<>();
-            role.add(new SimpleGrantedAuthority(user.getRole().getName()));
+            Set<GrantedAuthority> grantedAuthorities = null;
+            grantedAuthorities = new HashSet<>();
+            grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
+            System.out.println(grantedAuthorities);
             return new org.springframework.security.core.userdetails.User
-                    (user.getUsername(),
-                            user.getPassword(), enabled, accountNonExpired,
-                            credentialsNonExpired, accountNonLocked,
-                            role);
+                    (user.getUsername(), user.getPassword(), grantedAuthorities);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

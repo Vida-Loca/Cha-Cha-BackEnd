@@ -82,8 +82,9 @@ public class UserController {
     @GetMapping("/currentUser")
     public User getCurrentUser(HttpServletRequest request){
         System.out.println("\n"  + jwtAuthenticationFilter.getJWTFromRequest(request) + "\n");
-        return userRepository.findById(currentUserId(request)).orElse(null);
-
+        User user= userRepository.findById(currentUserId(request)).orElse(null);
+        System.out.println("\n"+ user.getRole());
+        return user;
     }
     @CrossOrigin
     @PostMapping("/login")

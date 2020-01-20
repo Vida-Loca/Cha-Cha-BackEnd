@@ -36,8 +36,7 @@ public class EventUser {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToMany(mappedBy = "eventUser",cascade ={CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH} )
+    @OneToMany(mappedBy = "eventUser",cascade =CascadeType.ALL )
     private List<UserCard> userCard;
 
     @Column(name ="is_admin", nullable = false, columnDefinition = "boolean default false")

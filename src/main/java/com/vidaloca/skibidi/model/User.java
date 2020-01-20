@@ -22,13 +22,13 @@ public class User {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "role_id")
     private Role role;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
     private List<EventUser> event_user;
 
 
