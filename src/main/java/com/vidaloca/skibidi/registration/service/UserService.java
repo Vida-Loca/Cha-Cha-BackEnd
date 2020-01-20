@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -52,6 +53,8 @@ public class UserService implements UserServiceInter {
         //  System.out.println(accountDto.getPassword());
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
+        user.setPicUrl(accountDto.getPicUrl());
+        user.setJoined(LocalDateTime.now());
         Role role = roleRepository.findById(1).orElse(null);
         user.setRole(role);
         //  System.out.println("TestPrzedSave");

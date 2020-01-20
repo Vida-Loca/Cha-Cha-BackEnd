@@ -5,6 +5,7 @@ import com.vidaloca.skibidi.model.Event;
 import com.vidaloca.skibidi.model.EventUser;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
+import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.security.JwtTokenProvider;
 import io.jsonwebtoken.Jwt;
@@ -48,9 +49,20 @@ public class UserController {
             events.add(x.getEvent());
         return events;
     }
+    @GetMapping("/user/isAdmin")
+    public GenericResponse isAdmin(HttpServletRequest request){
+        User user = userRepository.findById(currentUserId(request)).orElse(null);
+        if (user == null)
+            return new GenericResponse("failed");
+        if (user.getRole().getName().equals("ADMIN"))
+            return new GenericResponse("true");
+        else
+            return new GenericResponse("false");
+    }
     private Long currentUserId(HttpServletRequest request) {
         String token = jwtAuthenticationFilter.getJWTFromRequest(request);
         return tokenProvider.getUserIdFromJWT(token);
 
     }
+
 }

@@ -20,3 +20,5 @@ alter table user add constraint FKn82ha3ccdebhokx3a8fgdqeyy foreign key (role_id
 alter table user_card add constraint FKcftxjqhhcni4vnmgw58k83sjj foreign key (event_user_id) references event_user (event_user_id)
 alter table user_card add constraint FKagbamur6ryad61kxljjsuwrw5 foreign key (product_id) references product (product_id)
 alter table verification_token add constraint FKrdn0mss276m9jdobfhhn2qogw foreign key (user_id) references user (user_id)
+alter table user add column joined datetime(6)
+alter table user add column pic_url varchar(255)

@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -44,6 +46,12 @@ public class User {
 
     @Column
     private String surname;
+
+    @Column
+    private String picUrl;
+
+    @Column
+    private LocalDateTime joined;
 
     @Column(unique = true)
    // @ValidEmail

@@ -5,6 +5,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class UserDto {
     @NotNull
@@ -29,6 +31,10 @@ public class UserDto {
     @ValidEmail
     private String email;
 
+    private String picUrl;
+
+    private LocalDateTime joined;
+
     public UserDto(){}
 
     public UserDto(@NotNull @NotEmpty String username,@NotNull @NotEmpty String name, @NotNull @NotEmpty String surname,
@@ -39,6 +45,16 @@ public class UserDto {
         this.password = password;
         this.matchingPassword = matchingPassword;
         this.email = email;
+    }
+    public UserDto(@NotNull @NotEmpty String username,@NotNull @NotEmpty String name, @NotNull @NotEmpty String surname,
+                   @NotNull @NotEmpty String password, String matchingPassword, @NotNull @NotEmpty String email, String picUrl) {
+        this.username = username;
+        this.name= name;
+        this.surname = surname;
+        this.password = password;
+        this.matchingPassword = matchingPassword;
+        this.email = email;
+        this.picUrl = picUrl;
     }
 
     public String getName() {
@@ -88,6 +104,22 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public LocalDateTime getJoined() {
+        return joined;
+    }
+
+    public void setJoined(LocalDateTime joined) {
+        this.joined = joined;
     }
 
     @Override
