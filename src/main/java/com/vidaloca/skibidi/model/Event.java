@@ -28,18 +28,6 @@ public class Event {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @JsonManagedReference
-    @ManyToMany(mappedBy = "events", targetEntity = Game.class)
-    private Set<Game> games;
-
-    @JsonBackReference
-    @ManyToMany
-    @JoinTable(
-            name = "event_product",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private List<Product> products;
-
     @JsonBackReference
     @OneToMany(mappedBy = "event", cascade=CascadeType.ALL)
     private List<EventUser> eventUsers;

@@ -81,10 +81,7 @@ public class EventController {
 
     @GetMapping("/event/{id}/product")
     public List<Product> getEventProducts(@PathVariable Integer id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            return null;
-        return event.getProducts();
+        return eventService.findAllEventProducts(id);
     }
 
     @CrossOrigin
@@ -93,6 +90,8 @@ public class EventController {
                                     HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         Product p = productService.addProduct(productDto);
+        if (p==null)
+            return new GenericResponse("Cant't add product");
         return new GenericResponse(eventService.addProductToEvent(p, id, currentUserId));
     }
 
@@ -100,9 +99,10 @@ public class EventController {
     @PostMapping("/event/{id}/product")
     public GenericResponse addProductToEvent(@RequestParam Integer productId, @PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-
-        productRepository.findById(productId).ifPresent(p ->  eventService.addProductToEvent(p, id, currentUserId));
-        return new GenericResponse( "Successfully added existing product to event");
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product==null)
+            return new GenericResponse("Product not exist");
+        return new GenericResponse(eventService.addProductToEvent(product,id,currentUserId));
     }
 
     @CrossOrigin

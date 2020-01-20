@@ -69,12 +69,12 @@ public class EventServiceImpl implements EventService {
         if (event == null)
             return "Event doesn't exist";
         EventUser eu = event_userRepository.findByUserAndEvent(user, event);
+        if (eu == null)
+            return "User is not in that event";
         UserCard uc = new UserCard();
         uc.setEventUser(eu);
         uc.setProduct(product);
         userCardRepository.save(uc);
-        event.getProducts().add(product);
-        eventRepository.save(event);
         return "Successfully added product";
     }
 
@@ -115,6 +115,18 @@ public class EventServiceImpl implements EventService {
             return "User don't have permission to delete event";
         eventRepository.deleteById(id);
         return "Event delete successfully";
+    }
+
+    @Override
+    public List<Product> findAllEventProducts(Integer id) {
+        List<Product> products = new ArrayList<>();
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event==null)
+            return null;
+        for (EventUser eu : event.getEventUsers())
+            for (UserCard uc: eu.getUserCard())
+                products.add(uc.getProduct());
+        return products;
     }
 
     @Override
@@ -190,7 +202,6 @@ public class EventServiceImpl implements EventService {
             if (product.getId() == productToDeleteId )
                 userCardRepository.delete(uc);
         }
-        event.getProducts().removeIf(p -> p.getId() == productToDeleteId);
         return "Successfully delete products";
 
     }

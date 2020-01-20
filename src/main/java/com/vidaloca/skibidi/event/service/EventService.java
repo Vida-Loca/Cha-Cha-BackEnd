@@ -13,6 +13,7 @@ public interface EventService {
     String addProductToEvent(Product product, Integer eventId, Long userId);
     String addUserToEvent(String username, Integer eventId,Long userId);
     String deleteEvent(Integer id, Long user_id);
+    List<Product> findAllEventProducts(Integer id);
     List<User> findAllUsers(Integer event_id);
     List<Product> findUserEventProducts(Integer event_id, Long user_id);
     String deleteUser(Integer id,Long userToDeleteId, Long userId);

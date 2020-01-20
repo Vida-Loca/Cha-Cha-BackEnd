@@ -35,10 +35,6 @@ public class Product {
     private Double price;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "products", targetEntity = Event.class)
-    Set<Event> events;
-
-    @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<UserCard> userCards;
 }

@@ -52,12 +52,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductCategory addCategory(ProductCategoryDto productCategoryDto) {
         ProductCategory pc = new ProductCategory();
-        pc.setName(productCategoryDto.getName());
+        pc.setName(productCategoryDto.getName().toUpperCase());
         productCategoryRepository.save(pc);
         return pc;
     }
 
     private boolean isCategoryInDb(String productCategory){
-        return productCategoryRepository.findAllByName(productCategory).size() != 0;
+        return productCategoryRepository.findAllByName(productCategory.toUpperCase()).size() != 0;
     }
 }
