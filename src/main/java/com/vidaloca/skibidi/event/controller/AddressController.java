@@ -4,6 +4,7 @@ import com.vidaloca.skibidi.event.dto.AddressDto;
 import com.vidaloca.skibidi.event.repository.AddressRepository;
 import com.vidaloca.skibidi.event.service.AddressService;
 import com.vidaloca.skibidi.model.Address;
+import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,18 +32,18 @@ public class AddressController {
         return  addressRepository.findById(id).orElse(null);
     }
     @PostMapping("/address")
-    public String add(@Valid @RequestBody AddressDto addressDto){
+    public GenericResponse add(@Valid @RequestBody AddressDto addressDto){
         as.addAddress(addressDto);
-        return "Successfully added address";
+        return new GenericResponse("Success");
     }
     @DeleteMapping("/address/{id}")
-    public String delete(@PathVariable Integer id){
+    public GenericResponse delete(@PathVariable Integer id){
         addressRepository.deleteById(id);
-        return "Deleted successfully co nie Daro XD ?";
+        return new GenericResponse("Success");
     }
     @PutMapping("/address/{id}")
-    public String update(Integer id, @Valid @RequestBody AddressDto addressDto){
+    public GenericResponse update(Integer id, @Valid @RequestBody AddressDto addressDto){
         as.updateAddress(id,addressDto);
-        return "Successfully update address";
+        return new GenericResponse("Success");
     }
 }

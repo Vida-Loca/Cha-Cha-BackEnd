@@ -68,15 +68,15 @@ public class EventController {
 
     @CrossOrigin
     @PutMapping("/event/{id}")
-    public String updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id, HttpServletRequest request) {
+    public GenericResponse updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        return eventService.updateEvent(eventDto, id, currentUserId);
+        return new GenericResponse(eventService.updateEvent(eventDto, id, currentUserId));
     }
 
     @DeleteMapping("/event/{id}")
-    public String deleteById(@PathVariable Integer id, HttpServletRequest request) {
+    public GenericResponse deleteById(@PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        return eventService.deleteEvent(id, currentUserId);
+        return new GenericResponse(eventService.deleteEvent(id, currentUserId));
     }
 
     @GetMapping("/event/{id}/product")
@@ -89,28 +89,27 @@ public class EventController {
 
     @CrossOrigin
     @PostMapping("/event/{id}/productNew")
-    public String addProductToEvent(@Valid @RequestBody ProductDto productDto, @PathVariable Integer id,
+    public GenericResponse addProductToEvent(@Valid @RequestBody ProductDto productDto, @PathVariable Integer id,
                                     HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         Product p = productService.addProduct(productDto);
-        return eventService.addProductToEvent(p, id, currentUserId);
+        return new GenericResponse(eventService.addProductToEvent(p, id, currentUserId));
     }
 
     @CrossOrigin
     @PostMapping("/event/{id}/product")
-    public String addProductToEvent(@RequestParam Integer productId, @PathVariable Integer id, HttpServletRequest request) {
+    public GenericResponse addProductToEvent(@RequestParam Integer productId, @PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
 
         productRepository.findById(productId).ifPresent(p ->  eventService.addProductToEvent(p, id, currentUserId));
-        return "Successfully added existing product to event";
+        return new GenericResponse( "Successfully added existing product to event");
     }
 
     @CrossOrigin
     @PostMapping("/event/{id}/user")
-    public String addUserToEvent(@RequestParam String username, @PathVariable Integer id,HttpServletRequest request) {
+    public GenericResponse addUserToEvent(@RequestParam String username, @PathVariable Integer id,HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        eventService.addUserToEvent(username, id,currentUserId);
-        return "Successfully added user to event";
+        return new GenericResponse(eventService.addUserToEvent(username, id,currentUserId));
     }
     @GetMapping("/event/{id}/user")
     public List<User> getEventUsers (@PathVariable Integer id,HttpServletRequest request) {
@@ -126,19 +125,19 @@ public class EventController {
         return eventService.findUserEventProducts(id,currentUserId);
     }
     @DeleteMapping("/event/{id}/product")
-    public String deleteProductFromEvent (@PathVariable Integer id,@RequestParam Integer productToDeleteId, HttpServletRequest request) {
+    public GenericResponse deleteProductFromEvent (@PathVariable Integer id,@RequestParam Integer productToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        return eventService.deleteProduct(id,productToDeleteId,currentUserId);
+        return new GenericResponse(eventService.deleteProduct(id,productToDeleteId,currentUserId));
     }
     @DeleteMapping("/event/{id}/user")
-    public String deleteUserFromEvent (@PathVariable Integer id,@RequestParam Long userToDeleteId, HttpServletRequest request) {
+    public GenericResponse deleteUserFromEvent (@PathVariable Integer id,@RequestParam Long userToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        return eventService.deleteUser(id,userToDeleteId,currentUserId);
+        return new GenericResponse(eventService.deleteUser(id,userToDeleteId,currentUserId));
     }
     @PutMapping ("/event/{event_id}/user/{user_id}/grantAdmin")
-    public String grantAdminForUser(@PathVariable Integer event_id, @PathVariable Long user_id, HttpServletRequest request){
+    public GenericResponse grantAdminForUser(@PathVariable Integer event_id, @PathVariable Long user_id, HttpServletRequest request){
         Long currentUserId = currentUserId(request);
-        return eventService.grantUserAdmin(event_id,user_id,currentUserId);
+        return new GenericResponse(eventService.grantUserAdmin(event_id,user_id,currentUserId));
     }
 
     private Long currentUserId(HttpServletRequest request) {
