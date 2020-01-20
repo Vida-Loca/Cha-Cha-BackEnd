@@ -11,6 +11,7 @@ import com.vidaloca.skibidi.model.Event;
 import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
+import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +61,9 @@ public class EventController {
 
     @CrossOrigin
     @PostMapping("/event")
-    public Event addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
+    public GenericResponse addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        eventService.addNewEvent(eventDto,currentUserId);
-        return new Event();
+        return new GenericResponse(eventService.addNewEvent(eventDto,currentUserId));
     }
 
     @CrossOrigin
