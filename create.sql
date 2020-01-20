@@ -22,3 +22,5 @@ alter table user_card add constraint FKagbamur6ryad61kxljjsuwrw5 foreign key (pr
 alter table verification_token add constraint FKrdn0mss276m9jdobfhhn2qogw foreign key (user_id) references user (user_id)
 alter table user add column joined datetime(6)
 alter table user add column pic_url varchar(255)
+alter table event add column additional_information varchar(255)
+alter table event add column start_time time not null

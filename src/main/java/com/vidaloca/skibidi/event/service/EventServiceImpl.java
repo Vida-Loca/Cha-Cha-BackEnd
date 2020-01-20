@@ -240,6 +240,8 @@ public class EventServiceImpl implements EventService {
         event.getAddress().setNumber(eventDto.getAddress().getNumber());
         event.getAddress().setStreet(eventDto.getAddress().getStreet());
         event.getAddress().setPostcode(eventDto.getAddress().getPostcode());
+        event.setStartTime(eventDto.getStartTime());
+        event.setAdditionalInformation(eventDto.getAdditionalInformation());
         return event;
     }
 }
