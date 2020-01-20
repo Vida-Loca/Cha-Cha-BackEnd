@@ -10,9 +10,7 @@ import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.security.JwtTokenProvider;
 import io.jsonwebtoken.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -58,6 +56,16 @@ public class UserController {
             return new GenericResponse("true");
         else
             return new GenericResponse("false");
+    }
+    @PutMapping("/user/changePhoto")
+    public GenericResponse changePhoto (HttpServletRequest request, @RequestParam ("url") String url ){
+        User user = userRepository.findById(currentUserId(request)).orElse(null);
+        if (user == null) {
+            return new GenericResponse("fail");
+        }
+        user.setPicUrl(url);
+        userRepository.save(user);
+        return new GenericResponse("success");
     }
     private Long currentUserId(HttpServletRequest request) {
         String token = jwtAuthenticationFilter.getJWTFromRequest(request);
