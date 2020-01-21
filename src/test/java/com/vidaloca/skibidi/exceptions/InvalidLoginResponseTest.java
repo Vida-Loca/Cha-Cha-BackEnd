@@ -1,10 +1,7 @@
 package com.vidaloca.skibidi.exceptions;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class InvalidLoginResponseTest {
 

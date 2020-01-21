@@ -1,29 +1,20 @@
 package com.vidaloca.skibidi.event;
 
-import com.vidaloca.skibidi.event.controller.EventController;
 import com.vidaloca.skibidi.event.dto.AddressDto;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.repository.*;
-import com.vidaloca.skibidi.event.service.AddressService;
 import com.vidaloca.skibidi.event.service.EventService;
-import com.vidaloca.skibidi.event.service.ProductService;
 import com.vidaloca.skibidi.model.*;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.Mockito.*;
@@ -47,27 +38,10 @@ public class EventTests {
 
     @Mock
     private EventService es;
-    @Mock
-    private EventRepository er;
-    @Mock
-    private UserRepository ur;
-    @Mock
-    private EventUserRepository eur;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-    }
-
-
-    private Event getEvent(EventDto eventDto, Event event) {
-        event.setName(eventDto.getName());
-        event.setStartDate(eventDto.getStartDate());
-        event.getAddress().setCity(eventDto.getAddress().getCity());
-        event.getAddress().setCountry(eventDto.getAddress().getCountry());
-        event.getAddress().setNumber(eventDto.getAddress().getNumber());
-        event.getAddress().setPostcode(eventDto.getAddress().getPostcode());
-        return event;
     }
 
     //---------------------------addNewEvent

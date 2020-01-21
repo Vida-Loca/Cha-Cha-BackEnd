@@ -78,6 +78,12 @@ class AddressControllerTest {
     }
 
     @Test
+    void getAllVerifyTimes() {
+        addressController.getAll();
+        verify(addressRepository, times(1)).findAll();
+    }
+
+    @Test
     void get() {
         Address a1 = new Address();
         a1.setAddress_id(1);
@@ -101,6 +107,12 @@ class AddressControllerTest {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/address/{id}", 1)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getVerifyTimes() {
+        addressController.get(1);
+        verify(addressRepository, times(1)).findById(1);
     }
 
     @Test
@@ -132,6 +144,13 @@ class AddressControllerTest {
     }
 
     @Test
+    void addVerifyTimes() {
+        AddressDto addressDto = new AddressDto();
+        addressController.add(addressDto);
+        verify(addressService, times(1)).addAddress(addressDto);
+    }
+
+    @Test
     void testDelete() {
         addressController.delete(1);
         verify(addressRepository, times(1)).deleteById(1);
@@ -145,7 +164,7 @@ class AddressControllerTest {
     }
 
     @Test
-    void update() throws Exception {
+    void update() {
         Address address = new Address();
         address.setAddress_id(1);
         AddressDto addressDto = new AddressDto("UPDT", "UPDT", "UPDT", "UPD", "UPD");

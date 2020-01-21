@@ -8,11 +8,8 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 
-import static org.easymock.EasyMock.createMock;
 import static org.mockito.Mockito.*;
 
 class MapValidationErrorServiceTest {

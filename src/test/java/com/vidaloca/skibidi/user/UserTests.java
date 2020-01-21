@@ -1,6 +1,5 @@
 package com.vidaloca.skibidi.user;
 
-import com.vidaloca.skibidi.event.dto.AddressDto;
 import com.vidaloca.skibidi.exceptions.EmailExistsException;
 import com.vidaloca.skibidi.exceptions.UsernameExistsException;
 import com.vidaloca.skibidi.model.Role;
@@ -14,14 +13,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +23,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
-import static org.mockito.Mockito.*;
 
 import java.sql.Date;
 import java.util.List;
@@ -46,8 +38,6 @@ public class UserTests {
     private UserRepository userRepository;
     @Autowired
     private TokenRepository tokenRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
@@ -208,7 +198,7 @@ public class UserTests {
         expired.setToken("EXPIRED");
         tokenRepository.save(expired);
 
-        VerificationToken verificationToken = userService.generateNewVerificationToken("EXPIRED");
+        userService.generateNewVerificationToken("EXPIRED");
 
         List<VerificationToken> tokensA = (List<VerificationToken>) tokenRepository.findAll();
         Assert.assertNotSame(tokensB, tokensA);

@@ -1,7 +1,6 @@
 package com.vidaloca.skibidi.myUserDetails;
 
 import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
 import com.vidaloca.skibidi.registration.service.MyUserDetailsService;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -21,8 +20,6 @@ public class MyUserDetailsTests {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private MyUserDetailsService myUserDetailsService;
 
     @Test
@@ -35,7 +32,7 @@ public class MyUserDetailsTests {
     @Test(expected = RuntimeException.class)
     public void testLoadNotExistingUser() {
         String username = "NotExisting";
-        UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+        myUserDetailsService.loadUserByUsername(username);
         expectedException.expectMessage("No user found with username: NotExisting");
     }
 

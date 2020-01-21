@@ -1,19 +1,15 @@
 package com.vidaloca.skibidi.event.controller;
 
-import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.model.Role;
 import com.vidaloca.skibidi.model.User;
 import com.vidaloca.skibidi.registration.repository.RoleRepository;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
 import com.vidaloca.skibidi.registration.utills.GenericResponse;
-import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
-import com.vidaloca.skibidi.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 class AdminControllerTest {
-    @Mock
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Mock
-    private JwtTokenProvider jwtTokenProvider;
+
 
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private EventService eventService;
     @Mock
     private RoleRepository roleRepository;
     @InjectMocks
