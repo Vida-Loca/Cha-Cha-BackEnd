@@ -32,8 +32,6 @@ public class EventServiceImpl implements EventService {
         this.userCardRepository = userCardRepository;
     }
 
-    //-------------------------------------TUTEJ---------------------------------------------------------------------
-//    @Transactional
     @Override
     public String addNewEvent(EventDto eventDto, Long currentUserId) {
         Event event = new Event();
@@ -63,8 +61,6 @@ public class EventServiceImpl implements EventService {
         return "Updated successfully";
     }
 
-    //-------------------------------------TUTEJ---------------------------------------------------------------------
-//    @Transactional
     @Override
     public String addProductToEvent(Product product, Integer eventId, Long userId) {
         User user = userRepository.findById(userId).orElse(null);
@@ -122,8 +118,6 @@ public class EventServiceImpl implements EventService {
         return "Event delete successfully";
     }
 
-    //-------------------------------------TUTEJ---------------------------------------------------------------------
-//    @Transactional
     @Override
     public List<Product> findAllEventProducts(Integer id) {
         List<Product> products = new ArrayList<>();

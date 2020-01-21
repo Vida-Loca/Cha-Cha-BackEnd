@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
@@ -21,8 +22,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AddressControllerTest {
@@ -71,6 +71,13 @@ class AddressControllerTest {
     }
 
     @Test
+    void getAllStatus() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/address")
+        ).andExpect(status().isOk());
+    }
+
+    @Test
     void get() {
         Address a1 = new Address();
         a1.setAddress_id(1);
@@ -87,6 +94,13 @@ class AddressControllerTest {
 
         verify(addressRepository, times(1)).findById(1);
         assertEquals("Add1", address.getCity());
+    }
+
+    @Test
+    void getStatus() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/address/{id}", 1)
+        ).andExpect(status().isOk());
     }
 
     @Test
@@ -108,14 +122,26 @@ class AddressControllerTest {
     }
 
     @Test
-    void testDelete() throws Exception {
-        Address address = new Address();
-        address.setAddress_id(1);
+    void addStatus() throws Exception {
+        AddressDto addressDto = new AddressDto("lala", "lala", "lala", "lala", "lala");
+        mockMvc.perform(
+                post("/address")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(addressDto))
+        ).andExpect(status().isOk());
+    }
 
-        when(addressRepository.findById(1)).thenReturn(java.util.Optional.of(address));
-
-        mockMvc.perform(delete("/address/{id}", address.getAddress_id())).andExpect(status().isOk());
+    @Test
+    void testDelete() {
+        addressController.delete(1);
         verify(addressRepository, times(1)).deleteById(1);
+    }
+
+    @Test
+    void deleteStatus() throws Exception {
+        mockMvc.perform(
+                delete("/address/{id}", 1)
+        ).andExpect(status().isOk());
     }
 
     @Test
@@ -124,12 +150,19 @@ class AddressControllerTest {
         address.setAddress_id(1);
         AddressDto addressDto = new AddressDto("UPDT", "UPDT", "UPDT", "UPD", "UPD");
 
+        addressController.update(1, addressDto);
+        verify(addressService, times(1)).updateAddress(1, addressDto);
+    }
+
+    @Test
+    void updateStatus() throws Exception {
+        AddressDto addressDto = new AddressDto("UPDT", "UPDT", "UPDT", "UPD", "UPD");
+
         mockMvc.perform(
-                put("/address/{id}", address.getAddress_id())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(addressDto))
+                put("/address/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(addressDto))
         ).andExpect(status().isOk());
-        verify(addressService, times(1)).updateAddress(null, addressDto);
     }
 
     public static String asJsonString(final Object obj) {

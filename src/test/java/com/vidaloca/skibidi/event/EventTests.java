@@ -89,16 +89,15 @@ public class EventTests {
         Assert.assertEquals("Successfully added event", str);
     }
 
-    //TRZEBA DODAC @TRANSACTIONAL W EVENTSERVICE
-//    @Transactional
-//    @Test
-//    public void addNewEventTest() {
-//        AddressDto addressDto = new AddressDto("AddTest", "AddTest", "AddTest", "Add");
-//        EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
-//
-//        String str = eventService.addNewEvent(eventDto, 1L);
-//        Assert.assertEquals( "Successfully added event", str);
-//    }
+    @Transactional
+    @Test
+    public void addNewEventTest() {
+        AddressDto addressDto = new AddressDto("AddTest", "AddTest", "AddTest", "Add");
+        EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
+
+        String str = eventService.addNewEvent(eventDto, 1L);
+        Assert.assertEquals( "Successfully added event", str);
+    }
 
     //---------------------------updateEvent
 
@@ -187,14 +186,13 @@ public class EventTests {
         Assert.assertEquals("User is not in that event", str);
     }
 
-    //TRZEBA DODAC @TRANSACTIONAL W EVENTSERVICE
-//    @Transactional
-//    @Test
-//    public void addProductToEvent() {
-//        Product product = productRepository.findById(1).orElse(null);
-//        String str = eventService.addProductToEvent(product, 1, 1L);
-//        Assert.assertEquals("Successfully added product", str);
-//    }
+    @Transactional
+    @Test
+    public void addProductToEvent() {
+        Product product = productRepository.findById(1).orElse(null);
+        String str = eventService.addProductToEvent(product, 1, 1L);
+        Assert.assertEquals("Successfully added product", str);
+    }
 
     //---------------------------addUserToEvent
 
@@ -273,13 +271,13 @@ public class EventTests {
 
     //---------------------------findAllEventProducts
 
-    //TRANSACTIONAL W EVENTSERVICE
-//    @Test
-//    public void testFindAllEventProducts() {
-//        Event event = eventRepository.findById(1).orElse(null);
-//        List<Product> products = eventService.findAllEventProducts(event.getEvent_id());
-//        Assert.assertEquals(1, products.size());
-//    }
+    @Transactional
+    @Test
+    public void testFindAllEventProducts() {
+        Event event = eventRepository.findById(1).orElse(null);
+        List<Product> products = eventService.findAllEventProducts(event.getEvent_id());
+        Assert.assertEquals(1, products.size());
+    }
 
     @Test
     public void testFindAllNullEventProducts() {

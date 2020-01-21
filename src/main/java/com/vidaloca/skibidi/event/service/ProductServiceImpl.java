@@ -22,8 +22,6 @@ public class ProductServiceImpl implements ProductService {
         this.productCategoryRepository = productCategoryRepository;
     }
 
-    //-------------------------------------TUTEJ---------------------------------------------------------------------
-//    @Transactional
     @Override
     public Product addProduct(ProductDto productDto) {
         Product product = new Product();

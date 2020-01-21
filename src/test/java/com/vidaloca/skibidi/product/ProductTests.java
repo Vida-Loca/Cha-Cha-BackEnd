@@ -30,16 +30,15 @@ public class ProductTests {
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
 
-    //TRANSCATIONAL W PRODUCTSERVICE
-//    @Transactional
-//    @Test
-//    public void testAddProductFromExistingCategory() {
-//        ProductDto productDto = new ProductDto("Test", "20.01", "DRINK");
-//        Product product = productService.addProduct(productDto);
-//        List<ProductCategory> categories = (List<ProductCategory>) productCategoryRepository.findAll();
-//        Assert.assertEquals("Test", product.getName());
-//        Assert.assertEquals(2, categories.size());
-//    }
+    @Transactional
+    @Test
+    public void testAddProductFromExistingCategory() {
+        ProductDto productDto = new ProductDto("Test", "20.01", "DRINK");
+        Product product = productService.addProduct(productDto);
+        List<ProductCategory> categories = (List<ProductCategory>) productCategoryRepository.findAll();
+        Assert.assertEquals("Test", product.getName());
+        Assert.assertEquals(2, categories.size());
+    }
 
     @Transactional
     @Test

@@ -170,6 +170,7 @@ class AuthControllerTest {
 
     //----------------------------resendRegistrationToken
 
+    @Transactional
     @Test
     void resendRegistrationToken() throws Exception {
         User user = new User();
