@@ -18,11 +18,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 class AdminControllerTest {
-
 
     @Mock
     private UserRepository userRepository;
@@ -46,6 +47,19 @@ class AdminControllerTest {
     void getAllUsers() {
         List<User> userList = adminController.getAllUsers();
         assertNotNull(userList);
+    }
+
+    @Test
+    void getAllStatus() throws Exception {
+        mockMvc.perform(
+                get("/admin/getAllUsers")
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getAllVerifyTimes() {
+        adminController.getAllUsers();
+        verify(userRepository, times(1)).findAll();
     }
 
     @Test
@@ -82,6 +96,30 @@ class AdminControllerTest {
     }
 
     @Test
+    void grantUserAdminStatus() throws Exception {
+        mockMvc.perform(
+                put("/admin/grantUserAdmin/{id}", 1)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void grantUserAdminVerifyTimes() {
+        User user = new User();
+        Role role = new Role();
+        role.setId(2);
+        role.setName("ADMIN");
+
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
+        when(roleRepository.findById(2)).thenReturn(java.util.Optional.of(role));
+
+        adminController.grantUserAdmin(1L);
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(roleRepository, times(1)).findById(2);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
     void deleteNotExistingUser() {
         HttpServletRequest request = createMock(HttpServletRequest.class);
 
@@ -100,5 +138,32 @@ class AdminControllerTest {
         GenericResponse response = adminController.deleteUser(request, 1L);
 
         assertEquals("Successfully deleted user", response.getMessage());
+    }
+
+    @Test
+    void deleteUserStatus() throws Exception {
+        mockMvc.perform(
+                delete("/admin/deleteUser/{id}", 1)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteNullUserVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        adminController.deleteUser(request, 1L);
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(0)).deleteById(1L);
+    }
+
+    @Test
+    void deleteUserVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        User user = new User();
+
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
+
+        adminController.deleteUser(request, 1L);
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).deleteById(1L);
     }
 }
