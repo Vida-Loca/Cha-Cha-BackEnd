@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 import static org.easymock.EasyMock.createMock;
 import static org.mockito.Mockito.*;
@@ -31,7 +32,7 @@ class MapValidationErrorServiceTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         ResponseEntity responseEntity = mapValidationErrorService.MapValidationService(bindingResult);
+
         Assert.assertNull(responseEntity);
-        verify(mapValidationErrorService, times(1)).MapValidationService(bindingResult);
     }
 }
