@@ -9,6 +9,7 @@ import com.vidaloca.skibidi.model.*;
 import com.vidaloca.skibidi.registration.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class EventServiceImpl implements EventService {
         this.userCardRepository = userCardRepository;
     }
 
+    @Transactional
     @Override
     public String addNewEvent(EventDto eventDto, Long currentUserId) {
         Event event = new Event();
