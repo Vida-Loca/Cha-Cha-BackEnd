@@ -13,8 +13,10 @@ import com.vidaloca.skibidi.registration.service.UserService;
 import com.vidaloca.skibidi.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.security.JwtTokenProvider;
+import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -36,12 +38,16 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AuthControllerTest {
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
     @Mock
     private JwtTokenProvider tokenProvider;
     @Mock
@@ -119,6 +125,48 @@ class AuthControllerTest {
         GenericResponse response = authController.registerUserAccount(userDto, request);
 
         assertEquals("success", response.getMessage());
+    }
+
+    @Test
+    void registerUserAccountExistingEmail() throws EmailExistsException, UsernameExistsException {
+        UserDto userDto = new UserDto("unique", "user", "surname", "pasword", "pasword", "unique@o2.pl");
+        User user = new User();
+        UserDto userDto1 = new UserDto("unique1", "user", "surname", "pasword", "pasword", "unique@o2.pl");
+        User user1 = new User();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addPreferredLocale(Locale.ENGLISH);
+        request.setServerName("SERVER_NAME");
+        request.setServerPort(1010);
+        request.setContextPath("PATH");
+
+        when(service.registerNewUserAccount(userDto)).thenReturn(user);
+        when(service.registerNewUserAccount(userDto1)).thenThrow(EmailExistsException.class);
+
+        authController.registerUserAccount(userDto, request);
+        authController.registerUserAccount(userDto1, request);
+        expectedException.expect(EmailExistsException.class);
+    }
+
+    @Test
+    void registerUserAccountExistingUsername() throws EmailExistsException, UsernameExistsException {
+        UserDto userDto = new UserDto("unique", "user", "surname", "pasword", "pasword", "unique@o2.pl");
+        User user = new User();
+        UserDto userDto1 = new UserDto("unique", "user", "surname", "pasword", "pasword", "unique1@o2.pl");
+        User user1 = new User();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addPreferredLocale(Locale.ENGLISH);
+        request.setServerName("SERVER_NAME");
+        request.setServerPort(1010);
+        request.setContextPath("PATH");
+
+        when(service.registerNewUserAccount(userDto)).thenReturn(user);
+        when(service.registerNewUserAccount(userDto1)).thenThrow(UsernameExistsException.class);
+
+        authController.registerUserAccount(userDto, request);
+        authController.registerUserAccount(userDto1, request);
+        expectedException.expect(UsernameExistsException.class);
     }
 
     //----------------------------confirmRegistration

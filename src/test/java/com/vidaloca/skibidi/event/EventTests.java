@@ -267,6 +267,12 @@ public class EventTests {
         Assert.assertEquals(1, list.size());
     }
 
+    @Test
+    public void testFindAllUsersNullEvent() {
+        List<User> list = eventService.findAllUsers(-1);
+        Assert.assertNull(list);
+    }
+
     //---------------------------findUserEventProducts
 
     @Test
@@ -278,6 +284,12 @@ public class EventTests {
     @Test
     public void testFindUserEventProductNullEvent() {
         List<Product> products = eventService.findUserEventProducts(-1, 1L);
+        Assert.assertNull(products);
+    }
+
+    @Test
+    public void testFindUserEventProductNullEventUser() {
+        List<Product> products = eventService.findUserEventProducts(3, 2L);
         Assert.assertNull(products);
     }
 
@@ -351,6 +363,13 @@ public class EventTests {
     public void testDeleteProductUserNotInEvent() {
         String str = eventService.deleteProduct(1, 1, 2L);
         Assert.assertEquals("User is not in that event", str);
+    }
+
+    @Transactional
+    @Test
+    public void testDeleteProduct() {
+        String str = eventService.deleteProduct(1, 1, 1L);
+        Assert.assertEquals("Successfully delete products", str);
     }
 
     //---------------------------grantUserAdmin

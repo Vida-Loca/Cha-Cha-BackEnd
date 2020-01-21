@@ -95,5 +95,12 @@ public class AddressTests {
         Assert.assertEquals(1, violations.size());
     }
 
+    @Test
+    public void testUpdateNullAddress() {
+        AddressDto addressUpdate = new AddressDto("a", "Test", "Test", "Test");
+        Address address = addressService.updateAddress(-3, addressUpdate);
+        Assert.assertNull(address);
+    }
+
 
 }
