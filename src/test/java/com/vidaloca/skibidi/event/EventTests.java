@@ -42,6 +42,8 @@ public class EventTests {
     private EventRepository eventRepository;
     @Autowired
     private EventService eventService;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Mock
     private EventService es;
@@ -68,6 +70,8 @@ public class EventTests {
         return event;
     }
 
+    //---------------------------addNewEvent
+
     @Transactional
     @Test
     public void addNewEvent() {
@@ -85,15 +89,18 @@ public class EventTests {
         Assert.assertEquals("Successfully added event", str);
     }
 
-    //TRZEBA DODAC @TRANSACTIONAL W SERVICE
-    @Test
-    public void addNewEventTest() {
-        AddressDto addressDto = new AddressDto("AddTest", "AddTest", "AddTest", "Add");
-        EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
+    //TRZEBA DODAC @TRANSACTIONAL W EVENTSERVICE
+//    @Transactional
+//    @Test
+//    public void addNewEventTest() {
+//        AddressDto addressDto = new AddressDto("AddTest", "AddTest", "AddTest", "Add");
+//        EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
+//
+//        String str = eventService.addNewEvent(eventDto, 1L);
+//        Assert.assertEquals( "Successfully added event", str);
+//    }
 
-        String str = eventService.addNewEvent(eventDto, 1L);
-        System.out.println(str);
-    }
+    //---------------------------updateEvent
 
     @Test
     public void testUpdateEventNullUser() {
@@ -132,12 +139,15 @@ public class EventTests {
         Event eventBefore = eventRepository.findById(1).orElse(null);
         AddressDto addressDto = new AddressDto("TestCountry", "TestCity", "TestCode", "TestNo");
         EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
-        eventService.updateEvent(eventDto, 1, 1L);
+        String str = eventService.updateEvent(eventDto, 1, 1L);
         Event eventAfter = eventRepository.findById(1).orElse(null);
         Assert.assertNotEquals(eventBefore.getName(), eventAfter.getName());
         eventAfter.setName(eventBefore.getName());
         eventRepository.save(eventAfter);
+        Assert.assertEquals("Updated successfully", str);
     }
+
+    //---------------------------addProductToEvent
 
     @Test
     public void testAddProductToEvent() {
@@ -154,147 +164,39 @@ public class EventTests {
     }
 
     @Test
-    public void testGrantAdminEventNotExist() {
-        String str = eventService.grantUserAdmin(-3, 1L, 2L);
-        Assert.assertEquals("Event doesn't exist", str);
-    }
-
-    @Test
-    public void testGrantAdminHostNotExist() {
-        String str = eventService.grantUserAdmin(2, 1L, -3L);
+    public void addProductToEventNotExistingUser() {
+        Product product = new Product();
+        product.setId(1);
+        String str = eventService.addProductToEvent(product, 1, -1L);
         Assert.assertEquals("Unexpected failure", str);
     }
 
     @Test
-    public void testGrantAdminUserNotExist() {
-        String str = eventService.grantUserAdmin(2, -3L, 2L);
-        Assert.assertEquals("User to grant doesn't exist", str);
-    }
-
-    @Test
-    public void testGrantAdminHostNotInEvent() {
-        String str = eventService.grantUserAdmin(1, 1L, 2L);
-        Assert.assertEquals("You are not in that event", str);
-    }
-
-    @Test
-    public void testGrantAdminUserNotInEvent() {
-        String str = eventService.grantUserAdmin(1, 2L, 1L);
-        Assert.assertEquals("User is not acctually in that event", str);
-    }
-
-    @Test
-    public void testGrantAdminIsNotAdmin() {
-        String str = eventService.grantUserAdmin(2, 2L, 1L);
-        Assert.assertEquals("You don't have permission to grant admin to user", str);
-    }
-
-    @Transactional
-    @Test
-    public void testGrantAdmin() {
-        String str = eventService.grantUserAdmin(2, 1L, 2L);
-        Assert.assertEquals("Successfully granted admin to testowy2", str);
-    }
-
-    @Transactional
-    @Test
-    public void testDeleteEventIsAdmin() {
-        List<Event> eventsBefore = (List<Event>) eventRepository.findAll();
-        String str = eventService.deleteEvent(2, 2L);
-        List<Event> eventsAfter = (List<Event>) eventRepository.findAll();
-        Assert.assertNotSame(eventsBefore, eventsAfter);
-        Assert.assertEquals("Event delete successfully", str);
-    }
-
-    @Test
-    public void testDeleteEventIsNotAdmin() {
-        String str = eventService.deleteEvent(2, 1L);
-        Assert.assertEquals("User don't have permission to delete event", str);
-    }
-
-    @Test
-    public void testDeleteEventUserNotInEvent() {
-        String str = eventService.deleteEvent(1, 2L);
-        Assert.assertEquals("User is not in that event", str);
-    }
-
-    @Test
-    public void testDeleteNotExistingEvent() {
-        String str = eventService.deleteEvent(-3, 1L);
+    public void addProductToNotExistingEvent() {
+        Product product = new Product();
+        product.setId(1);
+        String str = eventService.addProductToEvent(product, -1, 1L);
         Assert.assertEquals("Event doesn't exist", str);
     }
 
     @Test
-    public void testFindAllUsers() {
-        List<User> list = eventService.findAllUsers(1);
-        Assert.assertEquals(1, list.size());
-    }
-
-    @Test
-    public void testFindUserEventProducts() {
-
-    }
-
-    @Test
-    public void testDeleteUserNotExistingEvent() {
-        String str = eventService.deleteUser(-3, 1L, 2L);
-        Assert.assertEquals("Event doesn't exist", str);
-    }
-
-    @Test
-    public void testDeleteUserNotExistingHost() {
-        String str = eventService.deleteUser(1, 2L, -3L);
-        Assert.assertEquals("Unexpected failure", str);
-    }
-
-    @Test
-    public void testDeleteUserNotExistingUser() {
-        String str = eventService.deleteUser(1, -3L, 1L);
-        Assert.assertEquals("User to delete doesn't exist", str);
-    }
-
-    @Test
-    public void testDeleteUserNotBeingInEvent() {
-        String str = eventService.deleteUser(1, 1L, 2L);
+    public void addProductToEventUserNotInEvent() {
+        Product product = new Product();
+        product.setId(1);
+        String str = eventService.addProductToEvent(product, 1, 2L);
         Assert.assertEquals("User is not in that event", str);
     }
 
-    @Test
-    public void testDeleteUserNotInEvent() {
-        String str = eventService.deleteUser(1, 2L, 1L);
-        Assert.assertEquals("User is not acctually in that event", str);
-    }
+    //TRZEBA DODAC @TRANSACTIONAL W EVENTSERVICE
+//    @Transactional
+//    @Test
+//    public void addProductToEvent() {
+//        Product product = productRepository.findById(1).orElse(null);
+//        String str = eventService.addProductToEvent(product, 1, 1L);
+//        Assert.assertEquals("Successfully added product", str);
+//    }
 
-    @Test
-    public void testDeleteUserIsNotAdmin() {
-        String str = eventService.deleteUser(2, 2L, 1L);
-        Assert.assertEquals("You don't have permission to delete user", str);
-    }
-
-    @Transactional
-    @Test
-    public void testDeleteUser() {
-        String str = eventService.deleteUser(2, 1L, 2L);
-        Assert.assertEquals("Successfully removed user from event", str);
-    }
-
-    @Test
-    public void testDeleteProductNotExistingEvent() {
-        String str = eventService.deleteProduct(-3, 1, 1L);
-        Assert.assertEquals("Event doesn't exist", str);
-    }
-
-    @Test
-    public void testDeleteProductNotExistingUser() {
-        String str = eventService.deleteProduct(1, 1, -3L);
-        Assert.assertEquals("Unexpected failure", str);
-    }
-
-    @Test
-    public void testDeleteProductUserNotInEvent() {
-        String str = eventService.deleteProduct(1, 1, 2L);
-        Assert.assertEquals("User is not in that event", str);
-    }
+    //---------------------------addUserToEvent
 
     @Test
     public void testAddUserToEventHostNE() {
@@ -339,28 +241,61 @@ public class EventTests {
         Assert.assertEquals("Successfully added user", str);
     }
 
+    //---------------------------deleteEvent
+
+    @Transactional
     @Test
-    public void addProductToEventNotExistingUser() {
-        Product product = new Product();
-        product.setId(1);
-        String str = eventService.addProductToEvent(product, 1, -1L);
-        Assert.assertEquals("Unexpected failure", str);
+    public void testDeleteEventIsAdmin() {
+        List<Event> eventsBefore = (List<Event>) eventRepository.findAll();
+        String str = eventService.deleteEvent(2, 2L);
+        List<Event> eventsAfter = (List<Event>) eventRepository.findAll();
+        Assert.assertNotSame(eventsBefore, eventsAfter);
+        Assert.assertEquals("Event delete successfully", str);
     }
 
     @Test
-    public void addProductToNotExistingEvent() {
-        Product product = new Product();
-        product.setId(1);
-        String str = eventService.addProductToEvent(product, -1, 1L);
+    public void testDeleteEventIsNotAdmin() {
+        String str = eventService.deleteEvent(2, 1L);
+        Assert.assertEquals("User don't have permission to delete event", str);
+    }
+
+    @Test
+    public void testDeleteEventUserNotInEvent() {
+        String str = eventService.deleteEvent(1, 2L);
+        Assert.assertEquals("User is not in that event", str);
+    }
+
+    @Test
+    public void testDeleteNotExistingEvent() {
+        String str = eventService.deleteEvent(-3, 1L);
         Assert.assertEquals("Event doesn't exist", str);
     }
 
+    //---------------------------findAllEventProducts
+
+    //TRANSACTIONAL W EVENTSERVICE
 //    @Test
-//    public void addProductToEvent() {
-//        Product product = new Product();
-//        String str = eventService.addProductToEvent(product, 1, 1L);
-//        Assert.assertEquals("Successfully added product", str);
+//    public void testFindAllEventProducts() {
+//        Event event = eventRepository.findById(1).orElse(null);
+//        List<Product> products = eventService.findAllEventProducts(event.getEvent_id());
+//        Assert.assertEquals(1, products.size());
 //    }
+
+    @Test
+    public void testFindAllNullEventProducts() {
+        List<Product> products = eventService.findAllEventProducts(-1);
+        Assert.assertNull(products);
+    }
+
+    //---------------------------findAllUsers
+
+    @Test
+    public void testFindAllUsers() {
+        List<User> list = eventService.findAllUsers(1);
+        Assert.assertEquals(1, list.size());
+    }
+
+    //---------------------------findUserEventProducts
 
     @Test
     public void testFindUserEventProductNullUser() {
@@ -381,5 +316,113 @@ public class EventTests {
         Assert.assertEquals("TestCoke", products.get(0).getName());
     }
 
+    //---------------------------deleteUser
 
+    @Test
+    public void testDeleteUserNotExistingEvent() {
+        String str = eventService.deleteUser(-3, 1L, 2L);
+        Assert.assertEquals("Event doesn't exist", str);
+    }
+
+    @Test
+    public void testDeleteUserNotExistingHost() {
+        String str = eventService.deleteUser(1, 2L, -3L);
+        Assert.assertEquals("Unexpected failure", str);
+    }
+
+    @Test
+    public void testDeleteUserNotExistingUser() {
+        String str = eventService.deleteUser(1, -3L, 1L);
+        Assert.assertEquals("User to delete doesn't exist", str);
+    }
+
+    @Test
+    public void testDeleteUserNotBeingInEvent() {
+        String str = eventService.deleteUser(1, 1L, 2L);
+        Assert.assertEquals("User is not in that event", str);
+    }
+
+    @Test
+    public void testDeleteUserNotInEvent() {
+        String str = eventService.deleteUser(1, 2L, 1L);
+        Assert.assertEquals("User is not acctually in that event", str);
+    }
+
+    @Test
+    public void testDeleteUserIsNotAdmin() {
+        String str = eventService.deleteUser(2, 2L, 1L);
+        Assert.assertEquals("You don't have permission to delete user", str);
+    }
+
+    @Transactional
+    @Test
+    public void testDeleteUser() {
+        String str = eventService.deleteUser(2, 1L, 2L);
+        Assert.assertEquals("Successfully removed user from event", str);
+    }
+
+    //---------------------------deleteProduct
+
+    @Test
+    public void testDeleteProductNotExistingEvent() {
+        String str = eventService.deleteProduct(-3, 1, 1L);
+        Assert.assertEquals("Event doesn't exist", str);
+    }
+
+    @Test
+    public void testDeleteProductNotExistingUser() {
+        String str = eventService.deleteProduct(1, 1, -3L);
+        Assert.assertEquals("Unexpected failure", str);
+    }
+
+    @Test
+    public void testDeleteProductUserNotInEvent() {
+        String str = eventService.deleteProduct(1, 1, 2L);
+        Assert.assertEquals("User is not in that event", str);
+    }
+
+    //---------------------------grantUserAdmin
+
+    @Test
+    public void testGrantAdminEventNotExist() {
+        String str = eventService.grantUserAdmin(-3, 1L, 2L);
+        Assert.assertEquals("Event doesn't exist", str);
+    }
+
+    @Test
+    public void testGrantAdminHostNotExist() {
+        String str = eventService.grantUserAdmin(2, 1L, -3L);
+        Assert.assertEquals("Unexpected failure", str);
+    }
+
+    @Test
+    public void testGrantAdminUserNotExist() {
+        String str = eventService.grantUserAdmin(2, -3L, 2L);
+        Assert.assertEquals("User to grant doesn't exist", str);
+    }
+
+    @Test
+    public void testGrantAdminHostNotInEvent() {
+        String str = eventService.grantUserAdmin(1, 1L, 2L);
+        Assert.assertEquals("You are not in that event", str);
+    }
+
+    @Test
+    public void testGrantAdminUserNotInEvent() {
+        String str = eventService.grantUserAdmin(1, 2L, 1L);
+        Assert.assertEquals("User is not acctually in that event", str);
+    }
+
+    @Test
+    public void testGrantAdminIsNotAdmin() {
+        String str = eventService.grantUserAdmin(2, 2L, 1L);
+        Assert.assertEquals("You don't have permission to grant admin to user", str);
+    }
+
+    @Transactional
+    @Test
+    public void testGrantAdmin() {
+        String str = eventService.grantUserAdmin(2, 1L, 2L);
+        Assert.assertEquals("Successfully granted admin to testowy2", str);
+    }
 }

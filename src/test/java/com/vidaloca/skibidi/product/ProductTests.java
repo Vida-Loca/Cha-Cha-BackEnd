@@ -7,6 +7,7 @@ import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.ProductService;
 import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.ProductCategory;
+import org.hibernate.Hibernate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,31 +30,16 @@ public class ProductTests {
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
 
-    EntityManager entityManager;
-
-    @Transactional
-    @Test
-    public void testAddNewProductCategory() {
-        List<ProductCategory> productCategoryBefore = (List<ProductCategory>) productCategoryRepository.findAll();
-        ProductCategoryDto productCategoryDto = new ProductCategoryDto("TestCategory");
-        productService.addCategory(productCategoryDto);
-        List<ProductCategory> productCategoryAfter = (List<ProductCategory>) productCategoryRepository.findAll();
-        Assert.assertNotEquals(productCategoryBefore.size(), productCategoryAfter.size());
-    }
-
-
+    //TRANSCATIONAL W PRODUCTSERVICE
+//    @Transactional
 //    @Test
-////    public void testAddProductFromExistingCategory() {
-////        List<ProductCategory> productCategoryBefore = (List<ProductCategory>) productCategoryRepository.findAll();
-////        List<Product> productsBefore = (List<Product>) productRepository.findAll();
-////        ProductDto productDto = new ProductDto("Product", "20.0", "Food");
-////        Product pr = productService.addProduct(productDto);
-////        entityManager.merge(pr);
-////        List<ProductCategory> productCategoryAfter = (List<ProductCategory>) productCategoryRepository.findAll();
-////        List<Product> productsAfter = (List<Product>) productRepository.findAll();
-////        Assert.assertEquals(productCategoryBefore.size(), productCategoryAfter.size());
-////        Assert.assertNotEquals(productsBefore.size(), productsAfter.size());
-////    }
+//    public void testAddProductFromExistingCategory() {
+//        ProductDto productDto = new ProductDto("Test", "20.01", "DRINK");
+//        Product product = productService.addProduct(productDto);
+//        List<ProductCategory> categories = (List<ProductCategory>) productCategoryRepository.findAll();
+//        Assert.assertEquals("Test", product.getName());
+//        Assert.assertEquals(2, categories.size());
+//    }
 
     @Transactional
     @Test
@@ -68,5 +54,13 @@ public class ProductTests {
         Assert.assertNotEquals(productsBefore.size(), productsAfter.size());
     }
 
-
+    @Transactional
+    @Test
+    public void testAddNewProductCategory() {
+        List<ProductCategory> productCategoryBefore = (List<ProductCategory>) productCategoryRepository.findAll();
+        ProductCategoryDto productCategoryDto = new ProductCategoryDto("TestCategory");
+        productService.addCategory(productCategoryDto);
+        List<ProductCategory> productCategoryAfter = (List<ProductCategory>) productCategoryRepository.findAll();
+        Assert.assertNotEquals(productCategoryBefore.size(), productCategoryAfter.size());
+    }
 }

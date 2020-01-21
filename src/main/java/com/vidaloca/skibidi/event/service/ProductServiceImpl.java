@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.model.Product;
 import com.vidaloca.skibidi.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -21,6 +22,8 @@ public class ProductServiceImpl implements ProductService {
         this.productCategoryRepository = productCategoryRepository;
     }
 
+    //-------------------------------------TUTEJ---------------------------------------------------------------------
+//    @Transactional
     @Override
     public Product addProduct(ProductDto productDto) {
         Product product = new Product();
