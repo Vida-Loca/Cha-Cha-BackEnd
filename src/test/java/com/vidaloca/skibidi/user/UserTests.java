@@ -153,10 +153,10 @@ public class UserTests {
     @Test
     public void testCreateVToken() {
         List<VerificationToken> tokensB = (List<VerificationToken>) tokenRepository.findAll();
-        String token = "NEW TOKEN";
+        String newToken = "TOKEN NEW";
         User user = userRepository.findById(1L).orElse(null);
 
-        userService.createVerificationToken(user, token);
+        userService.createVerificationToken(user, newToken);
 
         List<VerificationToken> tokensA = (List<VerificationToken>) tokenRepository.findAll();
         Assert.assertNotSame(tokensB, tokensA);
@@ -164,7 +164,7 @@ public class UserTests {
 
     @Test
     public void testValidateNotExistingToken() {
-        String str = userService.validateVerificationToken("NOTEXIST");
+        String str = userService.validateVerificationToken("NOT EXIST");
         Assert.assertEquals("invalidToken", str);
     }
 
