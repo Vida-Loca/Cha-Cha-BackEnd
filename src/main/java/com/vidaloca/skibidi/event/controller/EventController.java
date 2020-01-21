@@ -98,7 +98,7 @@ public class EventController {
 
     @CrossOrigin
     @PostMapping("/event/{id}/product")
-    public GenericResponse addProductToEvent(@RequestParam Integer productId, @PathVariable Integer id, HttpServletRequest request) {
+    public GenericResponse addProductToEvent(@RequestParam("productId") Integer productId, @PathVariable Integer id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         Product product = productRepository.findById(productId).orElse(null);
         if (product==null)
@@ -108,7 +108,7 @@ public class EventController {
 
     @CrossOrigin
     @PostMapping("/event/{id}/user")
-    public GenericResponse addUserToEvent(@RequestParam String username, @PathVariable Integer id,HttpServletRequest request) {
+    public GenericResponse addUserToEvent(@RequestParam("username") String username, @PathVariable Integer id,HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.addUserToEvent(username, id,currentUserId));
     }
@@ -126,12 +126,12 @@ public class EventController {
         return eventService.findUserEventProducts(id,currentUserId);
     }
     @DeleteMapping("/event/{id}/product")
-    public GenericResponse deleteProductFromEvent (@PathVariable Integer id,@RequestParam Integer productToDeleteId, HttpServletRequest request) {
+    public GenericResponse deleteProductFromEvent (@PathVariable Integer id,@RequestParam("productToDeleteId") Integer productToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.deleteProduct(id,productToDeleteId,currentUserId));
     }
     @DeleteMapping("/event/{id}/user")
-    public GenericResponse deleteUserFromEvent (@PathVariable Integer id,@RequestParam Long userToDeleteId, HttpServletRequest request) {
+    public GenericResponse deleteUserFromEvent (@PathVariable Integer id,@RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.deleteUser(id,userToDeleteId,currentUserId));
     }
