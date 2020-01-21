@@ -26,7 +26,7 @@ import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -75,6 +75,8 @@ class UserControllerTest {
 
         User user = userController.getCurrentUser(request);
         assertEquals("username", user.getUsername());
+        verify(userRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -113,6 +115,9 @@ class UserControllerTest {
 
         List<Event> result = userController.getAllUserEvents(request);
         assertEquals(1, result.size());
+        verify(userRepository, times(1)).findById(1L);
+        verify(eventUserRepository, times(1)).findAllByUser(u);
+        verifyNoMoreInteractions(userRepository, eventUserRepository);
     }
 
     @Test
@@ -170,6 +175,8 @@ class UserControllerTest {
         GenericResponse response = userController.isAdmin(request);
 
         assertEquals("true", response.getMessage());
+        verify(userRepository, times(1)).findById(1L);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -204,6 +211,9 @@ class UserControllerTest {
         GenericResponse response = userController.changePhoto(request, url);
 
         assertEquals("success", response.getMessage());
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).save(u);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test

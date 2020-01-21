@@ -60,6 +60,7 @@ class AdminControllerTest {
     void getAllVerifyTimes() {
         adminController.getAllUsers();
         verify(userRepository, times(1)).findAll();
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -117,6 +118,7 @@ class AdminControllerTest {
         verify(userRepository, times(1)).findById(1L);
         verify(roleRepository, times(1)).findById(2);
         verify(userRepository, times(1)).save(user);
+        verifyNoMoreInteractions(userRepository, roleRepository);
     }
 
     @Test
@@ -153,6 +155,7 @@ class AdminControllerTest {
         adminController.deleteUser(request, 1L);
         verify(userRepository, times(1)).findById(1L);
         verify(userRepository, times(0)).deleteById(1L);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -165,5 +168,6 @@ class AdminControllerTest {
         adminController.deleteUser(request, 1L);
         verify(userRepository, times(1)).findById(1L);
         verify(userRepository, times(1)).deleteById(1L);
+        verifyNoMoreInteractions(userRepository);
     }
 }

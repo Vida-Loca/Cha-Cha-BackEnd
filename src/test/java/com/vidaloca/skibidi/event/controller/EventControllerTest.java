@@ -103,6 +103,14 @@ class EventControllerTest {
     }
 
     @Test
+    void getEventVerifyTimes() {
+        eventController.getEvents();
+
+        verify(eventRepository, times(1)).findAll();
+        verifyNoMoreInteractions(eventRepository);
+    }
+
+    @Test
     void getEventById() {
         Event event1 = new Event();
         event1.setEvent_id(1);
@@ -127,6 +135,14 @@ class EventControllerTest {
         mockMvc.perform(
                 get("/event/{id}", event.getEvent_id())
         ).andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    void getEventByIdVerifyTimes() {
+        eventController.getEventById(1);
+
+        verify(eventRepository, times(1)).findById(1);
+        verifyNoMoreInteractions(eventRepository);
     }
 
     @Test
@@ -168,6 +184,22 @@ class EventControllerTest {
                         .content(asJsonString(eventDto))
                         .content(String.valueOf(request))
         ).andDo(print());
+    }
+
+    @Test
+    void addNewEventVerifyTimes() {
+        AddressDto addressDto = new AddressDto("Raz", "raz", "raz", "raz");
+        EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.addNewEvent(eventDto, request);
+
+        verify(eventService, times(1)).addNewEvent(eventDto, 1L);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -231,6 +263,23 @@ class EventControllerTest {
     }
 
     @Test
+    void updateEventVerifyTimes() {
+        AddressDto addressDto = new AddressDto("Raz", "raz", "raz", "raz");
+        EventDto eventDto = new EventDto("Event", Date.valueOf("2020-02-02"), addressDto, Time.valueOf(LocalTime.now()), "Info");
+
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.updateEvent(eventDto, 1, request);
+
+        verify(eventService, times(1)).updateEvent(eventDto, 1, 1L);
+        verifyNoMoreInteractions(eventService);
+    }
+
+    @Test
     void deleteById() {
         Event event = new Event();
         event.setEvent_id(1);
@@ -253,6 +302,20 @@ class EventControllerTest {
         mockMvc.perform(
                 delete("/event/{id}", 1)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteByIdVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.deleteById(1, request);
+
+        verify(eventService, times(1)).deleteEvent(1, 1L);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -281,6 +344,14 @@ class EventControllerTest {
         mockMvc.perform(
                 get("/event/{id}/product", 1)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getEventProductsVerifyTimes() {
+        eventController.getEventProducts(1);
+
+        verify(eventService, times(1)).findAllEventProducts(1);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -330,6 +401,24 @@ class EventControllerTest {
     }
 
     @Test
+    void addProductToEventByDtoVerifyTimes() {
+        ProductDto productDto = new ProductDto("Product", "20.0", "Category");
+        Product product = new Product();
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+        when(productService.addProduct(productDto)).thenReturn(product);
+
+        eventController.addProductToEvent(productDto, 1, request);
+
+        verify(productService, times(1)).addProduct(productDto);
+        verify(eventService, times(1)).addProductToEvent(product, 1, 1L);
+        verifyNoMoreInteractions(productService, eventService);
+    }
+
+    @Test
     void addProductToEventById() {
         Product product = new Product();
         product.setId(1);
@@ -369,6 +458,25 @@ class EventControllerTest {
     }
 
     @Test
+    void addProductToEventByIdVerifyTimes() {
+        Product product = new Product();
+        product.setId(1);
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+        when(productRepository.findById(1)).thenReturn(java.util.Optional.of(product));
+
+
+        eventController.addProductToEvent(1, 1, request);
+
+        verify(productRepository, times(1)).findById(1);
+        verify(eventService, times(1)).addProductToEvent(product, 1, 1L);
+        verifyNoMoreInteractions(productRepository, eventService);
+    }
+
+    @Test
     void addUserToEvent() {
         User user = new User();
         user.setUsername("username");
@@ -394,6 +502,20 @@ class EventControllerTest {
                 post("/event/{id}/user", 1)
                         .param("username", "username")
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void addUserToEventVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.addUserToEvent("username", 1, request);
+
+        verify(eventService, times(1)).addUserToEvent("username", 1, 1L);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -427,6 +549,15 @@ class EventControllerTest {
     }
 
     @Test
+    void getEventUsersVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        eventController.getEventUsers(1, request);
+
+        verify(eventService, times(1)).findAllUsers(1);
+        verifyNoMoreInteractions(eventService);
+    }
+
+    @Test
     void getEventUserProducts() {
         Product product = new Product();
         product.setName("BANAN");
@@ -446,6 +577,13 @@ class EventControllerTest {
         mockMvc.perform(
                 get("/event/{event_id}/user/{user_id}/products", 1, 1)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getEventUserProductsVerifyTimes() {
+        eventController.getEventUserProducts(1, 1L);
+        verify(eventService, times(1)).findUserEventProducts(1, 1L);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -473,6 +611,20 @@ class EventControllerTest {
         mockMvc.perform(
                 get("/event/{id}/myproducts", 1)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void getMyEventUserProductsVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.getMyEventUserProducts(1, request);
+
+        verify(eventService, times(1)).findUserEventProducts(1, 1L);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -508,6 +660,20 @@ class EventControllerTest {
     }
 
     @Test
+    void deleteProductFromEventVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.deleteProductFromEvent(1, 1, request);
+
+        verify(eventService, times(1)).deleteProduct(1, 1, 1L);
+        verifyNoMoreInteractions(eventService);
+    }
+
+    @Test
     void deleteUserFromEvent() {
         HttpServletRequest request = createMock(HttpServletRequest.class);
         String token = "TOKEN";
@@ -531,6 +697,20 @@ class EventControllerTest {
     }
 
     @Test
+    void deleteUserFromEventVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+
+        eventController.deleteUserFromEvent(1, 2L, request);
+
+        verify(eventService, times(1)).deleteUser(1, 2L, 1L);
+        verifyNoMoreInteractions(eventService);
+    }
+
+    @Test
     void grantAdminForUser() {
         User user = new User();
         user.setUsername("JAREK");
@@ -546,7 +726,6 @@ class EventControllerTest {
         GenericResponse str = eventController.grantAdminForUser(1, 2L, request);
 
         assertEquals("Successfully granted admin to JAREK", str.getMessage());
-        verify(eventService, times(1)).grantUserAdmin(1, 2L, 1L);
     }
 
     @Test
@@ -554,6 +733,20 @@ class EventControllerTest {
         mockMvc.perform(
                 put("/event/{event_id}/user/{user_id}/grantAdmin", 1, 1)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void grantAdminForUserVerifyTimes() {
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(2L);
+
+        eventController.grantAdminForUser(2, 1L, request);
+
+        verify(eventService, times(1)).grantUserAdmin(2, 1L, 2L);
+        verifyNoMoreInteractions(eventService);
     }
 
     @Test
@@ -626,6 +819,37 @@ class EventControllerTest {
 
         GenericResponse response = eventController.isAdmin(1, request);
         assertEquals("true", response.getMessage());
+    }
+
+    @Test
+    void isAdminStatus() throws Exception {
+        mockMvc.perform(
+                get("/event/{event_id}/isAdmin", 1)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void isAdminVerifyTimes() {
+        Event event = new Event();
+        User user = new User();
+        EventUser eventUser = new EventUser();
+        eventUser.setUser(user);
+        eventUser.setEvent(event);
+        eventUser.setAdmin(true);
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        String token = "TOKEN";
+
+        when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
+        when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
+        when(eventRepository.findById(1)).thenReturn(java.util.Optional.of(event));
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
+        when(event_userRepository.findByUserAndEvent(user, event)).thenReturn(eventUser);
+
+        eventController.isAdmin(1, request);
+        verify(eventRepository, times(1)).findById(1);
+        verify(userRepository, times(1)).findById(1L);
+        verify(event_userRepository, times(1)).findByUserAndEvent(user, event);
+        verifyNoMoreInteractions(eventRepository, userRepository, event_userRepository);
     }
 
     public static String asJsonString(final Object obj) {

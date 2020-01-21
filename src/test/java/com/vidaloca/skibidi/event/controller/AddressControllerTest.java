@@ -81,6 +81,7 @@ class AddressControllerTest {
     void getAllVerifyTimes() {
         addressController.getAll();
         verify(addressRepository, times(1)).findAll();
+        verifyNoMoreInteractions(addressRepository);
     }
 
     @Test
@@ -113,6 +114,7 @@ class AddressControllerTest {
     void getVerifyTimes() {
         addressController.get(1);
         verify(addressRepository, times(1)).findById(1);
+        verifyNoMoreInteractions(addressRepository);
     }
 
     @Test
@@ -148,12 +150,14 @@ class AddressControllerTest {
         AddressDto addressDto = new AddressDto();
         addressController.add(addressDto);
         verify(addressService, times(1)).addAddress(addressDto);
+        verifyNoMoreInteractions(addressService);
     }
 
     @Test
     void testDelete() {
         addressController.delete(1);
         verify(addressRepository, times(1)).deleteById(1);
+        verifyNoMoreInteractions(addressRepository);
     }
 
     @Test
@@ -171,6 +175,7 @@ class AddressControllerTest {
 
         addressController.update(1, addressDto);
         verify(addressService, times(1)).updateAddress(1, addressDto);
+        verifyNoMoreInteractions(addressService);
     }
 
     @Test

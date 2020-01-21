@@ -49,9 +49,6 @@ class ProductControllerTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(productController)
                 .build();
-
-       // productController = new ProductController(productService, productRepository);
-
     }
 
     @Test
@@ -72,6 +69,7 @@ class ProductControllerTest {
 
         assertEquals("TEST", result.get(0).getName());
         verify(productRepository, times(1)).findAll();
+        verifyNoMoreInteractions(productRepository);
     }
 
     @Test
@@ -98,6 +96,7 @@ class ProductControllerTest {
 
         assertEquals("added successfully", str.getMessage());
         verify(productService, times(1)).addProduct(productDto);
+        verifyNoMoreInteractions(productService);
     }
 
     @Test
@@ -123,6 +122,8 @@ class ProductControllerTest {
         List<ProductCategory> productCategories = productController.showAllProducts();
 
         assertEquals(1, productCategories.size());
+        verify(productCategoryRepository, times(1)).findAll();
+        verifyNoMoreInteractions(productCategoryRepository);
     }
 
     @Test
