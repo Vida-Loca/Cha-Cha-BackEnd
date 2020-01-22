@@ -153,7 +153,7 @@ public class UserTests {
     @Test
     public void testCreateVToken() {
         List<VerificationToken> tokensB = (List<VerificationToken>) tokenRepository.findAll();
-        String newToken = "TOKEN NEW";
+        String newToken = "TOKENNEW";
         User user = userRepository.findById(1L).orElse(null);
 
         userService.createVerificationToken(user, newToken);
