@@ -1,6 +1,8 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
+import com.vidaloca.skibidi.event.exception.handler.UserActuallyInEventException;
+import com.vidaloca.skibidi.event.exception.handler.UserIsNotAdminException;
 import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.product.repository.ProductRepository;
 import com.vidaloca.skibidi.event.repository.EventRepository;
@@ -9,6 +11,7 @@ import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.product.service.ProductService;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
@@ -54,31 +57,32 @@ public class EventController {
         return (List<Event>) eventRepository.findAll();
     }
 
-    @GetMapping("/event/{id}")
-    public Event getEventById(@PathVariable Integer id) {
-        return eventRepository.findById(id).orElse(null);
+    @GetMapping("/event/{eventId}")
+    public Event getEventById(@PathVariable Long eventId) {
+        return eventRepository.findById(eventId).orElse(null);
     }
 
     @CrossOrigin
     @PostMapping("/event")
-    public GenericResponse addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
+    public Event addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.addNewEvent(eventDto,currentUserId));
+        return eventService.addNewEvent(eventDto,currentUserId);
     }
 
     @CrossOrigin
-    @PutMapping("/event/{id}")
-    public GenericResponse updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id, HttpServletRequest request) {
+    @PutMapping("/event/{eventId}")
+    public Event updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
         Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.updateEvent(eventDto, id, currentUserId));
+        return eventService.updateEvent(eventDto, eventId, currentUserId);
     }
 
-    @DeleteMapping("/event/{id}")
-    public GenericResponse deleteById(@PathVariable Long id, HttpServletRequest request) {
+    @DeleteMapping("/event/{eventId}")
+    public String deleteById(@PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
         Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.deleteEvent(id, currentUserId));
+        return eventService.deleteEvent(eventId, currentUserId);
     }
-
+    //This going to product controller
+/*
     @GetMapping("/event/{id}/product")
     public List<Product> getEventProducts(@PathVariable Integer id) {
         return eventService.findAllEventProducts(id);
@@ -104,41 +108,46 @@ public class EventController {
             return new GenericResponse("Product not exist");
         return new GenericResponse(eventService.addProductToEvent(product,id,currentUserId));
     }
+     @GetMapping("/event/{eventId}/user/{userId}/products")
+    public List<Product> getEventUserProducts(@PathVariable Integer eventId, @PathVariable Long userId){
+        return eventService.findUserEventProducts(eventId,userId);
+    }
 
-    @CrossOrigin
-    @PostMapping("/event/{id}/user")
-    public GenericResponse addUserToEvent(@RequestParam("username") String username, @PathVariable Long id, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.addUserToEvent(username, id,currentUserId));
-    }
-    @GetMapping("/event/{id}/user")
-    public List<User> getEventUsers (@PathVariable Integer id,HttpServletRequest request) {
-        return eventService.findAllEventUsers(id);
-    }
-    @GetMapping("/event/{event_id}/user/{user_id}/products")
-    public List<Product> getEventUserProducts(@PathVariable Integer event_id, @PathVariable Long user_id){
-        return eventService.findUserEventProducts(event_id,user_id);
-    }
-    @GetMapping("/event/{id}/myproducts")
+       @GetMapping("/event/{id}/myproducts")
     public List<Product> getMyEventUserProducts(@PathVariable Integer id,HttpServletRequest request){
         Long currentUserId = currentUserId(request);
         return eventService.findUserEventProducts(id,currentUserId);
     }
-    @DeleteMapping("/event/{id}/product")
+
+        @GetMapping("/event/{eventId}/user")
+    public List<User> getEventUsers (@PathVariable Long eventId) {
+        return eventService.findAllEventUsers(eventId);
+    }
+        @DeleteMapping("/event/{id}/product")
     public GenericResponse deleteProductFromEvent (@PathVariable Integer id,@RequestParam("productToDeleteId") Integer productToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.deleteProduct(id,productToDeleteId,currentUserId));
     }
-    @DeleteMapping("/event/{id}/user")
-    public GenericResponse deleteUserFromEvent (@PathVariable Integer id,@RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) {
+
+*/
+    @CrossOrigin
+    @PostMapping("/event/{eventId}/user")
+    public EventUser addUserToEvent(@RequestParam("username") String username, @PathVariable Long eventId, HttpServletRequest request) throws UserActuallyInEventException, UserIsNotAdminException {
         Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.deleteUser(id,userToDeleteId,currentUserId));
+        return eventService.addUserToEvent(username, eventId,currentUserId);
     }
-    @PutMapping ("/event/{event_id}/user/{user_id}/grantAdmin")
-    public GenericResponse grantAdminForUser(@PathVariable Integer event_id, @PathVariable Long user_id, HttpServletRequest request){
+
+    @DeleteMapping("/event/{eventId}/user")
+    public String deleteUserFromEvent (@PathVariable Long eventId,@RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
         Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.grantUserAdmin(event_id,user_id,currentUserId));
+        return eventService.deleteUser(eventId,userToDeleteId,currentUserId);
     }
+    @PutMapping ("/event/{eventId}/user/{userId}/grantAdmin")
+    public String grantAdminForUser(@PathVariable Long eventId, @PathVariable Long userId, HttpServletRequest request) throws UserIsNotAdminException {
+        Long currentUserId = currentUserId(request);
+        return  eventService.grantUserAdmin(eventId,userId,currentUserId);
+    }
+    /* To to wgl do serwisu trzeba
     @GetMapping ("/event/{event_id}/isAdmin")
     public GenericResponse isAdmin(@PathVariable("event_id") Integer eventId, HttpServletRequest request){
         Event event = eventRepository.findById(eventId).orElse(null);
@@ -153,7 +162,7 @@ public class EventController {
         else
             return new GenericResponse("false");
     }
-
+*/
     private Long currentUserId(HttpServletRequest request) {
         String token = jwtAuthenticationFilter.getJWTFromRequest(request);
         return jwtTokenProvider.getUserIdFromJWT(token);
