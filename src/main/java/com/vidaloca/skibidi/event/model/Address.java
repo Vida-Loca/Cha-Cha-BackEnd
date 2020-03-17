@@ -40,4 +40,69 @@ public class Address {
     @NotNull(message = "Number is obligatory")
     @NotEmpty(message = "Number cannot be empty")
     private String number;
+
+
+    public static final class AddressBuilder {
+        private int address_id;
+        private List<Event> events;
+        private String country;
+        private String city;
+        private String postcode;
+        private String street;
+        private String number;
+
+        private AddressBuilder() {
+        }
+
+        public static AddressBuilder anAddress() {
+            return new AddressBuilder();
+        }
+
+        public AddressBuilder withAddress_id(int address_id) {
+            this.address_id = address_id;
+            return this;
+        }
+
+        public AddressBuilder withEvents(List<Event> events) {
+            this.events = events;
+            return this;
+        }
+
+        public AddressBuilder withCountry(String country) {
+            this.country = country;
+            return this;
+        }
+
+        public AddressBuilder withCity(String city) {
+            this.city = city;
+            return this;
+        }
+
+        public AddressBuilder withPostcode(String postcode) {
+            this.postcode = postcode;
+            return this;
+        }
+
+        public AddressBuilder withStreet(String street) {
+            this.street = street;
+            return this;
+        }
+
+        public AddressBuilder withNumber(String number) {
+            this.number = number;
+            return this;
+        }
+
+        public Address build() {
+            Address address = new Address();
+            address.setAddress_id(address_id);
+            address.setEvents(events);
+            address.setCountry(country);
+            address.setCity(city);
+            address.setPostcode(postcode);
+            address.setStreet(street);
+            address.setNumber(number);
+            return address;
+        }
+    }
 }

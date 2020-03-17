@@ -8,8 +8,10 @@ import com.vidaloca.skibidi.event.utills.SqlTimeDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -30,21 +32,22 @@ public class Event {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "address_id")
+    @NotNull(message = "Address is obligatory")
     private Address address;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "event", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventUser> eventUsers;
 
 
-    @Column(nullable = false)
+    @NotNull(message = "Name is obligatory")
+    @Length(min = 2, max = 20, message = "Event name length has to be between 2 and 20")
     private String name;
 
-    @Column(nullable = false, name="start_time")
+    @NotNull(message = "Start time is obligatory")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
-
-    @Column
+    
     private String additionalInformation;
 
 }

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -42,7 +43,7 @@ public class EventUser {
     @OneToMany(mappedBy = "eventUser",cascade =CascadeType.ALL )
     private List<UserCard> userCard;
 
-    @Column(name ="is_admin", nullable = false, columnDefinition = "boolean default false")
-    private boolean isAdmin;
+    @NotNull(message = "isAdmin cannot be null")
+    private boolean isAdmin = false;
 
 }
