@@ -1,20 +1,20 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.event.dto.ProductDto;
+import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.service.ProductService;
-import com.vidaloca.skibidi.model.Event;
-import com.vidaloca.skibidi.model.EventUser;
-import com.vidaloca.skibidi.model.Product;
-import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
-import com.vidaloca.skibidi.registration.utills.GenericResponse;
-import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
-import com.vidaloca.skibidi.security.JwtTokenProvider;
+import com.vidaloca.skibidi.event.model.Event;
+import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.repository.UserRepository;
+import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
+import com.vidaloca.skibidi.common.configuration.security.JwtAuthenticationFilter;
+import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

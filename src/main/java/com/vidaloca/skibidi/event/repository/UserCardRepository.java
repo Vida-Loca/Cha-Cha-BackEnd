@@ -1,7 +1,7 @@
 package com.vidaloca.skibidi.event.repository;
 
-import com.vidaloca.skibidi.model.EventUser;
-import com.vidaloca.skibidi.model.UserCard;
+import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.product.model.UserCard;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

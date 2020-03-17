@@ -1,10 +1,10 @@
 package com.vidaloca.skibidi.event.controller;
 
-import com.vidaloca.skibidi.model.Role;
-import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.registration.repository.RoleRepository;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
-import com.vidaloca.skibidi.registration.utills.GenericResponse;
+import com.vidaloca.skibidi.user.model.Role;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.repository.RoleRepository;
+import com.vidaloca.skibidi.user.repository.UserRepository;
+import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,14 +1,14 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vidaloca.skibidi.event.dto.ProductCategoryDto;
-import com.vidaloca.skibidi.event.dto.ProductDto;
+import com.vidaloca.skibidi.product.dto.ProductCategoryDto;
+import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.ProductService;
-import com.vidaloca.skibidi.model.Product;
-import com.vidaloca.skibidi.model.ProductCategory;
-import com.vidaloca.skibidi.registration.utills.GenericResponse;
+import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.product.model.ProductCategory;
+import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

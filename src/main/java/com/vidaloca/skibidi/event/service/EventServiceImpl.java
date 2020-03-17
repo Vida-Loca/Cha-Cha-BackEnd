@@ -5,11 +5,13 @@ import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.repository.UserCardRepository;
-import com.vidaloca.skibidi.model.*;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
+import com.vidaloca.skibidi.event.model.*;
+import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.product.model.UserCard;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;

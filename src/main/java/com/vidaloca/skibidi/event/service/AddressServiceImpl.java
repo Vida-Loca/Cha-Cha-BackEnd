@@ -2,7 +2,7 @@ package com.vidaloca.skibidi.event.service;
 
 import com.vidaloca.skibidi.event.dto.AddressDto;
 import com.vidaloca.skibidi.event.repository.AddressRepository;
-import com.vidaloca.skibidi.model.Address;
+import com.vidaloca.skibidi.event.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,9 +1,8 @@
 package com.vidaloca.skibidi.event.service;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.model.Event;
-import com.vidaloca.skibidi.model.Product;
-import com.vidaloca.skibidi.model.User;
+import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.user.model.User;
 
 import java.util.List;
 

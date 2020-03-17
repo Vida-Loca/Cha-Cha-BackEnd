@@ -3,7 +3,7 @@ package com.vidaloca.skibidi.address;
 import com.vidaloca.skibidi.event.dto.AddressDto;
 import com.vidaloca.skibidi.event.repository.AddressRepository;
 import com.vidaloca.skibidi.event.service.AddressService;
-import com.vidaloca.skibidi.model.Address;
+import com.vidaloca.skibidi.event.model.Address;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

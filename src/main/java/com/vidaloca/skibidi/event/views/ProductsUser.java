@@ -1,8 +1,8 @@
 package com.vidaloca.skibidi.event.views;
 
-import com.vidaloca.skibidi.model.Product;
-import com.vidaloca.skibidi.model.ProductCategory;
-import com.vidaloca.skibidi.model.User;
+import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.product.model.ProductCategory;
+import com.vidaloca.skibidi.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

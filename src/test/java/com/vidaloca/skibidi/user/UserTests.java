@@ -1,14 +1,14 @@
 package com.vidaloca.skibidi.user;
 
-import com.vidaloca.skibidi.exceptions.EmailExistsException;
-import com.vidaloca.skibidi.exceptions.UsernameExistsException;
-import com.vidaloca.skibidi.model.Role;
-import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.model.VerificationToken;
-import com.vidaloca.skibidi.registration.dto.UserDto;
-import com.vidaloca.skibidi.registration.repository.TokenRepository;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
-import com.vidaloca.skibidi.registration.service.UserService;
+import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
+import com.vidaloca.skibidi.user.registration.exception.UsernameExistsException;
+import com.vidaloca.skibidi.user.model.Role;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.registration.model.VerificationToken;
+import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
+import com.vidaloca.skibidi.user.registration.repository.TokenRepository;
+import com.vidaloca.skibidi.user.repository.UserRepository;
+import com.vidaloca.skibidi.user.registration.service.UserServiceImpl;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -33,7 +33,7 @@ import java.util.Set;
 public class UserTests {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -57,44 +57,44 @@ public class UserTests {
     @Test
     public void testRegisterNewUserAccount() throws EmailExistsException, UsernameExistsException {
         List<User> usersBefore = (List<User>) userRepository.findAll();
-        UserDto userDto = new UserDto("new", "New", "New", "password", "password", "mail@o2.pl");
-        userService.registerNewUserAccount(userDto);
-        System.out.println(userDto.toString());
+        UserRegistrationDto userRegistrationDto = new UserRegistrationDto("new", "New", "New", "password", "password", "mail@o2.pl");
+        userServiceImpl.registerNewUserAccount(userRegistrationDto);
+        System.out.println(userRegistrationDto.toString());
         List<User> usersAfter = (List<User>) userRepository.findAll();
         Assert.assertNotSame(usersBefore, usersAfter);
     }
 
     @Test(expected = EmailExistsException.class)
     public void testRegisterNewUserAccountWithExistingEmail() throws EmailExistsException, UsernameExistsException {
-        UserDto userDto = new UserDto();
-        userDto.setUsername("newU");
-        userDto.setName("New");
-        userDto.setSurname("New");
-        userDto.setPassword("pass");
-        userDto.setMatchingPassword("pass");
-        userDto.setEmail("test1@o2.pl");
-        userService.registerNewUserAccount(userDto);
+        UserRegistrationDto userRegistrationDto = new UserRegistrationDto();
+        userRegistrationDto.setUsername("newU");
+        userRegistrationDto.setName("New");
+        userRegistrationDto.setSurname("New");
+        userRegistrationDto.setPassword("pass");
+        userRegistrationDto.setMatchingPassword("pass");
+        userRegistrationDto.setEmail("test1@o2.pl");
+        userServiceImpl.registerNewUserAccount(userRegistrationDto);
     }
 
     @Test(expected = UsernameExistsException.class)
     public void testRegisterNewUserAccountWithExistingUsername() throws EmailExistsException, UsernameExistsException {
-        UserDto userDto = new UserDto();
-        userDto.setUsername("testowy1");
-        userDto.setName("New");
-        userDto.setSurname("New");
-        userDto.setPassword("pass");
-        userDto.setMatchingPassword("pass");
-        userDto.setEmail("jakismail@o2.pl");
-        userDto.setPicUrl("url");
-        userService.registerNewUserAccount(userDto);
+        UserRegistrationDto userRegistrationDto = new UserRegistrationDto();
+        userRegistrationDto.setUsername("testowy1");
+        userRegistrationDto.setName("New");
+        userRegistrationDto.setSurname("New");
+        userRegistrationDto.setPassword("pass");
+        userRegistrationDto.setMatchingPassword("pass");
+        userRegistrationDto.setEmail("jakismail@o2.pl");
+        userRegistrationDto.setPicUrl("url");
+        userServiceImpl.registerNewUserAccount(userRegistrationDto);
     }
 
     @Test
     public void testMailValidator() {
-        UserDto userDto = new UserDto("user", "user", "user", "user", "user", "notmail", "url");
+        UserRegistrationDto userRegistrationDto = new UserRegistrationDto("user", "user", "user", "user", "user", "notmail", "url");
 
-        Set<ConstraintViolation<UserDto>> violations
-                = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationDto>> violations
+                = validator.validate(userRegistrationDto);
 
         for (ConstraintViolation v : violations) {
             System.out.println(v.getMessage());
@@ -105,27 +105,27 @@ public class UserTests {
 
     @Test
     public void testGetUser() {
-        User user = userService.getUser("TOKEN");
+        User user = userServiceImpl.getUser("TOKEN");
         Assert.assertNotNull(user);
         Assert.assertEquals(user.getUsername(), "testowy1");
     }
 
     @Test(expected = NullPointerException.class)
     public void testGetNotExistingUser() {
-        User user = userService.getUser("BADTOKEN");
+        User user = userServiceImpl.getUser("BADTOKEN");
         Assert.assertNull(user);
     }
 
     @Test
     public void testGetVerificationToken() {
-        VerificationToken verificationToken = userService.getVerificationToken("TOKEN");
+        VerificationToken verificationToken = userServiceImpl.getVerificationToken("TOKEN");
         Assert.assertNotNull(verificationToken);
         Assert.assertEquals("testowy1", verificationToken.getUser().getUsername());
     }
 
     @Test
     public void testGetNotExistingVToken() {
-        VerificationToken verificationToken = userService.getVerificationToken("BTOKEN");
+        VerificationToken verificationToken = userServiceImpl.getVerificationToken("BTOKEN");
         Assert.assertNull(verificationToken);
     }
 
@@ -144,7 +144,7 @@ public class UserTests {
         user.setEmail("imie@mail.com");
         user.setPassword("password");
         user.setUsername("usrnme");
-        userService.saveRegisteredUser(user);
+        userServiceImpl.saveRegisteredUser(user);
         List<User> usersA = (List<User>) userRepository.findAll();
         Assert.assertNotSame(usersB, usersA);
     }
@@ -156,7 +156,7 @@ public class UserTests {
         String newToken = "TOKENNEW";
         User user = userRepository.findById(1L).orElse(null);
 
-        userService.createVerificationToken(user, newToken);
+        userServiceImpl.createVerificationToken(user, newToken);
 
         List<VerificationToken> tokensA = (List<VerificationToken>) tokenRepository.findAll();
         Assert.assertNotSame(tokensB, tokensA);
@@ -164,7 +164,7 @@ public class UserTests {
 
     @Test
     public void testValidateNotExistingToken() {
-        String str = userService.validateVerificationToken("NOT EXIST");
+        String str = userServiceImpl.validateVerificationToken("NOT EXIST");
         Assert.assertEquals("invalidToken", str);
     }
 
@@ -177,13 +177,13 @@ public class UserTests {
         expired.setToken("EXPIRED");
         tokenRepository.save(expired);
 
-        String str = userService.validateVerificationToken("EXPIRED");
+        String str = userServiceImpl.validateVerificationToken("EXPIRED");
         Assert.assertEquals("expired", str);
     }
 
     @Test
     public void testValidateToken() {
-        String str = userService.validateVerificationToken("TOKEN");
+        String str = userServiceImpl.validateVerificationToken("TOKEN");
         Assert.assertEquals("valid", str);
     }
 
@@ -198,7 +198,7 @@ public class UserTests {
         expired.setToken("EXPIRED");
         tokenRepository.save(expired);
 
-        userService.generateNewVerificationToken("EXPIRED");
+        userServiceImpl.generateNewVerificationToken("EXPIRED");
 
         List<VerificationToken> tokensA = (List<VerificationToken>) tokenRepository.findAll();
         Assert.assertNotSame(tokensB, tokensA);

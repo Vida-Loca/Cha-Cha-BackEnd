@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.event.repository;
 
-import com.vidaloca.skibidi.model.ProductCategory;
+import com.vidaloca.skibidi.product.model.ProductCategory;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

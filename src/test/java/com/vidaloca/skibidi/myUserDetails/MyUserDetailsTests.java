@@ -1,7 +1,7 @@
 package com.vidaloca.skibidi.myUserDetails;
 
-import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.registration.service.MyUserDetailsService;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.registration.service.MyUserDetailsService;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;

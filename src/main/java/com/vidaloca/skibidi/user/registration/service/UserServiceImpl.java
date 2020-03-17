@@ -1,0 +1,127 @@
+package com.vidaloca.skibidi.user.registration.service;
+
+import com.vidaloca.skibidi.user.registration.exception.UsernameExistsException;
+import com.vidaloca.skibidi.user.model.Role;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.registration.model.VerificationToken;
+import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
+import com.vidaloca.skibidi.user.repository.RoleRepository;
+import com.vidaloca.skibidi.user.registration.repository.TokenRepository;
+import com.vidaloca.skibidi.user.repository.UserRepository;
+import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.UUID;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private TokenRepository tokenRepository;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, TokenRepository tokenRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public static final String TOKEN_INVALID = "invalidToken";
+    public static final String TOKEN_EXPIRED = "expired";
+    public static final String TOKEN_VALID = "valid";
+
+    @Transactional
+    @Override
+    public User registerNewUserAccount(UserRegistrationDto accountDto)
+            throws EmailExistsException, UsernameExistsException {
+
+        if (emailExists(accountDto.getEmail())) {
+            throw new EmailExistsException(
+                    "There is an account with that email address:" + accountDto.getEmail());
+        }
+        if (userRepository.findByUsername(accountDto.getUsername())!=null) {
+            throw new UsernameExistsException(
+                    "There is an account with that username: " + accountDto.getUsername());
+        }
+        User user = new User();
+        user.setUsername(accountDto.getUsername());
+        user.setName(accountDto.getName());
+        user.setSurname(accountDto.getSurname());
+        //  System.out.println(accountDto.getPassword());
+        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
+        user.setEmail(accountDto.getEmail());
+        user.setPicUrl(accountDto.getPicUrl());
+        user.setJoined(LocalDateTime.now());
+        Role role = roleRepository.findById(1).orElse(null);
+        user.setRole(role);
+        //  System.out.println("TestPrzedSave");
+        return userRepository.save(user);
+    }
+
+    private boolean emailExists(String email) {
+        User user = userRepository.findByEmail(email);
+        return user != null;
+    }
+
+    @Override
+    public User getUser(String verificationToken) {
+        return tokenRepository.findByToken(verificationToken).getUser();
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
+
+    @Override
+    public void saveRegisteredUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        tokenRepository.save(myToken);
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+        final VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken == null) {
+            return TOKEN_INVALID;
+        }
+
+        final User user = verificationToken.getUser();
+        final Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate()
+                .getTime()
+                - cal.getTime()
+                .getTime()) <= 0) {
+            tokenRepository.delete(verificationToken);
+            return TOKEN_EXPIRED;
+        }
+
+        user.setEnabled(true);
+       // tokenRepository.delete(verificationToken);
+        userRepository.save(user);
+        return TOKEN_VALID;
+    }
+
+    @Override
+    public VerificationToken generateNewVerificationToken(final String existingVerificationToken) {
+        VerificationToken vToken = tokenRepository.findByToken(existingVerificationToken);
+        vToken.updateToken(UUID.randomUUID()
+                .toString());
+        vToken = tokenRepository.save(vToken);
+        return vToken;
+    }
+
+}

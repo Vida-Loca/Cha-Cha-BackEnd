@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.exceptions;
 
+import com.vidaloca.skibidi.user.login.exception.InvalidLoginResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 

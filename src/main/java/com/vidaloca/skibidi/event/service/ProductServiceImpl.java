@@ -1,14 +1,13 @@
 package com.vidaloca.skibidi.event.service;
 
-import com.vidaloca.skibidi.event.dto.ProductCategoryDto;
-import com.vidaloca.skibidi.event.dto.ProductDto;
+import com.vidaloca.skibidi.product.dto.ProductCategoryDto;
+import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
-import com.vidaloca.skibidi.model.Product;
-import com.vidaloca.skibidi.model.ProductCategory;
+import com.vidaloca.skibidi.product.model.Product;
+import com.vidaloca.skibidi.product.model.ProductCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
