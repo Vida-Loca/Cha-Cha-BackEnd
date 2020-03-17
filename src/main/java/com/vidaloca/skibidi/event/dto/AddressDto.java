@@ -14,29 +14,49 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddressDto {
-    @NotNull
-    @NotEmpty
-    @Length(max=255,min=3,message = "bad length")
     private String country;
-    @NotNull
-    @NotEmpty
-    @Length(max=255,min=3,message = "bad length")
     private String city;
-    @NotNull
-    @NotEmpty
-    @Length(max = 10, min=2, message = "postcode length cannot be above 10 and less than 2 ")
     private String postcode;
-    @Length(max = 255, message = "bad length")
     private String street;
-    @NotNull
-    @NotEmpty
-    @Length(max = 7, message = "bad length")
     private String number;
 
-    public AddressDto(@NotEmpty String country, @NotEmpty String city, @NotEmpty String postcode, @NotEmpty String number) {
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
         this.postcode = postcode;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
         this.number = number;
     }
 }

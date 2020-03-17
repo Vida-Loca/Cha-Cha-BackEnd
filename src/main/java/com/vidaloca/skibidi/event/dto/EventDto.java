@@ -8,41 +8,13 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 
 public class EventDto {
-    @NotNull
-    @NotEmpty
-    @Length(max = 255)
     private String name;
-
-    @NotNull
-    private Date startDate;
-    @NotNull
+    private LocalDateTime startTime;
     private AddressDto address;
-    @NotNull
-    @JsonFormat(pattern = "HH:mm")
-    @JsonDeserialize(using = SqlTimeDeserializer.class)
-    private Time startTime;
-
     private String additionalInformation;
-
-    public EventDto(){
-
-    }
-
-    public EventDto(@NotEmpty String name, Date startDate, AddressDto address, Time startTime, String additionalInformation) {
-        this.name = name;
-        this.startDate = startDate;
-        this.address = address;
-        this.startTime = startTime;
-        this.additionalInformation = additionalInformation;
-    }
-    public EventDto(@NotEmpty String name, Date startDate, AddressDto address, Time startTime) {
-        this.name = name;
-        this.startDate = startDate;
-        this.address = address;
-        this.startTime = startTime;
-    }
 
     public String getName() {
         return name;
@@ -52,12 +24,12 @@ public class EventDto {
         this.name = name;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public AddressDto getAddress() {
@@ -66,14 +38,6 @@ public class EventDto {
 
     public void setAddress(AddressDto address) {
         this.address = address;
-    }
-
-    public Time getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Time startTime) {
-        this.startTime = startTime;
     }
 
     public String getAdditionalInformation() {

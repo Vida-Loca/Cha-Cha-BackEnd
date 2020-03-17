@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -25,15 +28,16 @@ public class Address {
             CascadeType.DETACH, CascadeType.REFRESH})
     private List<Event> events;
 
-    @Column(nullable = false)
+    @NotNull(message = "Country is obligatory")
+    @Length(min=3,max=50, message = "Length of country name has to be between 3 and 50")
     private String country;
-    @Column(nullable = false)
+    @NotNull(message = "City is obligatory")
+    @Length(min=3,max=50, message = "Length of city name has to be between 3 and 50")
     private String city;
-    @Column(nullable = false)
-    @Length(max = 10)
+    @Length(max = 10, message = "Length of postcode has to be less than 11")
     private String postcode;
-    @Column
     private String street;
-    @Column(nullable = false)
+    @NotNull(message = "Number is obligatory")
+    @NotEmpty(message = "Number cannot be empty")
     private String number;
 }

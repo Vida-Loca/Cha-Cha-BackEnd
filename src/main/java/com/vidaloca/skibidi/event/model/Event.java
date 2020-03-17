@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -39,13 +40,9 @@ public class Event {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, name="start_date")
-    private Date startDate;
-
-    @JsonFormat(pattern = "HH:mm")
-    @JsonDeserialize(using = SqlTimeDeserializer.class)
     @Column(nullable = false, name="start_time")
-    private Time startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime startTime;
 
     @Column
     private String additionalInformation;
