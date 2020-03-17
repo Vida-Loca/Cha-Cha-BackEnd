@@ -1,13 +1,7 @@
 package com.vidaloca.skibidi.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sun.istack.NotNull;
-import com.vidaloca.skibidi.event.utills.SqlTimeDeserializer;
-import org.hibernate.validator.constraints.Length;
-import javax.validation.constraints.NotEmpty;
-import java.sql.Date;
-import java.sql.Time;
+import com.vidaloca.skibidi.address.dto.AddressDto;
+
 import java.time.LocalDateTime;
 
 public class EventDto {

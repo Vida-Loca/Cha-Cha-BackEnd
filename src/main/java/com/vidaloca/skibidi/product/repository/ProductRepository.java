@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.event.repository;
+package com.vidaloca.skibidi.product.repository;
 
 import com.vidaloca.skibidi.product.model.Product;
 import org.springframework.data.repository.CrudRepository;

@@ -1,13 +1,13 @@
-package com.vidaloca.skibidi.event.model;
+package com.vidaloca.skibidi.address.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vidaloca.skibidi.event.model.Event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_id")
-    private int address_id;
+    private int id;
 
     @JsonBackReference
     @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
@@ -43,7 +43,7 @@ public class Address {
 
 
     public static final class AddressBuilder {
-        private int address_id;
+        private int id;
         private List<Event> events;
         private String country;
         private String city;
@@ -58,8 +58,8 @@ public class Address {
             return new AddressBuilder();
         }
 
-        public AddressBuilder withAddress_id(int address_id) {
-            this.address_id = address_id;
+        public AddressBuilder withId(int id) {
+            this.id = id;
             return this;
         }
 
@@ -95,7 +95,7 @@ public class Address {
 
         public Address build() {
             Address address = new Address();
-            address.setAddress_id(address_id);
+            address.setId(id);
             address.setEvents(events);
             address.setCountry(country);
             address.setCity(city);

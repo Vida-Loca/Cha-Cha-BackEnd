@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.event;
 
-import com.vidaloca.skibidi.event.dto.AddressDto;
+import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.repository.*;
 import com.vidaloca.skibidi.event.service.EventService;

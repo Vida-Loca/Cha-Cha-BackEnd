@@ -1,13 +1,8 @@
-package com.vidaloca.skibidi.event.dto;
+package com.vidaloca.skibidi.address.dto;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 
 
 @Data

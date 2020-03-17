@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.event.service;
+package com.vidaloca.skibidi.product.service;
 
 import com.vidaloca.skibidi.product.dto.ProductCategoryDto;
 import com.vidaloca.skibidi.product.dto.ProductDto;

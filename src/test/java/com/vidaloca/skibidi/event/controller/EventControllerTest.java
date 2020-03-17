@@ -1,14 +1,14 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vidaloca.skibidi.event.dto.AddressDto;
+import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
-import com.vidaloca.skibidi.event.service.ProductService;
+import com.vidaloca.skibidi.product.service.ProductService;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.product.model.Product;

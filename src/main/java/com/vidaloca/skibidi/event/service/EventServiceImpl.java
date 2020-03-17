@@ -1,10 +1,12 @@
 package com.vidaloca.skibidi.event.service;
 
+import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.event.dto.EventDto;
+import com.vidaloca.skibidi.product.repository.ProductRepository;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
-import com.vidaloca.skibidi.event.repository.UserCardRepository;
+import com.vidaloca.skibidi.product.repository.UserCardRepository;
 import com.vidaloca.skibidi.event.model.*;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.product.model.UserCard;

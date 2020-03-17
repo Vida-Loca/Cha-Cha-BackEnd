@@ -1,10 +1,9 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vidaloca.skibidi.event.dto.AddressDto;
-import com.vidaloca.skibidi.event.repository.AddressRepository;
-import com.vidaloca.skibidi.event.service.AddressService;
-import com.vidaloca.skibidi.event.model.Address;
+import com.vidaloca.skibidi.address.dto.AddressDto;
+import com.vidaloca.skibidi.address.repository.AddressRepository;
+import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
