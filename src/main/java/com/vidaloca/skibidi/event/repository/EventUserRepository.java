@@ -6,9 +6,10 @@ import com.vidaloca.skibidi.user.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface EventUserRepository extends CrudRepository<EventUser,Integer> {
-    EventUser findByUserAndEvent(User user, Event event);
+public interface EventUserRepository extends CrudRepository<EventUser,Long> {
+    Optional<EventUser> findByUserAndEvent(User user, Event event);
     List<EventUser> findAllByEvent(Event event);
     List<EventUser> findAllByUser (User user);
 }

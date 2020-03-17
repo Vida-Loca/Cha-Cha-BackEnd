@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.event.controller;
+package com.vidaloca.skibidi.user.account.controller;
 
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.model.Event;

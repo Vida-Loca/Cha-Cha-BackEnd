@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.event.controller;
 
+import com.vidaloca.skibidi.admin.controller.AdminController;
 import com.vidaloca.skibidi.user.model.Role;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.RoleRepository;

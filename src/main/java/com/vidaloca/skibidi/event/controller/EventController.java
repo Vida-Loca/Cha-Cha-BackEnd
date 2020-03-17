@@ -5,9 +5,7 @@ import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.product.repository.ProductRepository;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
-import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
-import com.vidaloca.skibidi.product.service.ProductService;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.product.model.Product;
@@ -76,7 +74,7 @@ public class EventController {
     }
 
     @DeleteMapping("/event/{id}")
-    public GenericResponse deleteById(@PathVariable Integer id, HttpServletRequest request) {
+    public GenericResponse deleteById(@PathVariable Long id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.deleteEvent(id, currentUserId));
     }
@@ -109,13 +107,13 @@ public class EventController {
 
     @CrossOrigin
     @PostMapping("/event/{id}/user")
-    public GenericResponse addUserToEvent(@RequestParam("username") String username, @PathVariable Integer id,HttpServletRequest request) {
+    public GenericResponse addUserToEvent(@RequestParam("username") String username, @PathVariable Long id, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.addUserToEvent(username, id,currentUserId));
     }
     @GetMapping("/event/{id}/user")
     public List<User> getEventUsers (@PathVariable Integer id,HttpServletRequest request) {
-        return eventService.findAllUsers(id);
+        return eventService.findAllEventUsers(id);
     }
     @GetMapping("/event/{event_id}/user/{user_id}/products")
     public List<Product> getEventUserProducts(@PathVariable Integer event_id, @PathVariable Long user_id){

@@ -23,7 +23,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
-    private int event_id;
+    private Long id;
 
     @JsonManagedReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
@@ -47,4 +47,61 @@ public class Event {
 
     private String additionalInformation;
 
+
+    public static final class EventBuilder {
+        private Long id;
+        private Address address;
+        private List<EventUser> eventUsers;
+        private String name;
+        private LocalDateTime startTime;
+        private String additionalInformation;
+
+        private EventBuilder() {
+        }
+
+        public static EventBuilder anEvent() {
+            return new EventBuilder();
+        }
+
+        public EventBuilder withId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public EventBuilder withAddress(Address address) {
+            this.address = address;
+            return this;
+        }
+
+        public EventBuilder withEventUsers(List<EventUser> eventUsers) {
+            this.eventUsers = eventUsers;
+            return this;
+        }
+
+        public EventBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public EventBuilder withStartTime(LocalDateTime startTime) {
+            this.startTime = startTime;
+            return this;
+        }
+
+        public EventBuilder withAdditionalInformation(String additionalInformation) {
+            this.additionalInformation = additionalInformation;
+            return this;
+        }
+
+        public Event build() {
+            Event event = new Event();
+            event.setId(id);
+            event.setAddress(address);
+            event.setEventUsers(eventUsers);
+            event.setName(name);
+            event.setStartTime(startTime);
+            event.setAdditionalInformation(additionalInformation);
+            return event;
+        }
+    }
 }

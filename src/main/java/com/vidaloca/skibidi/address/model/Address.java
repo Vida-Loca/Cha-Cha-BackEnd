@@ -21,7 +21,7 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_id")
-    private int id;
+    private Long id;
 
     @JsonBackReference
     @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
@@ -43,7 +43,7 @@ public class Address {
 
 
     public static final class AddressBuilder {
-        private int id;
+        private Long id;
         private List<Event> events;
         private String country;
         private String city;
@@ -58,7 +58,7 @@ public class Address {
             return new AddressBuilder();
         }
 
-        public AddressBuilder withId(int id) {
+        public AddressBuilder withId(Long id) {
             this.id = id;
             return this;
         }

@@ -1,11 +1,8 @@
-package com.vidaloca.skibidi.event.controller;
+package com.vidaloca.skibidi.product.controller;
 
 import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.product.repository.ProductRepository;
-import com.vidaloca.skibidi.event.repository.ProductCategoryRepository;
-import com.vidaloca.skibidi.event.repository.ProductRepository;
-import com.vidaloca.skibidi.product.service.ProductService;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.product.model.ProductCategory;
 import com.vidaloca.skibidi.user.registration.utills.GenericResponse;

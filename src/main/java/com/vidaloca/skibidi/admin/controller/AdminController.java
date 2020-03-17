@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.event.controller;
+package com.vidaloca.skibidi.admin.controller;
 
 import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.user.model.Role;

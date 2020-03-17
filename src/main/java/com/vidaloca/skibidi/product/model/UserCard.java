@@ -19,7 +19,7 @@ public class UserCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_card_id")
-    private int id;
+    private Long id;
 
     @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name="event_user_id")

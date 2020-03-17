@@ -8,7 +8,6 @@ import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
 import com.vidaloca.skibidi.event.service.EventService;
-import com.vidaloca.skibidi.product.service.ProductService;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.product.model.Product;
@@ -533,12 +532,12 @@ class EventControllerTest {
 
         when(jwtAuthenticationFilter.getJWTFromRequest(request)).thenReturn(token);
         when(jwtTokenProvider.getUserIdFromJWT(token)).thenReturn(1L);
-        when(eventService.findAllUsers(1)).thenReturn(users);
+        when(eventService.findAllEventUsers(1)).thenReturn(users);
 
         List<User> result = eventController.getEventUsers(1, request);
 
         assertEquals("USER", result.get(0).getName());
-        verify(eventService, times(1)).findAllUsers(1);
+        verify(eventService, times(1)).findAllEventUsers(1);
     }
 
     @Test
@@ -553,7 +552,7 @@ class EventControllerTest {
         HttpServletRequest request = createMock(HttpServletRequest.class);
         eventController.getEventUsers(1, request);
 
-        verify(eventService, times(1)).findAllUsers(1);
+        verify(eventService, times(1)).findAllEventUsers(1);
         verifyNoMoreInteractions(eventService);
     }
 

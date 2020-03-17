@@ -3,7 +3,6 @@ package com.vidaloca.skibidi.user.model;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.vidaloca.skibidi.user.model.User;
 import lombok.*;
 
 import java.util.List;
@@ -17,7 +16,7 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
-    private int id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String name;

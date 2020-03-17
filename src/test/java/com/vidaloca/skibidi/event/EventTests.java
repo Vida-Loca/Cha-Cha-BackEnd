@@ -265,13 +265,13 @@ public class EventTests {
 
     @Test
     public void testFindAllUsers() {
-        List<User> list = eventService.findAllUsers(1);
+        List<User> list = eventService.findAllEventUsers(1);
         Assert.assertEquals(1, list.size());
     }
 
     @Test
     public void testFindAllUsersNullEvent() {
-        List<User> list = eventService.findAllUsers(-1);
+        List<User> list = eventService.findAllEventUsers(-1);
         Assert.assertNull(list);
     }
 
