@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.event.exception.handler;
+package com.vidaloca.skibidi.event.exception.model;
 
 public class EventNotFoundException extends RuntimeException {
     public EventNotFoundException(Long id){

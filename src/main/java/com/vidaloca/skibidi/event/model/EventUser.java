@@ -2,7 +2,7 @@ package com.vidaloca.skibidi.event.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vidaloca.skibidi.product.model.UserCard;
+import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,8 +40,12 @@ public class EventUser {
     private Event event;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "eventUser",cascade =CascadeType.ALL )
-    private List<UserCard> userCard;
+    @ManyToMany (cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "event_user_product",
+            joinColumns = @JoinColumn(name = "event_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> products;
 
     @NotNull(message = "isAdmin cannot be null")
     private boolean isAdmin = false;

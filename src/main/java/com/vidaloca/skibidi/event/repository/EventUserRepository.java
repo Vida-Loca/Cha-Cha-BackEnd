@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface EventUserRepository extends CrudRepository<EventUser,Long> {
     Optional<EventUser> findByUserAndEvent(User user, Event event);
     List<EventUser> findAllByEvent(Event event);
+    List<EventUser> findAllByEvent_Id(Long eventId);
     List<EventUser> findAllByUser (User user);
 }

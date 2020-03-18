@@ -1,17 +1,23 @@
 package com.vidaloca.skibidi.product.service;
 
+import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.product.model.Product;
-import com.vidaloca.skibidi.product.model.UserCard;
 
 import java.util.List;
 
 public interface ProductService {
 
-    UserCard addProductToEvent(Product product, Integer eventId, Long userId);
+    EventUser addProductToEvent(Product product, Long eventId, Long userId);
 
-    String deleteProduct(Integer id, Integer productToDeleteId, Long userId);
+    EventUser addExistingProductToEvent(Long productId, Long eventId, Long userId);
 
-    List<Product> findAllEventProducts(Integer id);
+    String deleteProduct(Long eventId, Long productToDeleteId, Long userId);
 
-    List<Product> findUserEventProducts(Integer event_id, Long user_id);
+    List<Product> findAllEventProducts(Long eventId);
+
+    List<Product> findUserEventProducts(Long eventId, Long userId);
+
+    Product addProduct (ProductDto productDto);
+
 }

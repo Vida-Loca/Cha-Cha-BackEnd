@@ -1,22 +1,12 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.event.exception.handler.UserActuallyInEventException;
-import com.vidaloca.skibidi.event.exception.handler.UserIsNotAdminException;
-import com.vidaloca.skibidi.product.dto.ProductDto;
-import com.vidaloca.skibidi.product.repository.ProductRepository;
-import com.vidaloca.skibidi.event.repository.EventRepository;
-import com.vidaloca.skibidi.event.repository.EventUserRepository;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
 import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
-import com.vidaloca.skibidi.product.model.Product;
-import com.vidaloca.skibidi.product.service.ProductService;
-import com.vidaloca.skibidi.user.model.User;
-import com.vidaloca.skibidi.user.repository.UserRepository;
-import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
-import com.vidaloca.skibidi.common.configuration.security.JwtAuthenticationFilter;
-import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
+import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,60 +17,42 @@ import java.util.List;
 @RestController
 public class EventController {
 
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    private JwtTokenProvider jwtTokenProvider;
-    private EventRepository eventRepository;
     private EventService eventService;
-    private ProductService productService;
-    private ProductRepository productRepository;
-    private UserRepository userRepository;
-    private EventUserRepository event_userRepository;
+
 
     @Autowired
-    public EventController(JwtAuthenticationFilter jwtAuthenticationFilter, JwtTokenProvider jwtTokenProvider,
-                           EventRepository eventRepository, EventService eventService,
-                           ProductService productService, ProductRepository productRepository,
-                           UserRepository userRepository, EventUserRepository event_userRepository) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.eventRepository = eventRepository;
+    public EventController(EventService eventService) {
         this.eventService = eventService;
-        this.productService = productService;
-        this.productRepository = productRepository;
-        this.userRepository = userRepository;
-        this.event_userRepository = event_userRepository;
     }
 
 
     @GetMapping("/event")
     public List<Event> getEvents() {
-        return (List<Event>) eventRepository.findAll();
+        return (List<Event>) eventService.findAllEvents();
     }
 
     @GetMapping("/event/{eventId}")
     public Event getEventById(@PathVariable Long eventId) {
-        return eventRepository.findById(eventId).orElse(null);
+        return eventService.findById(eventId);
     }
 
     @CrossOrigin
     @PostMapping("/event")
     public Event addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return eventService.addNewEvent(eventDto,currentUserId);
+        return eventService.addNewEvent(eventDto, CurrentUser.currentUserId(request));
     }
 
     @CrossOrigin
     @PutMapping("/event/{eventId}")
     public Event updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
-        Long currentUserId = currentUserId(request);
-        return eventService.updateEvent(eventDto, eventId, currentUserId);
+        return eventService.updateEvent(eventDto, eventId, CurrentUser.currentUserId(request));
     }
 
     @DeleteMapping("/event/{eventId}")
     public String deleteById(@PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
-        Long currentUserId = currentUserId(request);
-        return eventService.deleteEvent(eventId, currentUserId);
+        return eventService.deleteEvent(eventId, CurrentUser.currentUserId(request));
     }
+
     //This going to product controller
 /*
     @GetMapping("/event/{id}/product")
@@ -133,38 +105,22 @@ public class EventController {
     @CrossOrigin
     @PostMapping("/event/{eventId}/user")
     public EventUser addUserToEvent(@RequestParam("username") String username, @PathVariable Long eventId, HttpServletRequest request) throws UserActuallyInEventException, UserIsNotAdminException {
-        Long currentUserId = currentUserId(request);
-        return eventService.addUserToEvent(username, eventId,currentUserId);
+        return eventService.addUserToEvent(username, eventId, CurrentUser.currentUserId(request));
     }
 
     @DeleteMapping("/event/{eventId}/user")
-    public String deleteUserFromEvent (@PathVariable Long eventId,@RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
-        Long currentUserId = currentUserId(request);
-        return eventService.deleteUser(eventId,userToDeleteId,currentUserId);
+    public String deleteUserFromEvent(@PathVariable Long eventId, @RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
+        return eventService.deleteUser(eventId, userToDeleteId, CurrentUser.currentUserId(request));
     }
-    @PutMapping ("/event/{eventId}/user/{userId}/grantAdmin")
+
+    @PutMapping("/event/{eventId}/user/{userId}/grantAdmin")
     public String grantAdminForUser(@PathVariable Long eventId, @PathVariable Long userId, HttpServletRequest request) throws UserIsNotAdminException {
-        Long currentUserId = currentUserId(request);
-        return  eventService.grantUserAdmin(eventId,userId,currentUserId);
+        return eventService.grantUserAdmin(eventId, userId, CurrentUser.currentUserId(request));
     }
-    /* To to wgl do serwisu trzeba
-    @GetMapping ("/event/{event_id}/isAdmin")
-    public GenericResponse isAdmin(@PathVariable("event_id") Integer eventId, HttpServletRequest request){
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null)
-            return new GenericResponse("failed");
-        User user = userRepository.findById(currentUserId(request)).orElse(null);
-        if (user == null)
-            return new GenericResponse("failed");
-        EventUser eu = event_userRepository.findByUserAndEvent(user,event);
-        if (eu.isAdmin())
-            return new GenericResponse("true");
-        else
-            return new GenericResponse("false");
+
+    @GetMapping("/event/{eventId}/isAdmin")
+    public boolean isAdmin(@PathVariable("eventId") Long eventId, HttpServletRequest request) {
+        return eventService.isCurrentUserAdminOfEvent(eventId, CurrentUser.currentUserId(request));
     }
-*/
-    private Long currentUserId(HttpServletRequest request) {
-        String token = jwtAuthenticationFilter.getJWTFromRequest(request);
-        return jwtTokenProvider.getUserIdFromJWT(token);
-    }
+
 }

@@ -4,13 +4,12 @@ import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.event.exception.handler.EventNotFoundException;
-import com.vidaloca.skibidi.event.exception.handler.UserActuallyInEventException;
-import com.vidaloca.skibidi.event.exception.handler.UserIsNotAdminException;
-import com.vidaloca.skibidi.event.exception.handler.UserIsNotInEventException;
+import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
-import com.vidaloca.skibidi.product.repository.UserCardRepository;
 import com.vidaloca.skibidi.event.model.*;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.exception.UsernameNotFoundException;
@@ -38,6 +37,16 @@ public class EventServiceImpl implements EventService {
         this.userRepository = userRepository;
         this.eventUserRepository = eventUserRepository;
         this.addressRepository = addressRepository;
+    }
+
+    @Override
+    public Event findById(Long id) {
+        return eventRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+    }
+
+    @Override
+    public List<Event> findAllEvents() {
+        return (List<Event>) eventRepository.findAll();
     }
 
     @Override
@@ -125,6 +134,14 @@ public class EventServiceImpl implements EventService {
         eventUserRepository.save(eu2);
         return "Successfully granted admin to " + user.getUsername();
 
+    }
+
+    @Override
+    public boolean isCurrentUserAdminOfEvent(Long eventId , Long currentUserId) {
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        return (eu.isAdmin());
     }
 
     private Address getAddress(AddressDto addressDto) {

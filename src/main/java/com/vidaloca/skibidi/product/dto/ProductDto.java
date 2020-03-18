@@ -9,19 +9,37 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDto {
-    @NotNull
-    @NotEmpty
-    @Length(max=40, min=2)
     private String name;
-    @NotNull
-    @NotEmpty
-    @Pattern(regexp = "(\\d+\\.\\d{1,2})")
-    private String price;
-    @NotNull
-    @NotEmpty
+    private BigDecimal price;
     private String productCategory;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
 }

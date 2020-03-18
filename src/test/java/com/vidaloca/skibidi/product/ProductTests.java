@@ -1,6 +1,5 @@
 package com.vidaloca.skibidi.product;
 
-import com.vidaloca.skibidi.product.dto.ProductCategoryDto;
 import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.event.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.event.repository.ProductRepository;
