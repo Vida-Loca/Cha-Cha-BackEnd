@@ -71,25 +71,6 @@ public class EventController {
         return new GenericResponse(eventService.addProductToEvent(p, id, currentUserId));
     }
 
-    @CrossOrigin
-    @PostMapping("/event/{id}/product")
-    public GenericResponse addProductToEvent(@RequestParam("productId") Integer productId, @PathVariable Integer id, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        Product product = productRepository.findById(productId).orElse(null);
-        if (product==null)
-            return new GenericResponse("Product not exist");
-        return new GenericResponse(eventService.addProductToEvent(product,id,currentUserId));
-    }
-     @GetMapping("/event/{eventId}/user/{userId}/products")
-    public List<Product> getEventUserProducts(@PathVariable Integer eventId, @PathVariable Long userId){
-        return eventService.findUserEventProducts(eventId,userId);
-    }
-
-       @GetMapping("/event/{id}/myproducts")
-    public List<Product> getMyEventUserProducts(@PathVariable Integer id,HttpServletRequest request){
-        Long currentUserId = currentUserId(request);
-        return eventService.findUserEventProducts(id,currentUserId);
-    }
 
         @GetMapping("/event/{eventId}/user")
     public List<User> getEventUsers (@PathVariable Long eventId) {

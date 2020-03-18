@@ -21,24 +21,5 @@ public class SkibidiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SkibidiApplication.class, args);
 	}
-	@Bean
-	public RequestContextListener requestContextListener() {
-		return new RequestContextListener();
-	}
-	@Bean
-	public MessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource
-				= new ReloadableResourceBundleMessageSource();
-
-		messageSource.setBasename("classpath:messages");
-		messageSource.setDefaultEncoding("UTF-8");
-		return messageSource;
-	}
-	@Bean
-	public LocaleResolver localeResolver() {
-		SessionLocaleResolver slr = new SessionLocaleResolver();
-		slr.setDefaultLocale(Locale.US);
-		return slr;
-	}
 
 }

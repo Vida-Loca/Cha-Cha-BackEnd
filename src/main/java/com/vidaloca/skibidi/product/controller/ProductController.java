@@ -29,24 +29,32 @@ public class ProductController {
     public List<Product> getEventProducts(@PathVariable Long eventId) {
         return productService.findAllEventProducts(eventId);
     }
+
     @CrossOrigin
     @PostMapping("/event/{eventId}/productNew")
     public EventUser addProductToEvent(@Valid @RequestBody ProductDto productDto, @PathVariable Long eventId,
                                        HttpServletRequest request) {
-        return productService.addProductToEvent(productService.addProduct(productDto),eventId, CurrentUser.currentUserId(request));
+        return productService.addProductToEvent(productService.addProduct(productDto), eventId, CurrentUser.currentUserId(request));
     }
+
     @CrossOrigin
     @PostMapping("/event/{eventId}/product")
     public EventUser addProductToEvent(@RequestParam("productId") Long productId, @PathVariable Long eventId, HttpServletRequest request) {
-        return  productService.addExistingProductToEvent(productId,eventId,CurrentUser.currentUserId(request));
+        return productService.addExistingProductToEvent(productId, eventId, CurrentUser.currentUserId(request));
     }
+
     @GetMapping("/event/{eventId}/user/{userId}/products")
-    public List<Product> getEventUserProducts(@PathVariable Long eventId, @PathVariable Long userId){
-        return productService.findUserEventProducts(eventId,userId);
+    public List<Product> getEventUserProducts(@PathVariable Long eventId, @PathVariable Long userId) {
+        return productService.findUserEventProducts(eventId, userId);
     }
 
     @GetMapping("/event/{eventId}/myproducts")
-    public List<Product> getMyEventUserProducts(@PathVariable Long eventId,HttpServletRequest request){
-        return productService.findUserEventProducts(eventId,CurrentUser.currentUserId(request));
+    public List<Product> getMyEventUserProducts(@PathVariable Long eventId, HttpServletRequest request) {
+        return productService.findUserEventProducts(eventId, CurrentUser.currentUserId(request));
+    }
+
+    @DeleteMapping("/event/{eventId}/product")
+    public String deleteProductFromEvent(@PathVariable Long eventId, @RequestParam("productToDeleteId") Long productToDeleteId, HttpServletRequest request) {
+        return productService.deleteProduct(eventId,productToDeleteId,CurrentUser.currentUserId(request));
     }
 }

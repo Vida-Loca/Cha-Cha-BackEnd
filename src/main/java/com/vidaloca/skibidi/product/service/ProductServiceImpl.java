@@ -7,7 +7,7 @@ import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.product.dto.ProductDto;
-import com.vidaloca.skibidi.product.exception.ProductNotFoundException;
+import com.vidaloca.skibidi.product.exception.model.ProductNotFoundException;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.product.model.ProductCategory;
 import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;

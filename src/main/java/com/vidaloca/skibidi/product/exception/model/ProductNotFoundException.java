@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.product.exception;
+package com.vidaloca.skibidi.product.exception.model;
 
 
 public class ProductNotFoundException extends RuntimeException {

@@ -34,7 +34,7 @@ public class AdminController {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null)
             return  new GenericResponse("UserNotExist");
-        Role role = roleRepository.findById(2).orElse(null);
+        Role role = roleRepository.findByName("ADMIN").orElse(null);
         if (role == null)
             return new GenericResponse("Unexpected Problem");
         user.setRole(role);

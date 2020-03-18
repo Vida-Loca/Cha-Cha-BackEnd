@@ -5,6 +5,7 @@ import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.model.VerificationToken;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
 import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
+import org.springframework.mail.SimpleMailMessage;
 
 public interface UserService {
         User registerNewUserAccount(UserRegistrationDto accountDto)
@@ -20,4 +21,6 @@ public interface UserService {
         String validateVerificationToken(String token);
 
         VerificationToken generateNewVerificationToken(final String existingVerificationToken);
+
+        SimpleMailMessage constructMail(String subject, String body, User user);
 }

@@ -31,7 +31,7 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository,
-                            EventUserRepository eventUserRepository, UserCardRepository userCardRepository,
+                            EventUserRepository eventUserRepository,
                             AddressRepository addressRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;

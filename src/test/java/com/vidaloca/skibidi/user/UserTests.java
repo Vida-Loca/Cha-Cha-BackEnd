@@ -134,7 +134,7 @@ public class UserTests {
     public void testSaveRegisteredUser() {
         List<User> usersB = (List<User>) userRepository.findAll();
         Role role = new Role();
-        role.setId(1);
+        role.setId(1L);
         role.setName("USER");
         User user = new User();
         user.setRole(role);

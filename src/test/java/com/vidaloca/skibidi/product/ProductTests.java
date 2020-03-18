@@ -1,3 +1,4 @@
+/*
 package com.vidaloca.skibidi.product;
 
 import com.vidaloca.skibidi.product.dto.ProductDto;
@@ -59,3 +60,4 @@ public class ProductTests {
         Assert.assertNotEquals(productCategoryBefore.size(), productCategoryAfter.size());
     }
 }
+*/

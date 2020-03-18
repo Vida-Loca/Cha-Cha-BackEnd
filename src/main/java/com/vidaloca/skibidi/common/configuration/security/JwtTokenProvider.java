@@ -3,6 +3,7 @@ package com.vidaloca.skibidi.common.configuration.security;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,7 @@ public class JwtTokenProvider {
         Date now = new Date(System.currentTimeMillis());
 
         Date expiryDate = new Date(now.getTime()+EXPIRATION_TIME);
-        Long userIdLong = userRepository.findByUsername(user.getUsername()).getId();
+        Long userIdLong = userRepository.findByUsername(user.getUsername()).orElseThrow(()->new UsernameNotFoundException(user.getUsername())).getId();
         String userId = Long.toString(userIdLong);
 
         Map<String,Object> claims = new HashMap<>();

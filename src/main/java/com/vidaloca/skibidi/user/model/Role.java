@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.user.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
@@ -18,7 +19,8 @@ public class Role {
     @Column(name = "role_id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @NotNull
+    @Column(unique = true)
     private String name;
     @JsonBackReference
     @OneToMany(

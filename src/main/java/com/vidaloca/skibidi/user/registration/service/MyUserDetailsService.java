@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.user.registration.service;
 
+import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class MyUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         try {
-            User user = userRepository.findByUsername(username);
+            User user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException(username));
             if (user == null) {
                 throw new UsernameNotFoundException(
                         "No user found with username: " + username);
@@ -42,9 +43,7 @@ public class MyUserDetailsService implements UserDetailsService {
     }
     @Transactional
     public User loadUserById(Long id){
-        User user = userRepository.findById(id).orElse(null);
-        if(user==null) new UsernameNotFoundException("User not found");
-        return user;
+        return userRepository.findById(id).orElseThrow(()-> new UserNotFoundException(id));
 
     }
 }

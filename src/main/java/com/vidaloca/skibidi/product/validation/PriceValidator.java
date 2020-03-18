@@ -23,6 +23,6 @@ public class PriceValidator
     private boolean validatePrice(BigDecimal price) {
         if ( price.compareTo(new BigDecimal("0.0")) < 0)
             return false;
-        return price.precision() <= 2;
+        return price.scale() <= 2;
     }
 }

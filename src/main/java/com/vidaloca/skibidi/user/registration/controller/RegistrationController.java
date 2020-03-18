@@ -3,38 +3,26 @@ package com.vidaloca.skibidi.user.registration.controller;
 import com.vidaloca.skibidi.user.registration.exception.UsernameExistsException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.model.VerificationToken;
-import com.vidaloca.skibidi.user.login.dto.LoginDto;
-import com.vidaloca.skibidi.user.repository.RoleRepository;
-import com.vidaloca.skibidi.user.repository.UserRepository;
-import com.vidaloca.skibidi.user.login.service.MapValidationErrorService;
+import com.vidaloca.skibidi.user.registration.service.UserService;
 import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
 import com.vidaloca.skibidi.user.registration.utills.RegisterEvent;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
-import com.vidaloca.skibidi.user.registration.service.UserServiceImpl;
 import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
-import com.vidaloca.skibidi.user.registration.utills.JwtLoginSucessResponse;
-import com.vidaloca.skibidi.common.configuration.security.JwtAuthenticationFilter;
-import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
-import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +32,7 @@ public class RegistrationController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UserServiceImpl service;
+    private UserService userService;
     @Autowired
     private  ApplicationEventPublisher eventPublisher;
     @Qualifier("messageSource")
@@ -52,39 +40,6 @@ public class RegistrationController {
     private MessageSource messages;
     @Autowired
     private MailSender mailSender;
-    @Autowired
-    private Environment env;
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private JwtTokenProvider tokenProvider;
-    @Autowired
-    private MapValidationErrorService mapValidationErrorService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @CrossOrigin
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto, BindingResult result){
-        ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
-        if(errorMap != null) return errorMap;
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = "Bearer " +  tokenProvider.generateToken(authentication);
-
-        return ResponseEntity.ok(new JwtLoginSucessResponse(true, jwt));
-    }
 
 
     @CrossOrigin
@@ -92,7 +47,7 @@ public class RegistrationController {
     public GenericResponse registerUserAccount(@RequestBody UserRegistrationDto accountDto, final HttpServletRequest request) throws EmailExistsException, UsernameExistsException {
        try {
            LOGGER.debug("Registering user account with information: {}", accountDto);
-           final User registered = service.registerNewUserAccount(accountDto);
+           final User registered = userService.registerNewUserAccount(accountDto);
            eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale(), getAppUrl(request)));
            return new GenericResponse("success");
        }
@@ -106,9 +61,9 @@ public class RegistrationController {
 
     @GetMapping("/registrationConfirm")
     public GenericResponse confirmRegistration(final HttpServletRequest request, @RequestParam("token") final String token){
-        final String result = service.validateVerificationToken(token);
+        final String result = userService.validateVerificationToken(token);
         if (result.equals("valid")) {
-            final User user = service.getUser(token);
+            final User user = userService.getUser(token);
             authWithoutPassword(user);
             return new GenericResponse("success");
         }
@@ -117,8 +72,8 @@ public class RegistrationController {
     }
     @GetMapping("/resendRegistrationToken")
     public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
-        final VerificationToken newToken = service.generateNewVerificationToken(existingToken);
-        final User user = service.getUser(newToken.getToken());
+        final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
+        final User user = userService.getUser(newToken.getToken());
         mailSender.send(constructResendVerificationTokenEmail(getAppUrl(request), request.getLocale(), newToken, user));
         return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
     }
@@ -131,14 +86,13 @@ public class RegistrationController {
     private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
         final String confirmationUrl = contextPath + "/registrationConfirm?token=" + newToken.getToken();
         final String message = messages.getMessage("message.resendToken", null, locale);
-        return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
+        return  userService.constructMail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
-    public void authWithoutPassword(User user) {
+    private void authWithoutPassword(User user) {
         List<String> role = new ArrayList<>();
         role.add(user.getRole().getName());
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, getAuthorities(role));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
     private static List<GrantedAuthority> getAuthorities (List<String> roles) {
@@ -149,13 +103,4 @@ public class RegistrationController {
         return authorities;
     }
 
-
-    private SimpleMailMessage constructEmail(String subject, String body, User user) {
-        final SimpleMailMessage email = new SimpleMailMessage();
-        email.setSubject(subject);
-        email.setText(body);
-        email.setTo(user.getEmail());
-        email.setFrom(env.getProperty("support.email"));
-        return email;
-    }
 }

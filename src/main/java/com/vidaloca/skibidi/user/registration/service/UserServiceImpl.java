@@ -10,6 +10,7 @@ import com.vidaloca.skibidi.user.registration.repository.TokenRepository;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
             throw new EmailExistsException(
                     "There is an account with that email address:" + accountDto.getEmail());
         }
-        if (userRepository.findByUsername(accountDto.getUsername())!=null) {
+        if (userRepository.findByUsername(accountDto.getUsername()).isPresent()) {
             throw new UsernameExistsException(
                     "There is an account with that username: " + accountDto.getUsername());
         }
@@ -55,20 +56,22 @@ public class UserServiceImpl implements UserService {
         user.setUsername(accountDto.getUsername());
         user.setName(accountDto.getName());
         user.setSurname(accountDto.getSurname());
-        //  System.out.println(accountDto.getPassword());
         user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
         user.setEmail(accountDto.getEmail());
         user.setPicUrl(accountDto.getPicUrl());
         user.setJoined(LocalDateTime.now());
-        Role role = roleRepository.findById(1).orElse(null);
+        Role role = roleRepository.findByName("USER").orElse(null);
+        if (role == null){
+            role = new Role();
+            role.setName("USER");
+            role = roleRepository.save(role);
+        }
         user.setRole(role);
-        //  System.out.println("TestPrzedSave");
         return userRepository.save(user);
     }
 
     private boolean emailExists(String email) {
-        User user = userRepository.findByEmail(email);
-        return user != null;
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Override
@@ -122,6 +125,15 @@ public class UserServiceImpl implements UserService {
                 .toString());
         vToken = tokenRepository.save(vToken);
         return vToken;
+    }
+
+    @Override
+    public SimpleMailMessage constructMail(String subject, String body, User user) {
+            final SimpleMailMessage email = new SimpleMailMessage();
+            email.setSubject(subject);
+            email.setText(body);
+            email.setTo(user.getEmail());
+            return email;
     }
 
 }

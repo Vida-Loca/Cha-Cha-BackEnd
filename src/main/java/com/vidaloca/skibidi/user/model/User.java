@@ -3,17 +3,21 @@ package com.vidaloca.skibidi.user.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.Nullable;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.user.registration.validation.ValidEmail;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "userr")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,23 +39,22 @@ public class User {
     private List<EventUser> eventUsers;
 
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @NotNull(message = "Username is obligatory")
     private String username;
 
     @JsonIgnore
-    @Column(nullable = false, length = 60)
+    @NotNull(message = "Password cannot be null")
+    @Length(min=60,max=60,message = "Password crashed")
     private String password;
 
-    @Column
     private String name;
 
-    @Column
     private String surname;
 
-    @Column
     private String picUrl;
 
-    @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime joined;
 
     @Column(unique = true)
@@ -61,8 +64,7 @@ public class User {
     private String email;
 
     @JsonIgnore
-    @Column(columnDefinition = "boolean default false")
-    private boolean enabled;
+    private boolean enabled = false;
 
     @Override
     public String toString() {

@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.product.exception.handler;
 
-import com.vidaloca.skibidi.product.exception.ProductNotFoundException;
+import com.vidaloca.skibidi.product.exception.model.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
