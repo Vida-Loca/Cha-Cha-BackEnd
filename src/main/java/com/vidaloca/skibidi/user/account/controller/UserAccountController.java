@@ -43,8 +43,8 @@ public class UserAccountController {
     }
 
     @PostMapping("/user/resetPassword")
-    public String resetPassword(HttpServletRequest request) {
-         return userAccountService.resetPassword(request);
+    public String resetPassword(HttpServletRequest request, @RequestParam String email) {
+         return userAccountService.resetPassword(request,email);
     }
 
     @GetMapping("/user/changePassword")

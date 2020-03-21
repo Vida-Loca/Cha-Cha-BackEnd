@@ -6,6 +6,7 @@ import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
 import com.vidaloca.skibidi.user.account.model.ResetPasswordToken;
 import com.vidaloca.skibidi.user.account.repository.ResetPasswordTokenRepository;
+import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
@@ -65,8 +66,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public String resetPassword(HttpServletRequest request) {
-        User user = userRepository.findById(CurrentUser.currentUserId(request)).orElseThrow(() -> new UserNotFoundException(CurrentUser.currentUserId(request)));
+    public String resetPassword(HttpServletRequest request, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
         String token = UUID.randomUUID().toString();
         createPasswordResetTokenForUser(user, token);
         resetPasswordMail.sendMail(request,token,user);
@@ -81,6 +82,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public User changePassword(Long userId, PasswordDto passwordDto) throws PasswordsNotMatchesException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        if (!user.isCanChangePass())
+            return null;
         if (passwordDto.getPassword().equals(passwordDto.getMatchingPassword())) {
             user.setPassword(passwordEncoder.encode(passwordDto.getPassword()));
         } else

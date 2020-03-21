@@ -17,7 +17,7 @@ public interface UserAccountService {
 
     User changePhoto (Long userId, String photoUrl);
 
-    String resetPassword (HttpServletRequest request);
+    String resetPassword (HttpServletRequest request, String email);
 
     String resetPasswordConfirm (Long userId, String token);
 
