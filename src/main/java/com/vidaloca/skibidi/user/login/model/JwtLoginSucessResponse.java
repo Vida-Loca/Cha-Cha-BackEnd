@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.user.registration.utills;
+package com.vidaloca.skibidi.user.login.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

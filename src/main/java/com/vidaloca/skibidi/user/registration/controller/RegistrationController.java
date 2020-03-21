@@ -4,12 +4,9 @@ import com.vidaloca.skibidi.user.registration.exception.UsernameExistsException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.model.VerificationToken;
 import com.vidaloca.skibidi.user.registration.service.UserService;
-import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
-import com.vidaloca.skibidi.user.registration.utills.RegisterEvent;
+import com.vidaloca.skibidi.user.registration.mail.RegisterEvent;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
 import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
@@ -29,64 +26,45 @@ import java.util.Locale;
 
 @RestController
 public class RegistrationController {
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    @Autowired
     private UserService userService;
-    @Autowired
     private  ApplicationEventPublisher eventPublisher;
-    @Qualifier("messageSource")
-    @Autowired
-    private MessageSource messages;
-    @Autowired
-    private MailSender mailSender;
 
+    @Autowired
+    public RegistrationController(UserService userService, ApplicationEventPublisher eventPublisher) {
+        this.userService = userService;
+        this.eventPublisher = eventPublisher;
+    }
 
     @CrossOrigin
     @PostMapping ("/registration")
-    public GenericResponse registerUserAccount(@RequestBody UserRegistrationDto accountDto, final HttpServletRequest request) throws EmailExistsException, UsernameExistsException {
+    public String registerUserAccount(@RequestBody UserRegistrationDto accountDto, final HttpServletRequest request) {
        try {
-           LOGGER.debug("Registering user account with information: {}", accountDto);
            final User registered = userService.registerNewUserAccount(accountDto);
            eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale(), getAppUrl(request)));
-           return new GenericResponse("success");
+           return "Successfully registration";
        }
        catch (EmailExistsException ex){
-           return new GenericResponse("Email exists",ex.getMessage());
+           return "Email exists";
        }
        catch (UsernameExistsException ex){
-           return new GenericResponse("Username exists",ex.getMessage());
+           return "Username exists";
        }
     }
 
     @GetMapping("/registrationConfirm")
-    public GenericResponse confirmRegistration(final HttpServletRequest request, @RequestParam("token") final String token){
+    public String confirmRegistration(@RequestParam("token") final String token){
         final String result = userService.validateVerificationToken(token);
         if (result.equals("valid")) {
             final User user = userService.getUser(token);
             authWithoutPassword(user);
-            return new GenericResponse("success");
+            return "Successfully registration";
         }
-
-       return  new GenericResponse("fail");
+        return "Something went wrong";
     }
-    @GetMapping("/resendRegistrationToken")
-    public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
-        final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
-        final User user = userService.getUser(newToken.getToken());
-        mailSender.send(constructResendVerificationTokenEmail(getAppUrl(request), request.getLocale(), newToken, user));
-        return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
-    }
-
 
     private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-    }
-
-    private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
-        final String confirmationUrl = contextPath + "/registrationConfirm?token=" + newToken.getToken();
-        final String message = messages.getMessage("message.resendToken", null, locale);
-        return  userService.constructMail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
     private void authWithoutPassword(User user) {

@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.user.exception.handler;
 
 import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
+import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.exception.UsernameNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,11 @@ public class UserExceptionHandler {
     @ExceptionHandler(EmailNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String getEmailNotFoundException(EmailNotFoundException ex) {
+        return ex.getMessage();
+    }
+    @ExceptionHandler(PasswordsNotMatchesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String getPasswordNotMatchesException(PasswordsNotMatchesException ex){
         return ex.getMessage();
     }
 }

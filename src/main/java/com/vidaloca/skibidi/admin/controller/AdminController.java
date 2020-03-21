@@ -1,14 +1,15 @@
 package com.vidaloca.skibidi.admin.controller;
 
 import com.vidaloca.skibidi.event.service.EventService;
+import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.Role;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.RoleRepository;
 import com.vidaloca.skibidi.user.repository.UserRepository;
-import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.relation.RoleNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -26,28 +27,22 @@ public class AdminController {
     }
 
     @GetMapping("/admin/getAllUsers")
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return (List<User>) userRepository.findAll();
     }
+
     @PutMapping("/admin/grantUserAdmin/{id}")
-    public GenericResponse grantUserAdmin(@PathVariable ("id") Long userId){
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null)
-            return  new GenericResponse("UserNotExist");
+    public User grantUserAdmin(@PathVariable("id") Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Role role = roleRepository.findByName("ADMIN").orElse(null);
-        if (role == null)
-            return new GenericResponse("Unexpected Problem");
         user.setRole(role);
-        userRepository.save(user);
-        return new GenericResponse("successfully granted admin for user: " +userId);
+        return userRepository.save(user);
     }
 
     @DeleteMapping("/admin/deleteUser/{id}")
-    public GenericResponse deleteUser(HttpServletRequest request, @PathVariable("id") Long userId) {
-        if (userRepository.findById(userId).orElse(null) == null)
-            return new GenericResponse("User not exists");
-        userRepository.deleteById(userId);
-        return new GenericResponse("Successfully deleted user");
+    public void deleteUser(HttpServletRequest request, @PathVariable("id") Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        userRepository.delete(user);
     }
 
 }
