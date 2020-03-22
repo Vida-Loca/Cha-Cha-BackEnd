@@ -44,7 +44,7 @@ class EventControllerTest {
         when(eventService.findById(anyLong())).thenReturn(event);
 
         //when
-        mockMvc.perform(get("/event/{eventId}"))
+        mockMvc.perform(get("/event/{eventId}", 1))
                 .andExpect(status().isOk());
 
         //then
