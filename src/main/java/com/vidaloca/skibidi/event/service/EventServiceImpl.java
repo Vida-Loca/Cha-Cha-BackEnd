@@ -97,8 +97,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<User> findAllEventUsers(Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        if (event == null)
-            return null;
         List<EventUser> event_users = eventUserRepository.findAllByEvent(event);
         List<User> users = new ArrayList<>();
         for (EventUser eu : event_users)

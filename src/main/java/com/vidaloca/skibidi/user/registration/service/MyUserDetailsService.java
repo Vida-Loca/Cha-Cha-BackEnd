@@ -27,12 +27,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
         try {
             User user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException(username));
-            if (user == null) {
-                throw new UsernameNotFoundException(
-                        "No user found with username: " + username);
-            }
-            Set<GrantedAuthority> grantedAuthorities = null;
-            grantedAuthorities = new HashSet<>();
+            Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
             System.out.println(grantedAuthorities);
             return new org.springframework.security.core.userdetails.User
