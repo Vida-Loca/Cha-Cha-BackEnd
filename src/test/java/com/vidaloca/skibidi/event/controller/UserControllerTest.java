@@ -1,15 +1,17 @@
+/*
 package com.vidaloca.skibidi.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
-import com.vidaloca.skibidi.model.Event;
-import com.vidaloca.skibidi.model.EventUser;
-import com.vidaloca.skibidi.model.Role;
-import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
-import com.vidaloca.skibidi.registration.utills.GenericResponse;
-import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
-import com.vidaloca.skibidi.security.JwtTokenProvider;
+import com.vidaloca.skibidi.event.model.Event;
+import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.user.account.controller.UserController;
+import com.vidaloca.skibidi.user.model.Role;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.repository.UserRepository;
+import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
+import com.vidaloca.skibidi.common.configuration.security.JwtAuthenticationFilter;
+import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -233,4 +235,4 @@ class UserControllerTest {
             throw new RuntimeException(e);
         }
     }
-}
+}*/

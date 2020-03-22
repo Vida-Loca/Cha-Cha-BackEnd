@@ -1,20 +1,12 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.event.dto.ProductDto;
-import com.vidaloca.skibidi.event.repository.EventRepository;
-import com.vidaloca.skibidi.event.repository.EventUserRepository;
-import com.vidaloca.skibidi.event.repository.ProductRepository;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
 import com.vidaloca.skibidi.event.service.EventService;
-import com.vidaloca.skibidi.event.service.ProductService;
-import com.vidaloca.skibidi.model.Event;
-import com.vidaloca.skibidi.model.EventUser;
-import com.vidaloca.skibidi.model.Product;
-import com.vidaloca.skibidi.model.User;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
-import com.vidaloca.skibidi.registration.utills.GenericResponse;
-import com.vidaloca.skibidi.security.JwtAuthenticationFilter;
-import com.vidaloca.skibidi.security.JwtTokenProvider;
+import com.vidaloca.skibidi.event.model.Event;
+import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,61 +17,44 @@ import java.util.List;
 @RestController
 public class EventController {
 
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    private JwtTokenProvider jwtTokenProvider;
-    private EventRepository eventRepository;
     private EventService eventService;
-    private ProductService productService;
-    private ProductRepository productRepository;
-    private UserRepository userRepository;
-    private EventUserRepository event_userRepository;
+
 
     @Autowired
-    public EventController(JwtAuthenticationFilter jwtAuthenticationFilter, JwtTokenProvider jwtTokenProvider,
-                           EventRepository eventRepository, EventService eventService,
-                           ProductService productService, ProductRepository productRepository,
-                           UserRepository userRepository, EventUserRepository event_userRepository) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.eventRepository = eventRepository;
+    public EventController(EventService eventService) {
         this.eventService = eventService;
-        this.productService = productService;
-        this.productRepository = productRepository;
-        this.userRepository = userRepository;
-        this.event_userRepository = event_userRepository;
     }
 
 
     @GetMapping("/event")
     public List<Event> getEvents() {
-        return (List<Event>) eventRepository.findAll();
+        return (List<Event>) eventService.findAllEvents();
     }
 
-    @GetMapping("/event/{id}")
-    public Event getEventById(@PathVariable Integer id) {
-        return eventRepository.findById(id).orElse(null);
+    @GetMapping("/event/{eventId}")
+    public Event getEventById(@PathVariable Long eventId) {
+        return eventService.findById(eventId);
     }
 
     @CrossOrigin
     @PostMapping("/event")
-    public GenericResponse addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.addNewEvent(eventDto,currentUserId));
+    public Event addNewEvent(@Valid @RequestBody EventDto eventDto, HttpServletRequest request) {
+        return eventService.addNewEvent(eventDto, CurrentUser.currentUserId(request));
     }
 
     @CrossOrigin
-    @PutMapping("/event/{id}")
-    public GenericResponse updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Integer id, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.updateEvent(eventDto, id, currentUserId));
+    @PutMapping("/event/{eventId}")
+    public Event updateEvent(@Valid @RequestBody EventDto eventDto, @PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
+        return eventService.updateEvent(eventDto, eventId, CurrentUser.currentUserId(request));
     }
 
-    @DeleteMapping("/event/{id}")
-    public GenericResponse deleteById(@PathVariable Integer id, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.deleteEvent(id, currentUserId));
+    @DeleteMapping("/event/{eventId}")
+    public String deleteById(@PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
+        return eventService.deleteEvent(eventId, CurrentUser.currentUserId(request));
     }
 
+    //This going to product controller
+/*
     @GetMapping("/event/{id}/product")
     public List<Product> getEventProducts(@PathVariable Integer id) {
         return eventService.findAllEventProducts(id);
@@ -96,67 +71,37 @@ public class EventController {
         return new GenericResponse(eventService.addProductToEvent(p, id, currentUserId));
     }
 
-    @CrossOrigin
-    @PostMapping("/event/{id}/product")
-    public GenericResponse addProductToEvent(@RequestParam("productId") Integer productId, @PathVariable Integer id, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        Product product = productRepository.findById(productId).orElse(null);
-        if (product==null)
-            return new GenericResponse("Product not exist");
-        return new GenericResponse(eventService.addProductToEvent(product,id,currentUserId));
-    }
 
-    @CrossOrigin
-    @PostMapping("/event/{id}/user")
-    public GenericResponse addUserToEvent(@RequestParam("username") String username, @PathVariable Integer id,HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.addUserToEvent(username, id,currentUserId));
+        @GetMapping("/event/{eventId}/user")
+    public List<User> getEventUsers (@PathVariable Long eventId) {
+        return eventService.findAllEventUsers(eventId);
     }
-    @GetMapping("/event/{id}/user")
-    public List<User> getEventUsers (@PathVariable Integer id,HttpServletRequest request) {
-        return eventService.findAllUsers(id);
-    }
-    @GetMapping("/event/{event_id}/user/{user_id}/products")
-    public List<Product> getEventUserProducts(@PathVariable Integer event_id, @PathVariable Long user_id){
-        return eventService.findUserEventProducts(event_id,user_id);
-    }
-    @GetMapping("/event/{id}/myproducts")
-    public List<Product> getMyEventUserProducts(@PathVariable Integer id,HttpServletRequest request){
-        Long currentUserId = currentUserId(request);
-        return eventService.findUserEventProducts(id,currentUserId);
-    }
-    @DeleteMapping("/event/{id}/product")
+        @DeleteMapping("/event/{id}/product")
     public GenericResponse deleteProductFromEvent (@PathVariable Integer id,@RequestParam("productToDeleteId") Integer productToDeleteId, HttpServletRequest request) {
         Long currentUserId = currentUserId(request);
         return new GenericResponse(eventService.deleteProduct(id,productToDeleteId,currentUserId));
     }
-    @DeleteMapping("/event/{id}/user")
-    public GenericResponse deleteUserFromEvent (@PathVariable Integer id,@RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) {
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.deleteUser(id,userToDeleteId,currentUserId));
-    }
-    @PutMapping ("/event/{event_id}/user/{user_id}/grantAdmin")
-    public GenericResponse grantAdminForUser(@PathVariable Integer event_id, @PathVariable Long user_id, HttpServletRequest request){
-        Long currentUserId = currentUserId(request);
-        return new GenericResponse(eventService.grantUserAdmin(event_id,user_id,currentUserId));
-    }
-    @GetMapping ("/event/{event_id}/isAdmin")
-    public GenericResponse isAdmin(@PathVariable("event_id") Integer eventId, HttpServletRequest request){
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null)
-            return new GenericResponse("failed");
-        User user = userRepository.findById(currentUserId(request)).orElse(null);
-        if (user == null)
-            return new GenericResponse("failed");
-        EventUser eu = event_userRepository.findByUserAndEvent(user,event);
-        if (eu.isAdmin())
-            return new GenericResponse("true");
-        else
-            return new GenericResponse("false");
+
+*/
+    @CrossOrigin
+    @PostMapping("/event/{eventId}/user")
+    public EventUser addUserToEvent(@RequestParam("username") String username, @PathVariable Long eventId, HttpServletRequest request) throws UserActuallyInEventException, UserIsNotAdminException {
+        return eventService.addUserToEvent(username, eventId, CurrentUser.currentUserId(request));
     }
 
-    private Long currentUserId(HttpServletRequest request) {
-        String token = jwtAuthenticationFilter.getJWTFromRequest(request);
-        return jwtTokenProvider.getUserIdFromJWT(token);
+    @DeleteMapping("/event/{eventId}/user")
+    public String deleteUserFromEvent(@PathVariable Long eventId, @RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
+        return eventService.deleteUser(eventId, userToDeleteId, CurrentUser.currentUserId(request));
     }
+
+    @PutMapping("/event/{eventId}/user/{userId}/grantAdmin")
+    public String grantAdminForUser(@PathVariable Long eventId, @PathVariable Long userId, HttpServletRequest request) throws UserIsNotAdminException {
+        return eventService.grantUserAdmin(eventId, userId, CurrentUser.currentUserId(request));
+    }
+
+    @GetMapping("/event/{eventId}/isAdmin")
+    public boolean isAdmin(@PathVariable("eventId") Long eventId, HttpServletRequest request) {
+        return eventService.isCurrentUserAdminOfEvent(eventId, CurrentUser.currentUserId(request));
+    }
+
 }

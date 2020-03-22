@@ -1,15 +1,22 @@
 package com.vidaloca.skibidi.event.service;
 
+import com.vidaloca.skibidi.address.dto.AddressDto;
+import com.vidaloca.skibidi.address.model.Address;
+import com.vidaloca.skibidi.address.repository.AddressRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
+import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
-import com.vidaloca.skibidi.event.repository.ProductRepository;
-import com.vidaloca.skibidi.event.repository.UserCardRepository;
-import com.vidaloca.skibidi.model.*;
-import com.vidaloca.skibidi.registration.repository.UserRepository;
+import com.vidaloca.skibidi.event.model.*;
+import com.vidaloca.skibidi.user.exception.UserNotFoundException;
+import com.vidaloca.skibidi.user.exception.UsernameNotFoundException;
+import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,228 +26,137 @@ public class EventServiceImpl implements EventService {
 
     private EventRepository eventRepository;
     private UserRepository userRepository;
-    private EventUserRepository event_userRepository;
-    private UserCardRepository userCardRepository;
+    private EventUserRepository eventUserRepository;
+    private AddressRepository addressRepository;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository,
-                            EventUserRepository event_userRepository, UserCardRepository userCardRepository,
-                            ProductRepository productRepository){
+                            EventUserRepository eventUserRepository,
+                            AddressRepository addressRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
-        this.event_userRepository = event_userRepository;
-        this.userCardRepository = userCardRepository;
+        this.eventUserRepository = eventUserRepository;
+        this.addressRepository = addressRepository;
     }
 
     @Override
-    public String addNewEvent(EventDto eventDto, Long currentUserId) {
+    public Event findById(Long id) {
+        return eventRepository.findById(id).orElseThrow(()-> new EventNotFoundException(id));
+    }
+
+    @Override
+    public List<Event> findAllEvents() {
+        return (List<Event>) eventRepository.findAll();
+    }
+
+    @Override
+    public Event addNewEvent(EventDto eventDto, Long currentUserId) {
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         Event event = new Event();
-        User user = userRepository.findById(currentUserId).orElse(null);
-        event.setAddress(new Address());
-        Event finalEvent = getEvent(eventDto, event);
-        eventRepository.save(finalEvent);
         EventUser eu = new EventUser(user, event, true);
-        event_userRepository.save(eu);
-        return "Successfully added event";
+        event.setEventUsers(List.of(eu));
+        return eventRepository.save(getEvent(eventDto, event));
     }
 
     @Override
-    public String updateEvent(EventDto eventDto, Integer id, Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        Event event = eventRepository.findById(id).orElse(null);
-        if (user == null)
-            return "Unexpected failure";
-        if (event == null)
-            return "Event doesn't exist";
-        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
-        if (eu == null)
-            return "User is not in that event";
+    public Event updateEvent(EventDto eventDto, Long eventId, Long userId) throws UserIsNotAdminException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         if (!eu.isAdmin())
-            return "User is not allowed to update event";
-        eventRepository.save(getEvent(eventDto, event));
-        return "Updated successfully";
+            throw new UserIsNotAdminException(userId);
+        return eventRepository.save(getEvent(eventDto, event));
     }
 
-    @Override
-    public String addProductToEvent(Product product, Integer eventId, Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null)
-            return "Unexpected failure";
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null)
-            return "Event doesn't exist";
-        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
-        if (eu == null)
-            return "User is not in that event";
-        UserCard uc = new UserCard();
-        uc.setEventUser(eu);
-        uc.setProduct(product);
-        userCardRepository.save(uc);
-        return "Successfully added product";
-    }
 
     @Override
-    public String addUserToEvent(String username, Integer eventId, Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null)
-            return "Unexpected failure";
-        User addingUser = userRepository.findByUsername(username);
-        if (addingUser == null)
-            return "User doesn't exists";
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null)
-            return "Event doesn't exist";
-        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
-        if (eu == null)
-            return "User is not in that event";
-        EventUser eu2 = event_userRepository.findByUserAndEvent(addingUser, event);
-        if (eu2 != null)
-            return  "User is acctually in that event";
+    public EventUser addUserToEvent(String username, Long eventId, Long userId) throws UserIsNotAdminException, UserActuallyInEventException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User addingUser = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException(username));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         if (!eu.isAdmin())
-            return "User don't have permission to add new user to event";
+            throw new UserIsNotAdminException(userId);
+        if (eventUserRepository.findByUserAndEvent(addingUser,event).isPresent())
+            throw new UserActuallyInEventException(addingUser.getUsername());
         EventUser euAdd = new EventUser(addingUser, event, false);
-        event_userRepository.save(euAdd);
-        return "Successfully added user";
+        return eventUserRepository.save(euAdd);
     }
 
     @Override
-    public String deleteEvent(Integer id, Long user_id) {
-        User user = userRepository.findById(user_id).orElse(null);
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            return "Event doesn't exist";
-        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
-        if (eu == null)
-            return "User is not in that event";
+    public String deleteEvent(Long eventId, Long userId) throws UserIsNotAdminException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         if (!eu.isAdmin())
-            return "User don't have permission to delete event";
-        eventRepository.deleteById(id);
-        return "Event delete successfully";
+            throw new UserIsNotAdminException(userId);
+        eventRepository.deleteById(eventId);
+        return "Event deleted successfully";
     }
 
     @Override
-    public List<Product> findAllEventProducts(Integer id) {
-        List<Product> products = new ArrayList<>();
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event==null)
+    public List<User> findAllEventUsers(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        if (event == null)
             return null;
-        for (EventUser eu : event.getEventUsers())
-            for (UserCard uc: eu.getUserCard())
-                products.add(uc.getProduct());
-        return products;
-    }
-
-    @Override
-    public List<User> findAllUsers(Integer event_id) {
-        Event event = eventRepository.findById(event_id).orElse(null);
-        if (event==null)
-            return null;
-        List<EventUser> event_users = event_userRepository.findAllByEvent(event);
-        List <User> users = new ArrayList<>();
-        for (EventUser eu: event_users)
+        List<EventUser> event_users = eventUserRepository.findAllByEvent(event);
+        List<User> users = new ArrayList<>();
+        for (EventUser eu : event_users)
             users.add(eu.getUser());
         return users;
     }
 
-    @Override
-    public List<Product> findUserEventProducts(Integer event_id, Long user_id) {
-        List<Product> userEventProducts = new ArrayList<>();
-        User user = userRepository.findById(user_id).orElse(null);
-        if (user == null)
-            return null;
-        Event event = eventRepository.findById(event_id).orElse(null);
-        if (event == null)
-            return null;
-        EventUser eu = event_userRepository.findByUserAndEvent(user,event);
-        if (eu == null )
-            return null;
-        List<UserCard> uc = userCardRepository.findAllByEventUser(eu);
-        for (UserCard u : uc){
-            userEventProducts.add(u.getProduct());
-        }
-        return userEventProducts;
-    }
 
     @Override
-    public String deleteUser(Integer id,Long userToDeleteId, Long userId) {
-        Event event = eventRepository.findById(id).orElse(null);
-        User userToDelete = userRepository.findById(userToDeleteId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
-        EventUser event_user = event_userRepository.findByUserAndEvent(user,event);
-        if (event==null)
-            return "Event doesn't exist";
-        if (user==null)
-            return "Unexpected failure";
-        if (userToDelete==null)
-            return "User to delete doesn't exist";
-        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
-        if (eu == null)
-            return "User is not in that event";
-        EventUser eu2 = event_userRepository.findByUserAndEvent(userToDelete, event);
-        if (eu2 == null)
-            return  "User is not acctually in that event";
-        if (!event_user.isAdmin())
-            return "You don't have permission to delete user";
-        event_userRepository.deleteById(eu.getId());
+    public String deleteUser(Long eventId, Long userToDeleteId, Long userId) throws UserIsNotAdminException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        User userToDelete = userRepository.findById(userToDeleteId).orElseThrow(() -> new UserNotFoundException(userToDeleteId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        if (!eu.isAdmin())
+            throw new UserIsNotAdminException(userId);
+        EventUser eu2 = eventUserRepository.findByUserAndEvent(userToDelete, event).orElseThrow(() -> new UserIsNotInEventException(userToDelete.getId(), event.getId()));
+        eventUserRepository.deleteById(eu.getId());
         return "Successfully removed user from event";
 
     }
 
     @Override
-    public String deleteProduct(Integer id, Integer productToDeleteId, Long userId) {
-        Event event = eventRepository.findById(id).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
-        EventUser event_user = event_userRepository.findByUserAndEvent(user,event);
-        if (event==null)
-            return "Event doesn't exist";
-        if (user==null)
-            return "Unexpected failure";
-        if (event_user == null)
-            return "User is not in that event";
-        List<UserCard> userCards = userCardRepository.findAllByEventUser(event_user);
-        for (UserCard uc : userCards){
-            Product product = uc.getProduct();
-            if (product.getId() == productToDeleteId )
-                userCardRepository.delete(uc);
-        }
-        return "Successfully delete products";
-
-    }
-
-    @Override
-    public String grantUserAdmin(Integer event_id, Long userToGrantId, Long user_id) {
-        Event event = eventRepository.findById(event_id).orElse(null);
-        User userToGrant = userRepository.findById(userToGrantId).orElse(null);
-        User user = userRepository.findById(user_id).orElse(null);
-        EventUser event_user = event_userRepository.findByUserAndEvent(user,event);
-        if (event==null)
-            return "Event doesn't exist";
-        if (user==null)
-            return "Unexpected failure";
-        if (userToGrant==null)
-            return "User to grant doesn't exist";
-        EventUser eu = event_userRepository.findByUserAndEvent(user, event);
-        if (eu == null)
-            return "You are not in that event";
-        EventUser eu2 = event_userRepository.findByUserAndEvent(userToGrant, event);
-        if (eu2 == null)
-            return  "User is not acctually in that event";
-        if (!event_user.isAdmin())
-            return "You don't have permission to grant admin to user";
+    public String grantUserAdmin(Long eventId, Long userToGrantId, Long userId) throws UserIsNotAdminException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        User userToGrant = userRepository.findById(userToGrantId).orElseThrow(() -> new UserNotFoundException(userToGrantId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        if (!eu.isAdmin())
+            throw new UserIsNotAdminException(userId);
+        EventUser eu2 = eventUserRepository.findByUserAndEvent(userToGrant, event).orElseThrow(() -> new UserIsNotInEventException(userToGrant.getId(), event.getId()));
         eu2.setAdmin(true);
-        event_userRepository.save(eu2);
+        eventUserRepository.save(eu2);
         return "Successfully granted admin to " + user.getUsername();
 
     }
 
+    @Override
+    public boolean isCurrentUserAdminOfEvent(Long eventId , Long currentUserId) {
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        return (eu.isAdmin());
+    }
+
+    private Address getAddress(AddressDto addressDto) {
+        Address address = addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumber(addressDto.getCountry(),
+                addressDto.getCity(), addressDto.getPostcode(), addressDto.getStreet(), addressDto.getNumber()).orElse(null);
+        if (address != null)
+            return address;
+        return Address.AddressBuilder.anAddress().withCountry(addressDto.getCountry()).withCity(addressDto.getCity()).withPostcode(addressDto.getPostcode()).
+                withStreet(addressDto.getStreet()).withNumber(addressDto.getNumber()).build();
+    }
+
     private Event getEvent(EventDto eventDto, Event event) {
         event.setName(eventDto.getName());
-        event.setStartDate(eventDto.getStartDate());
-        event.getAddress().setCity(eventDto.getAddress().getCity());
-        event.getAddress().setCountry(eventDto.getAddress().getCountry());
-        event.getAddress().setNumber(eventDto.getAddress().getNumber());
-        event.getAddress().setStreet(eventDto.getAddress().getStreet());
-        event.getAddress().setPostcode(eventDto.getAddress().getPostcode());
+        event.setStartTime(eventDto.getStartTime());
+        event.setAddress(getAddress(eventDto.getAddress()));
         event.setStartTime(eventDto.getStartTime());
         event.setAdditionalInformation(eventDto.getAdditionalInformation());
         return event;
