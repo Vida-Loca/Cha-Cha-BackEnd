@@ -118,8 +118,8 @@ class EventServiceImplTest {
     @Test
     void addNewEvent() {
         //given
-        AddressDto addressDto = AddressDto.builder().country("Country").city("City")
-                .postcode("Postcode").street("Street").number("Num").build();
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
@@ -147,8 +147,8 @@ class EventServiceImplTest {
         //given
         Long eventId = 1L;
         Long userId = 1L;
-        AddressDto addressDto = AddressDto.builder().country("Country").city("City")
-                .postcode("Postcode").street("Street").number("Num").build();
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
@@ -181,8 +181,8 @@ class EventServiceImplTest {
         //given
         Long eventId = 1L;
         Long userId = 1L;
-        AddressDto addressDto = AddressDto.builder().country("Country").city("City")
-                .postcode("Postcode").street("Street").number("Num").build();
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
@@ -211,8 +211,8 @@ class EventServiceImplTest {
         //given
         Long eventId = 1L;
         Long userId = 1L;
-        AddressDto addressDto = AddressDto.builder().country("Country").city("City")
-                .postcode("Postcode").street("Street").number("Num").build();
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
@@ -235,8 +235,8 @@ class EventServiceImplTest {
         //given
         Long eventId = 1L;
         Long userId = 1L;
-        AddressDto addressDto = AddressDto.builder().country("Country").city("City")
-                .postcode("Postcode").street("Street").number("Num").build();
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
@@ -258,8 +258,8 @@ class EventServiceImplTest {
         //given
         Long eventId = 1L;
         Long userId = 1L;
-        AddressDto addressDto = AddressDto.builder().country("Country").city("City")
-                .postcode("Postcode").street("Street").number("Num").build();
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
