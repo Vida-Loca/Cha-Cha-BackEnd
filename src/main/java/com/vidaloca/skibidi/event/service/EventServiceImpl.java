@@ -132,7 +132,7 @@ public class EventServiceImpl implements EventService {
         EventUser eu2 = eventUserRepository.findByUserAndEvent(userToGrant, event).orElseThrow(() -> new UserIsNotInEventException(userToGrant.getId(), event.getId()));
         eu2.setAdmin(true);
         eventUserRepository.save(eu2);
-        return "Successfully granted admin to " + user.getUsername();
+        return "Successfully granted admin to " + userToGrant.getUsername();
 
     }
 
