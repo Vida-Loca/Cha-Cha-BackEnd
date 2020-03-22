@@ -66,6 +66,9 @@ public class User {
     @JsonIgnore
     private boolean enabled = false;
 
+    @JsonIgnore
+    private boolean canChangePass = false;
+
     @Override
     public String toString() {
         return username;

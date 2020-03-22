@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,5 +28,11 @@ public class ResetPasswordToken {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    private Date expiryDate;
+    private LocalDateTime expiryDate;
+
+    public ResetPasswordToken(User user, String token){
+        this.token = token;
+        this.user = user;
+        expiryDate = LocalDateTime.now().plusDays(1);
+    }
 }

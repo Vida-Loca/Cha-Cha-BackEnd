@@ -2,13 +2,9 @@ package com.vidaloca.skibidi.product.controller;
 
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.product.dto.ProductDto;
-import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;
-import com.vidaloca.skibidi.product.repository.ProductRepository;
 import com.vidaloca.skibidi.product.model.Product;
-import com.vidaloca.skibidi.product.model.ProductCategory;
 import com.vidaloca.skibidi.product.service.ProductService;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
-import com.vidaloca.skibidi.user.registration.utills.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

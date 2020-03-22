@@ -1,4 +1,4 @@
-package com.vidaloca.skibidi.user.registration.utills;
+package com.vidaloca.skibidi.user.registration.mail;
 
 import com.vidaloca.skibidi.user.model.User;
 import org.springframework.context.ApplicationEvent;
