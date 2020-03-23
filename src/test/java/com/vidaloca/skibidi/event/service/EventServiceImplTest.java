@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.event.service;
 
 import com.vidaloca.skibidi.address.dto.AddressDto;
+import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
@@ -130,6 +131,43 @@ class EventServiceImplTest {
 
         when(userRepository.findById(anyLong())).thenReturn(optionalUser);
         when(eventRepository.save(any(Event.class))).thenReturn(event);
+
+        //when
+        Event returnedEvent = eventService.addNewEvent(eventDto, 1L);
+
+        //then
+        assertEquals("EventName", returnedEvent.getName());
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(eventRepository, times(1)).save(any(Event.class));
+        verifyNoMoreInteractions(eventRepository);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void addNewEventExistingAddress() {
+        //given
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
+        EventDto eventDto = new EventDto();
+        eventDto.setName("EventName");
+        eventDto.setStartTime(LocalDateTime.now());
+        eventDto.setAddress(addressDto);
+        eventDto.setAdditionalInformation("Info");
+
+        Address address = new Address();
+        address.setCountry(addressDto.getCountry());
+        address.setCity(addressDto.getCity());
+        address.setPostcode(addressDto.getPostcode());
+        address.setStreet(addressDto.getStreet());
+        address.setNumber(addressDto.getNumber());
+        Optional<Address> addressOptional = Optional.of(address);
+
+        event.setName(eventDto.getName());
+
+        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
+        when(addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumber(anyString(),
+                anyString(), anyString(), anyString(), anyString())).thenReturn(addressOptional);
 
         //when
         Event returnedEvent = eventService.addNewEvent(eventDto, 1L);
