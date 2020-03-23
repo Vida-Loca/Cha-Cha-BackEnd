@@ -1,19 +1,19 @@
 package com.vidaloca.skibidi.user.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.user.registration.validation.ValidEmail;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.istack.Nullable;
-import com.vidaloca.skibidi.event.model.EventUser;
-import com.vidaloca.skibidi.user.registration.validation.ValidEmail;
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,7 +36,7 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
-    private List<EventUser> eventUsers;
+    private List<EventUser> eventUsers = new ArrayList<>();
 
 
     @Column(unique = true)

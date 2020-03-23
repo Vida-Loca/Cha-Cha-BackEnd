@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class ProductServiceImplTest {
@@ -48,8 +46,6 @@ class ProductServiceImplTest {
     Event event;
     EventUser eventUser;
     Product product;
-    List<Product> productsListBefore;
-    List<Product> productsListAfter;
 
     @BeforeEach
     void setUp() {
