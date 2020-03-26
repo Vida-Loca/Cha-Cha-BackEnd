@@ -1,7 +1,7 @@
 package com.vidaloca.skibidi.friendship.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.vidaloca.skibidi.friendship.status.InvitationStatus;
+import com.vidaloca.skibidi.friendship.status.Status;
 import com.vidaloca.skibidi.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class Friendship {
     private User invited;
 
     @Enumerated(EnumType.STRING)
-    private InvitationStatus invitationStatus;
+    private Status status;
 
     @JsonFormat(pattern = "yyy-MM-dd HH:mm")
     private LocalDateTime friendshipStartTime;
@@ -42,7 +42,7 @@ public class Friendship {
         private Long id;
         private User invitor;
         private User invited;
-        private InvitationStatus invitationStatus;
+        private Status status;
         private LocalDateTime friendshipStartTime;
 
         private FriendshipBuilder() {
@@ -67,8 +67,8 @@ public class Friendship {
             return this;
         }
 
-        public FriendshipBuilder withInvitationStatus(InvitationStatus invitationStatus) {
-            this.invitationStatus = invitationStatus;
+        public FriendshipBuilder withInvitationStatus(Status status) {
+            this.status = status;
             return this;
         }
 
@@ -82,7 +82,7 @@ public class Friendship {
             friendship.setId(id);
             friendship.setInvitor(invitor);
             friendship.setInvited(invited);
-            friendship.setInvitationStatus(invitationStatus);
+            friendship.setStatus(status);
             friendship.setFriendshipStartTime(friendshipStartTime);
             return friendship;
         }

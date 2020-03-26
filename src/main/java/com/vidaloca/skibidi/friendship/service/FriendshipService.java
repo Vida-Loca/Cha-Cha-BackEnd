@@ -6,6 +6,9 @@ import com.vidaloca.skibidi.user.model.User;
 import java.util.List;
 
 public interface FriendshipService {
+
+    List<User> findAllByUsernameContains(String regex);
+
     List<User> findAllUserFriends(Long userId);
 
     List<Friendship> findAllUserInvitations(Long userId);
@@ -20,3 +23,4 @@ public interface FriendshipService {
 
     Friendship removeFriend(Long userId, Long userToRemoveId);
 }
+

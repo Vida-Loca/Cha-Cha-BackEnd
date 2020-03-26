@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.friendship.status;
 
-public enum InvitationStatus {
+public enum Status {
     ACCEPTED("Accepted"),
     PROCESSING("Processing"),
     REJECTED("Rejected"),
@@ -9,7 +9,7 @@ public enum InvitationStatus {
 
     private String description;
 
-    InvitationStatus(String description){
+    Status(String description){
         this.description = description;
     }
 
