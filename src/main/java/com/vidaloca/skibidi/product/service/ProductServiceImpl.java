@@ -45,22 +45,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public EventUser addProductToEvent(Product product, Long eventId, Long userId) {
+    public Product addProductToEvent(Product product, Long eventId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         eu.getProducts().add(product);
-        return eventUserRepository.save(eu);
+        eventUserRepository.save(eu);
+        return product;
     }
 
     @Override
-    public EventUser addExistingProductToEvent(Long productId, Long eventId, Long userId) {
+    public Product addExistingProductToEvent(Long productId, Long eventId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
         eu.getProducts().add(product);
-        return eventUserRepository.save(eu);
+        eventUserRepository.save(eu);
+        return product;
     }
 
     @Override

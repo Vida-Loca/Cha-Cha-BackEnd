@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.Nullable;
 import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.friendship.model.Friendship;
 import com.vidaloca.skibidi.user.registration.validation.ValidEmail;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -62,6 +63,12 @@ public class User {
     @NotNull
     @NotEmpty
     private String email;
+
+    @OneToMany(mappedBy = "invitor", cascade = CascadeType.ALL)
+    private List<Friendship> invitorFriendships;
+
+    @OneToMany(mappedBy = "invited", cascade = CascadeType.ALL)
+    private List<Friendship> invitedFriendships;
 
     @JsonIgnore
     private boolean enabled = false;

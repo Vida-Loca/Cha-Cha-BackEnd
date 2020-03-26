@@ -28,14 +28,14 @@ public class ProductController {
 
     @CrossOrigin
     @PostMapping("/event/{eventId}/productNew")
-    public EventUser addProductToEvent(@Valid @RequestBody ProductDto productDto, @PathVariable Long eventId,
+    public Product addProductToEvent(@Valid @RequestBody ProductDto productDto, @PathVariable Long eventId,
                                        HttpServletRequest request) {
         return productService.addProductToEvent(productService.addProduct(productDto), eventId, CurrentUser.currentUserId(request));
     }
 
     @CrossOrigin
     @PostMapping("/event/{eventId}/product")
-    public EventUser addProductToEvent(@RequestParam("productId") Long productId, @PathVariable Long eventId, HttpServletRequest request) {
+    public Product addProductToEvent(@RequestParam("productId") Long productId, @PathVariable Long eventId, HttpServletRequest request) {
         return productService.addExistingProductToEvent(productId, eventId, CurrentUser.currentUserId(request));
     }
 

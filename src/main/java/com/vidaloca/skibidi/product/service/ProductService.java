@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface ProductService {
 
-    EventUser addProductToEvent(Product product, Long eventId, Long userId);
+    Product addProductToEvent(Product product, Long eventId, Long userId);
 
-    EventUser addExistingProductToEvent(Long productId, Long eventId, Long userId);
+    Product addExistingProductToEvent(Long productId, Long eventId, Long userId);
 
     String deleteProduct(Long eventId, Long productToDeleteId, Long userId);
 
