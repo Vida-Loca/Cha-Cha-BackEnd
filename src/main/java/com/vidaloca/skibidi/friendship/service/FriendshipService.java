@@ -1,6 +1,9 @@
 package com.vidaloca.skibidi.friendship.service;
 
-import com.vidaloca.skibidi.friendship.model.Friendship;
+import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
+import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
+import com.vidaloca.skibidi.friendship.model.Invitation;
+import com.vidaloca.skibidi.friendship.model.Relation;
 import com.vidaloca.skibidi.user.model.User;
 
 import java.util.List;
@@ -11,16 +14,18 @@ public interface FriendshipService {
 
     List<User> findAllUserFriends(Long userId);
 
-    List<Friendship> findAllUserInvitations(Long userId);
+    List<Invitation> findAllUserInvitations(Long userId);
 
-    Friendship inviteFriend(Long invitorId, Long invitedId);
+    Invitation inviteFriend(Long invitorId, Long invitedId) throws InvitationExistsException, UserNotAllowedException;
 
-    Friendship cancelInvitation(Long friendshipId, Long invitorId);
+    Invitation cancelInvitation(Long friendshipId, Long invitorId) throws UserNotAllowedException;
 
-    Friendship acceptInvitation(Long friendshipId, Long invitedId);
+    Relation acceptInvitation(Long friendshipId, Long invitedId) throws UserNotAllowedException;
 
-    Friendship rejectInvitation(Long friendshipId, Long invitedId);
+    Invitation rejectInvitation(Long friendshipId, Long invitedId) throws UserNotAllowedException;
 
-    Friendship removeFriend(Long userId, Long userToRemoveId);
+    Relation removeFriend(Long userId, Long userToRemoveId) throws UserNotAllowedException;
+
+    Relation blockUser(Long userId, Long userToBlockId) throws UserNotAllowedException;
 }
 

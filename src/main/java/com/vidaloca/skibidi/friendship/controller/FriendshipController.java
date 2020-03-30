@@ -1,6 +1,9 @@
 package com.vidaloca.skibidi.friendship.controller;
 
-import com.vidaloca.skibidi.friendship.model.Friendship;
+import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
+import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
+import com.vidaloca.skibidi.friendship.model.Invitation;
+import com.vidaloca.skibidi.friendship.model.Relation;
 import com.vidaloca.skibidi.friendship.service.FriendshipService;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import com.vidaloca.skibidi.user.model.User;
@@ -20,40 +23,52 @@ public class FriendshipController {
     }
 
     @GetMapping("/users_contains")
-    public List<User> getAllUsersContains(@RequestParam String regex){
+    public List<User> getAllUsersContains(@RequestParam String regex) {
         return friendshipService.findAllByUsernameContains(regex);
     }
 
     @GetMapping("/user/friends")
-    public List<User> getAllCurrentUserFriends(HttpServletRequest request){
+    public List<User> getAllCurrentUserFriends(HttpServletRequest request) {
         return friendshipService.findAllUserFriends(CurrentUser.currentUserId(request));
     }
+
     @GetMapping("/user/{userId}/friends")
-    public List<User> getAllUserFriends(@PathVariable Long userId){
+    public List<User> getAllUserFriends(@PathVariable Long userId) {
         return friendshipService.findAllUserFriends(userId);
     }
+
     @GetMapping("/user/invitations")
-    public List<Friendship> getAllInvitations(HttpServletRequest request){
+    public List<Invitation> getAllInvitations(HttpServletRequest request) {
         return friendshipService.findAllUserInvitations(CurrentUser.currentUserId(request));
     }
+
     @PostMapping("/user/invite")
-    public Friendship inviteUserToFriends(HttpServletRequest request,@RequestParam Long invitedId){
-        return friendshipService.inviteFriend(CurrentUser.currentUserId(request),invitedId);
+    public Invitation inviteUserToFriends(HttpServletRequest request, @RequestParam Long invitedId) {
+        return friendshipService.inviteFriend(CurrentUser.currentUserId(request), invitedId);
     }
+
     @PutMapping("/user/cancel")
-    public Friendship cancelInvitation(HttpServletRequest request, @RequestParam Long friendshipId){
-        return friendshipService.cancelInvitation(friendshipId,CurrentUser.currentUserId(request));
+    public Invitation cancelInvitation(HttpServletRequest request, @RequestParam Long invitationId) {
+        return friendshipService.cancelInvitation(invitationId, CurrentUser.currentUserId(request));
     }
+
     @PutMapping("/user/accept")
-    public Friendship acceptInvitation(HttpServletRequest request, @RequestParam Long friendshipId){
-        return friendshipService.acceptInvitation(friendshipId,CurrentUser.currentUserId(request));
+    public Relation acceptInvitation(HttpServletRequest request, @RequestParam Long invitationId) {
+        return friendshipService.acceptInvitation(invitationId, CurrentUser.currentUserId(request));
     }
+
     @PutMapping("/user/reject")
-    public Friendship rejectInvitation(HttpServletRequest request, @RequestParam Long friendshipId){
-        return friendshipService.rejectInvitation(friendshipId,CurrentUser.currentUserId(request));
+    public Invitation rejectInvitation(HttpServletRequest request, @RequestParam Long invitationId) {
+        return friendshipService.rejectInvitation(invitationId, CurrentUser.currentUserId(request));
     }
+
     @PutMapping("/user/remove")
-    public Friendship removeFriend(HttpServletRequest request, @RequestParam Long userToRemoveId){
-        return friendshipService.removeFriend(CurrentUser.currentUserId(request),userToRemoveId);
+    public Relation removeFriend(HttpServletRequest request, @RequestParam Long userToRemoveId) {
+        return friendshipService.removeFriend(CurrentUser.currentUserId(request), userToRemoveId);
+    }
+
+    @PutMapping("/user/block")
+    public Relation blockUser(HttpServletRequest request, @RequestParam Long userToBlockId) {
+        return friendshipService.blockUser(CurrentUser.currentUserId(request), userToBlockId);
     }
 }

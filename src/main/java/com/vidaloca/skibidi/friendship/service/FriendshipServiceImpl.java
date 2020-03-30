@@ -1,11 +1,14 @@
 package com.vidaloca.skibidi.friendship.service;
 
-import com.vidaloca.skibidi.friendship.exception.FriendshipExistsException;
-import com.vidaloca.skibidi.friendship.exception.FriendshipNotFoundException;
+import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
+import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
-import com.vidaloca.skibidi.friendship.model.Friendship;
-import com.vidaloca.skibidi.friendship.repository.FriendshipRepository;
-import com.vidaloca.skibidi.friendship.status.Status;
+import com.vidaloca.skibidi.friendship.model.Invitation;
+import com.vidaloca.skibidi.friendship.model.Relation;
+import com.vidaloca.skibidi.friendship.repository.InvitationRepository;
+import com.vidaloca.skibidi.friendship.repository.RelationRepository;
+import com.vidaloca.skibidi.friendship.status.InvitationStatus;
+import com.vidaloca.skibidi.friendship.status.RelationStatus;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
@@ -21,14 +24,15 @@ import java.util.stream.Collectors;
 public class FriendshipServiceImpl implements FriendshipService {
 
     private UserRepository userRepository;
-    private FriendshipRepository friendshipRepository;
+    private InvitationRepository invitationRepository;
+    private RelationRepository relationRepository;
 
     @Autowired
-    public FriendshipServiceImpl(UserRepository userRepository, FriendshipRepository friendshipRepository) {
+    public FriendshipServiceImpl(UserRepository userRepository, InvitationRepository invitationRepository, RelationRepository relationRepository) {
         this.userRepository = userRepository;
-        this.friendshipRepository = friendshipRepository;
+        this.invitationRepository = invitationRepository;
+        this.relationRepository = relationRepository;
     }
-
 
     @Override
     public List<User> findAllByUsernameContains(String regex) {
@@ -37,74 +41,108 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public List<User> findAllUserFriends(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId));
-        List<User> friends = user.getInvitorFriendships().stream().filter(f -> f.getStatus()
-                .equals(Status.ACCEPTED)).map(Friendship::getInvitor).collect(Collectors.toList());
-        friends.addAll(user.getInvitedFriendships().stream().filter(f -> f.getStatus()
-        .equals(Status.ACCEPTED)).map(Friendship::getInvited).collect(Collectors.toList()));
-        return friends;
-    }
-
-    @Override
-    public List<Friendship> findAllUserInvitations(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId));
-        return user.getInvitedFriendships().stream().filter(f -> f.getStatus().equals(Status.PROCESSING))
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        return relationRepository.findAllByUser(user).stream().filter(r -> r.getRelationStatus().equals(RelationStatus.FRIENDS)).
+                map(f -> userRepository.findById(f.getRelatedUserId()).orElseThrow(() -> new UserNotFoundException(f.getRelatedUserId())))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Friendship inviteFriend(Long invitorId, Long invitedId) {
-        User invitor = userRepository.findById(invitorId).orElseThrow(()-> new UserNotFoundException(invitorId));
-        User invited = userRepository.findById(invitedId).orElseThrow(()-> new UserNotFoundException(invitedId));
-        Optional<Friendship> friendship = friendshipRepository.findByInvitorAndInvited(invitor, invited);
-        if (friendship.isPresent())
-            throw new FriendshipExistsException(invitorId,invitedId,friendship.get().getStatus());
-        return Friendship.FriendshipBuilder.aFriendship().withInvitor(invitor).withInvited(invited).
-                withInvitationStatus(Status.PROCESSING).build();
+    public List<Invitation> findAllUserInvitations(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        return user.getInvitationsToUser().stream().filter(f -> f.getInvitationStatus().equals(InvitationStatus.PROCESSING))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Friendship cancelInvitation(Long friendshipId, Long invitorId) {
-        Friendship friendship = friendshipRepository.findById(friendshipId).orElseThrow(() -> new FriendshipNotFoundException(friendshipId));
-        if (!friendship.getInvitor().getId().equals(invitorId))
-            throw new UserNotAllowedException(invitorId,"cancel");
-        friendship.setStatus(Status.CANCELLED);
-        return friendshipRepository.save(friendship);
-    }
-
-    @Override
-    public Friendship acceptInvitation(Long friendshipId, Long invitedId) {
-        Friendship friendship = friendshipRepository.findById(friendshipId).orElseThrow(() -> new FriendshipNotFoundException(friendshipId));
-        if (!friendship.getInvitor().getId().equals(invitedId))
-            throw new UserNotAllowedException(invitedId,"accept");
-        friendship.setStatus(Status.ACCEPTED);
-        friendship.setFriendshipStartTime(LocalDateTime.now());
-        return friendshipRepository.save(friendship);
-    }
-
-    @Override
-    public Friendship rejectInvitation(Long friendshipId, Long invitedId) {
-        Friendship friendship = friendshipRepository.findById(friendshipId).orElseThrow(() -> new FriendshipNotFoundException(friendshipId));
-        if (!friendship.getInvitor().getId().equals(invitedId))
-            throw new UserNotAllowedException(invitedId,"reject");
-        friendship.setStatus(Status.REJECTED);
-        return friendshipRepository.save(friendship);
-    }
-
-    @Override
-    public Friendship removeFriend(Long userId, Long userToRemoveId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId));
-        User userToRemove = userRepository.findById(userToRemoveId).orElseThrow(()-> new UserNotFoundException(userToRemoveId));
-        Optional<Friendship> friendship = friendshipRepository.findByInvitorAndInvited(user,userToRemove);
-        if (friendship.isPresent()) {
-            friendship.get().setStatus(Status.REMOVED);
-            return friendshipRepository.save(friendship.get());
+    public Invitation inviteFriend(Long invitorId, Long invitedId){
+        User invitor = userRepository.findById(invitorId).orElseThrow(() -> new UserNotFoundException(invitorId));
+        User invited = userRepository.findById(invitedId).orElseThrow(() -> new UserNotFoundException(invitedId));
+        Optional<Relation> relation = relationRepository.findByUserAndRelatedUserId(invitor, invited.getId());
+        if (relation.isPresent() && !relation.get().getRelationStatus().equals(RelationStatus.REMOVED))
+            throw new UserNotAllowedException(invitorId, "invite");
+        Optional<Invitation> invitation = invitationRepository.findByInvitorAndInvited(invitor, invited);
+        if (invitation.isPresent()) {
+            if (invitation.get().getInvitationStatus().equals(InvitationStatus.ACCEPTED) ||
+                    invitation.get().getInvitationStatus().equals(InvitationStatus.PROCESSING))
+                throw new InvitationExistsException(invitorId, invitedId, invitation.get().getInvitationStatus());
+            else {
+                invitation.get().setInvitationStatus(InvitationStatus.PROCESSING);
+                return invitationRepository.save(invitation.get());
+            }
         }
-        friendship = friendshipRepository.findByInvitorAndInvited(userToRemove,user);
-        if (friendship.isPresent()){
-            friendship.get().setStatus(Status.REMOVED);
-            return friendshipRepository.save(friendship.get());
-        }
-        throw new FriendshipNotFoundException(userId,userToRemoveId);
+        Invitation invitation1 = Invitation.InvitationBuilder.anInvitation().withInvitor(invitor).withInvited(invited).
+                withInvitationStatus(InvitationStatus.PROCESSING).build();
+        return invitationRepository.save(invitation1);
+    }
+
+    @Override
+    public Invitation cancelInvitation(Long invitationId, Long invitorId)  {
+        Invitation invitation = invitationRepository.findById(invitationId).orElseThrow(() -> new InvitationNotFoundException(invitationId));
+        if (!invitation.getInvitor().getId().equals(invitorId))
+            throw new UserNotAllowedException(invitorId, "cancel");
+        invitation.setInvitationStatus(InvitationStatus.CANCELLED);
+        return invitationRepository.save(invitation);
+    }
+
+    @Override
+    public Relation acceptInvitation(Long invitationId, Long invitedId)  {
+        User invited = userRepository.findById(invitedId).orElseThrow(() -> new UserNotFoundException(invitedId));
+        Invitation invitation = invitationRepository.findById(invitationId).orElseThrow(() -> new InvitationNotFoundException(invitationId));
+        if (invitation.getInvitor().getId().equals(invitedId))
+            throw new UserNotAllowedException(invitedId, "accept");
+        invitation.setInvitationStatus(InvitationStatus.ACCEPTED);
+        invitationRepository.save(invitation);
+        Relation relation1 = Relation.RelationBuilder.aRelation().withUser(invitation.getInvitor()).
+                withRelatedUserId(invited.getId()).withRelationStartDate(LocalDateTime.now()).
+                withRelationStatus(RelationStatus.FRIENDS).build();
+        relationRepository.save(relation1);
+        Relation relation2 = Relation.RelationBuilder.aRelation().withUser(invited).withRelatedUserId(invitation.getInvitor().getId()).
+                withRelationStartDate(LocalDateTime.now()).withRelationStatus(RelationStatus.FRIENDS).build();
+        return relationRepository.save(relation2);
+    }
+
+    @Override
+    public Invitation rejectInvitation(Long invitationId, Long invitedId) {
+        Invitation invitation = invitationRepository.findById(invitationId).orElseThrow(() -> new InvitationNotFoundException(invitationId));
+        if (!invitation.getInvitor().getId().equals(invitedId))
+            throw new UserNotAllowedException(invitedId, "reject");
+        invitation.setInvitationStatus(InvitationStatus.REJECTED);
+        return invitationRepository.save(invitation);
+    }
+
+    @Override
+    public Relation removeFriend(Long userId, Long userToRemoveId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Optional<Relation> relation = relationRepository.findByUserAndRelatedUserId(user, userToRemoveId);
+        if (relation.isEmpty())
+            throw new InvitationNotFoundException(userId, userToRemoveId);
+        if (relation.get().getRelationStatus() != RelationStatus.FRIENDS)
+            throw new UserNotAllowedException(user.getId(), "remove");
+        User userToRemove = userRepository.findById(userToRemoveId).orElseThrow(() -> new UserNotFoundException(userToRemoveId));
+        Invitation invitation = invitationRepository.findByInvitorAndInvited(user, userToRemove).
+                orElse(invitationRepository.findByInvitorAndInvited(userToRemove, user).orElse(null));
+        if (invitation != null)
+            invitationRepository.delete(invitation);
+        relation.get().setRelationStatus(RelationStatus.REMOVED);
+        Relation relation2 = relationRepository.findByUserAndRelatedUserId(userRepository.findById(userToRemoveId).orElseThrow(() -> new UserNotFoundException(userToRemoveId)), user.getId()).get();
+        relation2.setRelationStatus(RelationStatus.REMOVED);
+        relationRepository.save(relation2);
+        return relationRepository.save(relation.get());
+    }
+
+    @Override
+    public Relation blockUser(Long userId, Long userToBlockId)  {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Optional<Relation> relation = relationRepository.findByUserAndRelatedUserId(user, userToBlockId);
+        if (relation.isEmpty())
+            throw new InvitationNotFoundException(userId, userToBlockId);
+        if (relation.get().getRelationStatus() != RelationStatus.FRIENDS)
+            throw new UserNotAllowedException(user.getId(), "block");
+        relation.get().setRelationStatus(RelationStatus.BLOCKED);
+        Relation relation2 = relationRepository.findByUserAndRelatedUserId(userRepository.findById(userToBlockId).orElseThrow(() -> new UserNotFoundException(userToBlockId)), user.getId()).get();
+        relation2.setRelationStatus(RelationStatus.BLOCKED);
+        relationRepository.save(relation2);
+        return relationRepository.save(relation.get());
     }
 }
