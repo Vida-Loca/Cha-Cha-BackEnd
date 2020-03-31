@@ -1,5 +1,8 @@
 package com.vidaloca.skibidi.friendship.service;
 
+import com.sun.xml.bind.v2.util.CollisionCheckStack;
+import com.vidaloca.skibidi.event.model.Event;
+import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
 import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,6 +49,15 @@ public class FriendshipServiceImpl implements FriendshipService {
         return relationRepository.findAllByUser(user).stream().filter(r -> r.getRelationStatus().equals(RelationStatus.FRIENDS)).
                 map(f -> userRepository.findById(f.getRelatedUserId()).orElseThrow(() -> new UserNotFoundException(f.getRelatedUserId())))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Event> findAllFriendsEvents(Long userId) {
+        List<User> friends = findAllUserFriends(userId);
+        List<EventUser> eventUserList = new ArrayList<>();
+        friends.forEach(u -> eventUserList.addAll(u.getEventUsers().stream().filter(EventUser::isAdmin).collect(Collectors.toList())));
+        return eventUserList.stream().map(EventUser::getEvent).collect(Collectors.toList());
+
     }
 
     @Override

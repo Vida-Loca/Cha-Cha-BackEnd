@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.friendship.service;
 
+import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.friendship.model.Invitation;
@@ -13,6 +14,8 @@ public interface FriendshipService {
     List<User> findAllByUsernameContains(String regex);
 
     List<User> findAllUserFriends(Long userId);
+
+    List<Event> findAllFriendsEvents(Long userId);
 
     List<Invitation> findAllUserInvitations(Long userId);
 

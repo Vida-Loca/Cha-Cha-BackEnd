@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.friendship.controller;
 
+import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.friendship.model.Invitation;
@@ -36,6 +37,10 @@ public class FriendshipController {
     public List<User> getAllUserFriends(@PathVariable Long userId) {
         return friendshipService.findAllUserFriends(userId);
     }
+    @GetMapping("/user/friends/events")
+    public List<Event> getAllUserFriendsEvents(HttpServletRequest request){
+        return friendshipService.findAllFriendsEvents(CurrentUser.currentUserId(request));
+    }
 
     @GetMapping("/user/invitations")
     public List<Invitation> getAllInvitations(HttpServletRequest request) {
@@ -61,6 +66,7 @@ public class FriendshipController {
     public Invitation rejectInvitation(HttpServletRequest request, @RequestParam Long invitationId) {
         return friendshipService.rejectInvitation(invitationId, CurrentUser.currentUserId(request));
     }
+
 
     @PutMapping("/user/remove")
     public Relation removeFriend(HttpServletRequest request, @RequestParam Long userToRemoveId) {
