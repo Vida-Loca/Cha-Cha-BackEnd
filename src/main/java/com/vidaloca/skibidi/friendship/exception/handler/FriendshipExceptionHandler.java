@@ -1,9 +1,9 @@
 package com.vidaloca.skibidi.friendship.exception.handler;
 
+import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
+import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
+import com.vidaloca.skibidi.friendship.exception.RelationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
-import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
-import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
-import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,25 +13,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class FriendshipExceptionHandler {
 
     @ExceptionHandler(UserNotAllowedException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String getUsernameNotFoundException(UserNotAllowedException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String getUserNotFoundException(UserNotFoundException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(EmailNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String getEmailNotFoundException(EmailNotFoundException ex) {
-        return ex.getMessage();
-    }
-    @ExceptionHandler(PasswordsNotMatchesException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String getPasswordNotMatchesException(PasswordsNotMatchesException ex){
+    public String getUserNotAllowedException(UserNotAllowedException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(InvitationExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String getInvitationExistsException(InvitationExistsException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(InvitationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String getInvitationNotFoundException(InvitationNotFoundException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(RelationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String getRelationNotFoundException(RelationNotFoundException ex){
         return ex.getMessage();
     }
 }

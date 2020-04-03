@@ -5,6 +5,7 @@ import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
 import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
+import com.vidaloca.skibidi.friendship.exception.RelationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.friendship.model.Relation;
@@ -118,7 +119,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public Invitation rejectInvitation(Long invitationId, Long invitedId) {
         Invitation invitation = invitationRepository.findById(invitationId).orElseThrow(() -> new InvitationNotFoundException(invitationId));
-        if (!invitation.getInvitor().getId().equals(invitedId))
+        if (invitation.getInvitor().getId().equals(invitedId))
             throw new UserNotAllowedException(invitedId, "reject");
         invitation.setInvitationStatus(InvitationStatus.REJECTED);
         return invitationRepository.save(invitation);
@@ -127,35 +128,32 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public Relation removeFriend(Long userId, Long userToRemoveId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        Optional<Relation> relation = relationRepository.findByUserAndRelatedUserId(user, userToRemoveId);
-        if (relation.isEmpty())
-            throw new InvitationNotFoundException(userId, userToRemoveId);
-        if (relation.get().getRelationStatus() != RelationStatus.FRIENDS)
+        Relation relation = relationRepository.findByUserAndRelatedUserId(user, userToRemoveId).orElseThrow(()-> new RelationNotFoundException(userId,userToRemoveId));
+        if (relation.getRelationStatus() != RelationStatus.FRIENDS)
             throw new UserNotAllowedException(user.getId(), "remove");
         User userToRemove = userRepository.findById(userToRemoveId).orElseThrow(() -> new UserNotFoundException(userToRemoveId));
-        Invitation invitation = invitationRepository.findByInvitorAndInvited(user, userToRemove).
-                orElse(invitationRepository.findByInvitorAndInvited(userToRemove, user).orElse(null));
+        Invitation invitation = invitationRepository.findByInvitorAndInvited(user,userToRemove).orElse(
+                invitationRepository.findByInvitorAndInvited(userToRemove,user).orElse(null)
+        );
         if (invitation != null)
             invitationRepository.delete(invitation);
-        relation.get().setRelationStatus(RelationStatus.REMOVED);
-        Relation relation2 = relationRepository.findByUserAndRelatedUserId(userRepository.findById(userToRemoveId).orElseThrow(() -> new UserNotFoundException(userToRemoveId)), user.getId()).get();
+        relation.setRelationStatus(RelationStatus.REMOVED);
+        Relation relation2 = relationRepository.findByUserAndRelatedUserId(userToRemove, user.getId()).orElseThrow(()-> new RelationNotFoundException(userId,userToRemoveId));
         relation2.setRelationStatus(RelationStatus.REMOVED);
         relationRepository.save(relation2);
-        return relationRepository.save(relation.get());
+        return relationRepository.save(relation);
     }
 
     @Override
     public Relation blockUser(Long userId, Long userToBlockId)  {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        Optional<Relation> relation = relationRepository.findByUserAndRelatedUserId(user, userToBlockId);
-        if (relation.isEmpty())
-            throw new InvitationNotFoundException(userId, userToBlockId);
-        if (relation.get().getRelationStatus() != RelationStatus.FRIENDS)
+        Relation relation = relationRepository.findByUserAndRelatedUserId(user, userToBlockId).orElseThrow(()-> new RelationNotFoundException(userId,userToBlockId));
+        if (relation.getRelationStatus() == RelationStatus.BLOCKED)
             throw new UserNotAllowedException(user.getId(), "block");
-        relation.get().setRelationStatus(RelationStatus.BLOCKED);
-        Relation relation2 = relationRepository.findByUserAndRelatedUserId(userRepository.findById(userToBlockId).orElseThrow(() -> new UserNotFoundException(userToBlockId)), user.getId()).get();
+        relation.setRelationStatus(RelationStatus.BLOCKED);
+        Relation relation2 = relationRepository.findByUserAndRelatedUserId(userRepository.findById(userToBlockId).orElseThrow(() -> new UserNotFoundException(userToBlockId)), user.getId()).orElseThrow(()-> new RelationNotFoundException(userId,userToBlockId));
         relation2.setRelationStatus(RelationStatus.BLOCKED);
         relationRepository.save(relation2);
-        return relationRepository.save(relation.get());
+        return relationRepository.save(relation);
     }
 }
