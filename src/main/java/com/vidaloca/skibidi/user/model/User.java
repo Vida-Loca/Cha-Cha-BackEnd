@@ -6,6 +6,8 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vidaloca.skibidi.event.access.model.EventInvitation;
+import com.vidaloca.skibidi.event.access.model.EventRequest;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.friendship.model.Relation;
@@ -73,6 +75,12 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Relation> relations;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EventInvitation> eventInvitations;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EventRequest> eventRequests;
 
     @JsonIgnore
     private boolean enabled = false;
