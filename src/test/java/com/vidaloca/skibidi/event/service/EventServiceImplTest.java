@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.event.service;
 
 import com.vidaloca.skibidi.address.dto.AddressDto;
+import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
@@ -89,7 +90,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void findByNotExistingId() {
+    void findByIdNotFound() {
         Exception exception = assertThrows(EventNotFoundException.class, () ->
                 eventService.findById(EVENT_ID));
 
@@ -138,6 +139,66 @@ class EventServiceImplTest {
         assertEquals("EventName", returnedEvent.getName());
         verify(userRepository, times(1)).findById(anyLong());
         verify(eventRepository, times(1)).save(any(Event.class));
+        verifyNoMoreInteractions(eventRepository);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void addNewEventExistingAddress() {
+        //given
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
+        EventDto eventDto = new EventDto();
+        eventDto.setName("EventName");
+        eventDto.setStartTime(LocalDateTime.now());
+        eventDto.setAddress(addressDto);
+        eventDto.setAdditionalInformation("Info");
+
+        Address address = new Address();
+        address.setCountry(addressDto.getCountry());
+        address.setCity(addressDto.getCity());
+        address.setPostcode(addressDto.getPostcode());
+        address.setStreet(addressDto.getStreet());
+        address.setNumber(addressDto.getNumber());
+        Optional<Address> addressOptional = Optional.of(address);
+
+        event.setName(eventDto.getName());
+
+        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
+        when(addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumber(anyString(),
+                anyString(), anyString(), anyString(), anyString())).thenReturn(addressOptional);
+
+        //when
+        Event returnedEvent = eventService.addNewEvent(eventDto, 1L);
+
+        //then
+        assertEquals("EventName", returnedEvent.getName());
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(eventRepository, times(1)).save(any(Event.class));
+        verifyNoMoreInteractions(eventRepository);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void addNewEventUserNotFound() {
+        //given
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
+        EventDto eventDto = new EventDto();
+        eventDto.setName("EventName");
+        eventDto.setStartTime(LocalDateTime.now());
+        eventDto.setAddress(addressDto);
+        eventDto.setAdditionalInformation("Info");
+
+        //when
+        Exception exception = assertThrows(UserNotFoundException.class, () ->
+                eventService.addNewEvent(eventDto, 1L));
+
+        //then
+        assertEquals("User with id: " + 1L + " is not found", exception.getMessage());
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(eventRepository, times(0)).save(any(Event.class));
         verifyNoMoreInteractions(eventRepository);
         verifyNoMoreInteractions(userRepository);
     }
@@ -659,6 +720,38 @@ class EventServiceImplTest {
     }
 
     @Test
+    void deleteUserNotAdmin() {
+        //given
+        User userToDel = new User();
+        userToDel.setId(2L);
+        Optional<User> optional = Optional.of(userToDel);
+
+        EventUser eventUser1 = new EventUser();
+        eventUser1.setId(1L);
+        eventUser1.setUser(user);
+        eventUser1.setAdmin(false);
+        EventUser eventUser2 = new EventUser();
+        eventUser2.setId(2L);
+        eventUser2.setUser(userToDel);
+
+        when(userRepository.findById(1L)).thenReturn(optionalUser);
+        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
+        when(userRepository.findById(2L)).thenReturn(optional);
+        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
+
+        //when
+        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
+                eventService.deleteUser(event.getId(), userToDel.getId(), user.getId()));
+
+        //then
+        assertEquals("User with id: " + user.getId() + " is not admin of that event.", exception.getMessage());
+        verify(userRepository, times(2)).findById(anyLong());
+        verify(eventRepository, times(1)).findById(anyLong());
+        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+        verify(eventUserRepository, times(0)).deleteById(anyLong());
+    }
+
+    @Test
     void grantUserAdmin() throws UserIsNotAdminException {
         //given
         User userToGrant = new User();
@@ -690,6 +783,39 @@ class EventServiceImplTest {
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
         verify(eventUserRepository, times(1)).save(any(EventUser.class));
+    }
+
+    @Test
+    void grantUserAdminNotAdmin() {
+        //given
+        User userToGrant = new User();
+        userToGrant.setId(2L);
+        userToGrant.setUsername("grant");
+        Optional<User> optional = Optional.of(userToGrant);
+
+        EventUser eventUser1 = new EventUser();
+        eventUser1.setId(1L);
+        eventUser1.setUser(user);
+        eventUser1.setAdmin(false);
+        EventUser eventUser2 = new EventUser();
+        eventUser2.setId(2L);
+        eventUser2.setUser(userToGrant);
+
+        when(userRepository.findById(1L)).thenReturn(optionalUser);
+        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
+        when(userRepository.findById(2L)).thenReturn(optional);
+        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
+
+        //when
+        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
+                eventService.grantUserAdmin(event.getId(), userToGrant.getId(), user.getId()));
+
+        //then
+        assertEquals("User with id: " + user.getId() + " is not admin of that event.", exception.getMessage());
+        verify(userRepository, times(2)).findById(anyLong());
+        verify(eventRepository, times(1)).findById(anyLong());
+        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+        verify(eventUserRepository, times(0)).save(any(EventUser.class));
     }
 
     @Test
