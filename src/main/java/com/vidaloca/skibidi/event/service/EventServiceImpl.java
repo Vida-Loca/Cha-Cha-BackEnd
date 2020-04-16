@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService {
         return users;
     }
 
-
+//Only FOR ADMIN
     @Override
     public String deleteUser(Long eventId, Long userToDeleteId, Long userId) throws UserIsNotAdminException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
