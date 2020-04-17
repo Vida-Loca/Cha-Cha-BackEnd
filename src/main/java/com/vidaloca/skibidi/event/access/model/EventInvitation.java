@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.event.access.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.user.model.User;
@@ -9,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -31,4 +34,9 @@ public class EventInvitation {
     private User user;
 
     private AccessStatus accessStatus = AccessStatus.PROCESSING;
+
+    @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime invitationDate = LocalDateTime.now();
+
 }

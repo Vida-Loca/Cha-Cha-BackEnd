@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.event.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
@@ -53,9 +54,11 @@ public class Event {
 
     private String additionalInformation;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventInvitation> eventInvitations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventRequest> eventRequests;
 

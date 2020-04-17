@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.event.access.model.EventRequest;
 import com.vidaloca.skibidi.event.access.repository.EventRequestRepository;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
@@ -19,7 +20,9 @@ import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,12 +42,16 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public EventRequest sendRequestToEvent(Long currentUserId, Long eventId) {
+    public EventRequest sendRequestToEvent(Long currentUserId, Long eventId) throws UserActuallyInEventException {
         User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         if (!event.getEventType().canUserSendRequest())
             throw new UserCantRequestToEventException(currentUserId);
-        EventRequest eventRequest = EventRequest.builder().event(event).user(user).build();
+        Optional<EventUser> eu = eventUserRepository.findByUserAndEvent(user,event);
+        if (eu.isPresent())
+            throw new UserActuallyInEventException(user.getUsername());
+        EventRequest eventRequest = EventRequest.builder().event(event).user(user).accessStatus(AccessStatus.PROCESSING).
+                requestDate(LocalDateTime.now()).build();
         return eventRequestRepository.save(eventRequest);
     }
 

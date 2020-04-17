@@ -73,12 +73,15 @@ public class User {
     @OneToMany(mappedBy = "invited", cascade = CascadeType.ALL)
     private List<Invitation> invitationsToUser;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Relation> relations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EventInvitation> eventInvitations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EventRequest> eventRequests;
 

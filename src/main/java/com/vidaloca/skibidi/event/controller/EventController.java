@@ -7,6 +7,7 @@ import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
+import com.vidaloca.skibidi.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,10 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @GetMapping("/event/{eventId}/users")
+    public List<User> findAllEventUsers(@PathVariable Long eventId, HttpServletRequest request){
+        return eventService.findAllEventUsers(eventId,CurrentUser.currentUserId(request));
+    }
 
     @GetMapping("/event")
     public List<Event> getEvents() {
@@ -51,12 +56,6 @@ public class EventController {
     @DeleteMapping("/event/{eventId}")
     public String deleteById(@PathVariable Long eventId, HttpServletRequest request) throws UserIsNotAdminException {
         return eventService.deleteEvent(eventId, CurrentUser.currentUserId(request));
-    }
-
-    @CrossOrigin
-    @PostMapping("/event/{eventId}/user")
-    public EventUser addUserToEvent(@RequestParam("username") String username, @PathVariable Long eventId, HttpServletRequest request) throws UserActuallyInEventException, UserIsNotAdminException {
-        return eventService.addUserToEvent(username, eventId, CurrentUser.currentUserId(request));
     }
 
     @DeleteMapping("/event/{eventId}/user")

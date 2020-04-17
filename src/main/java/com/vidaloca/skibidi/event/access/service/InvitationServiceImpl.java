@@ -7,6 +7,7 @@ import com.vidaloca.skibidi.event.access.model.EventInvitation;
 import com.vidaloca.skibidi.event.access.repository.EventInvitationRepository;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
@@ -19,7 +20,9 @@ import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,14 +44,18 @@ public class InvitationServiceImpl implements InvitationService {
 
 
     @Override
-    public EventInvitation inviteToEvent(Long eventId, Long userId, Long currentUserId) {
+    public EventInvitation inviteToEvent(Long eventId, Long userId, Long currentUserId) throws UserActuallyInEventException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         User currentUser = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         EventUser eu = eventUserRepository.findByUserAndEvent(currentUser,event).orElseThrow(()-> new UserIsNotInEventException(currentUserId,eventId));
+        Optional<EventUser> eu2 = eventUserRepository.findByUserAndEvent(user,event);
+        if (eu2.isPresent())
+            throw new UserActuallyInEventException(user.getUsername());
         if (eu.isAdmin() || eu.getEvent().getEventType().canUserInvite())
             return eventInvitationRepository.save(
-                    EventInvitation.builder().event(event).user(user).build());
+                    EventInvitation.builder().event(event).user(user).accessStatus(AccessStatus.PROCESSING).
+                            invitationDate(LocalDateTime.now()).build());
         throw new UserCantInviteToEventException(currentUserId);
     }
 
