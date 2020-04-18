@@ -69,20 +69,20 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "invitor", cascade = CascadeType.ALL)
-    private List<Invitation> invitationsFromUser;
+    private List<Invitation> invitationsFromUser = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "invited", cascade = CascadeType.ALL)
-    private List<Invitation> invitationsToUser;
+    private List<Invitation> invitationsToUser = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Relation> relations;
+    private List<Relation> relations = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EventInvitation> eventInvitations;
+    private List<EventInvitation> eventInvitations = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EventRequest> eventRequests;
+    private List<EventRequest> eventRequests = new ArrayList<>();
 
     @JsonIgnore
     private boolean enabled = false;
