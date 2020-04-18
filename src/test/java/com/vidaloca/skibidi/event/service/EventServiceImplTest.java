@@ -335,7 +335,7 @@ class EventServiceImplTest {
         assertEquals("User with id: " + userId + " is not found", exception.getMessage());
     }
 
-    @Test
+  /*  @Test
     void addUserToEvent() throws UserActuallyInEventException, UserIsNotAdminException {
         //given
         User admin = new User();
@@ -373,8 +373,8 @@ class EventServiceImplTest {
         verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
         verify(eventUserRepository, times(1)).save(any(EventUser.class));
     }
-
-    @Test
+*/
+   /* @Test
     void addUserToEventUserAlreadyInEvent() {
         //given
         user.setId(2L);
@@ -413,7 +413,8 @@ class EventServiceImplTest {
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
         verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
+    }*/
+/*
 
     @Test
     void addUserToEventNotAdmin() {
@@ -549,6 +550,7 @@ class EventServiceImplTest {
         verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
         verify(eventUserRepository, times(0)).save(any(EventUser.class));
     }
+*/
 
     @Test
     void deleteEvent() throws UserIsNotAdminException {
@@ -657,7 +659,7 @@ class EventServiceImplTest {
         verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
     }
 
-    @Test
+   /* @Test
     void findAllEventUsers() {
         //given
         User u1 = new User();
@@ -686,7 +688,7 @@ class EventServiceImplTest {
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(1)).findAllByEvent(any(Event.class));
     }
-
+*/
     @Test
     void deleteUser() throws UserIsNotAdminException {
         //given

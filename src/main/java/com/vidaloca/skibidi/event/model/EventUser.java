@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.user.model.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "event_user")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventUser {

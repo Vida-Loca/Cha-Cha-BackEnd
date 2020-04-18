@@ -19,11 +19,9 @@ public interface EventService {
 
     Event updateEvent(EventDto eventDto, Long eventId, Long userId) throws UserIsNotAdminException;
 
-    EventUser addUserToEvent(String username, Long eventId, Long userId) throws UserIsNotAdminException, UserActuallyInEventException;
-
     String deleteEvent(Long id, Long user_id) throws UserIsNotAdminException;
 
-    List<User> findAllEventUsers(Long eventId);
+    List<User> findAllEventUsers(Long eventId, Long currentUserId);
 
     String deleteUser(Long eventId, Long userToDeleteId, Long userId) throws UserIsNotAdminException;
 

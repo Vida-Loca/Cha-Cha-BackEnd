@@ -11,6 +11,7 @@ import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.model.*;
+import com.vidaloca.skibidi.event.type.EventType;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.exception.UsernameNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -68,21 +71,6 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(getEvent(eventDto, event));
     }
 
-
-    @Override
-    public EventUser addUserToEvent(String username, Long eventId, Long userId) throws UserIsNotAdminException, UserActuallyInEventException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        User addingUser = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException(username));
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        if (!eu.isAdmin())
-            throw new UserIsNotAdminException(userId);
-        if (eventUserRepository.findByUserAndEvent(addingUser,event).isPresent())
-            throw new UserActuallyInEventException(addingUser.getUsername());
-        EventUser euAdd = new EventUser(addingUser, event, false);
-        return eventUserRepository.save(euAdd);
-    }
-
     @Override
     public String deleteEvent(Long eventId, Long userId) throws UserIsNotAdminException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -95,18 +83,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<User> findAllEventUsers(Long eventId) {
+    public List<User> findAllEventUsers(Long eventId, Long currentUserId) {
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        if (event == null)
+        List<EventUser> eventUsers = eventUserRepository.findAllByEvent(event);
+        Optional<EventUser> eu = eventUserRepository.findByUserAndEvent(user,event);
+        if (event.getEventType()!= EventType.PUBLIC && eu.isEmpty() )
             return null;
-        List<EventUser> event_users = eventUserRepository.findAllByEvent(event);
-        List<User> users = new ArrayList<>();
-        for (EventUser eu : event_users)
-            users.add(eu.getUser());
-        return users;
+        return eventUsers.stream().map(EventUser::getUser).collect(Collectors.toList());
     }
 
-
+//Only FOR ADMIN
     @Override
     public String deleteUser(Long eventId, Long userToDeleteId, Long userId) throws UserIsNotAdminException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -159,6 +146,7 @@ public class EventServiceImpl implements EventService {
         event.setAddress(getAddress(eventDto.getAddress()));
         event.setStartTime(eventDto.getStartTime());
         event.setAdditionalInformation(eventDto.getAdditionalInformation());
+        event.setEventType(eventDto.getEventType());
         return event;
     }
 }
