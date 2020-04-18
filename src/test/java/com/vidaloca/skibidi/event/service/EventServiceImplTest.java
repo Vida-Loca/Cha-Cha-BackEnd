@@ -5,7 +5,6 @@ import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
-import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.model.Event;
@@ -13,7 +12,6 @@ import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
-import com.vidaloca.skibidi.user.exception.UsernameNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -335,222 +333,220 @@ class EventServiceImplTest {
         assertEquals("User with id: " + userId + " is not found", exception.getMessage());
     }
 
-  /*  @Test
-    void addUserToEvent() throws UserActuallyInEventException, UserIsNotAdminException {
-        //given
-        User admin = new User();
-        admin.setId(1L);
-        Optional<User> optionalAdmin = Optional.of(admin);
-
-        user.setUsername("username");
-
-        EventUser adminEventUser = new EventUser();
-        adminEventUser.setId(1L);
-        adminEventUser.setUser(admin);
-        adminEventUser.setAdmin(true);
-        Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
-
-        EventUser addedEventUser = new EventUser();
-        addedEventUser.setId(2L);
-        addedEventUser.setUser(user);
-        addedEventUser.setAdmin(false);
-
-        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
-        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-        when(eventUserRepository.findByUserAndEvent(admin, event)).thenReturn(optionalAdminEventUser);
-        when(eventUserRepository.save(any(EventUser.class))).thenReturn(addedEventUser);
-
-        //when
-        EventUser returnedEventUser = eventService.addUserToEvent("username", 1L, 1L);
-
-        //then
-        assertNotNull(returnedEventUser);
-        assertEquals("username", returnedEventUser.getUser().getUsername());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(1)).save(any(EventUser.class));
-    }
-*/
-   /* @Test
-    void addUserToEventUserAlreadyInEvent() {
-        //given
-        user.setId(2L);
-        user.setUsername("username");
-
-        User admin = new User();
-        admin.setId(1L);
-        Optional<User> optionalAdmin = Optional.of(admin);
-
-        EventUser adminEventUser = new EventUser();
-        adminEventUser.setId(1L);
-        adminEventUser.setUser(admin);
-        adminEventUser.setAdmin(true);
-        Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
-
-        EventUser addedEventUser = new EventUser();
-        addedEventUser.setId(2L);
-        addedEventUser.setUser(user);
-        addedEventUser.setAdmin(false);
-        Optional<EventUser> optionalAddedEventUser = Optional.of(addedEventUser);
-
-        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
-        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-        when(eventUserRepository.findByUserAndEvent(admin, event)).thenReturn(optionalAdminEventUser);
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalAddedEventUser);
-
-        //when
-        Throwable exception = assertThrows(UserActuallyInEventException.class, () ->
-                eventService.addUserToEvent("username", 1L, 1L));
-
-        //then
-        assertEquals("User: username is actually in that event", exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }*/
-/*
-
-    @Test
-    void addUserToEventNotAdmin() {
-        //given
-        user.setId(2L);
-        user.setUsername("username");
-
-        User admin = new User();
-        admin.setId(1L);
-        Optional<User> optionalAdmin = Optional.of(admin);
-
-
-        EventUser adminEventUser = new EventUser();
-        adminEventUser.setId(1L);
-        adminEventUser.setUser(admin);
-        adminEventUser.setAdmin(false);
-        Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
-
-        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
-        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-        when(eventUserRepository.findByUserAndEvent(admin, event)).thenReturn(optionalAdminEventUser);
-
-        //when
-        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
-                eventService.addUserToEvent("username", 1L, 1L));
-
-        //then
-        assertEquals("User with id: " + admin.getId() + " is not admin of that event.", exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
-
-    @Test
-    void addUserToEventNotInEvent() {
-        //given
-        user.setId(2L);
-        user.setUsername("username");
-
-        User admin = new User();
-        admin.setId(1L);
-        Optional<User> optionalAdmin = Optional.of(admin);
-
-        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
-        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-
-        //when
-        Throwable exception = assertThrows(UserIsNotInEventException.class, () ->
-                eventService.addUserToEvent("username", 1L, 1L));
-
-        //then
-        assertEquals("User with id: " + admin.getId() + " is not in event with id: " + event.getId() + " and cannot make this action", exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
-
-    @Test
-    void addUserToEventNotExistingEvent() {
-        //given
-        user.setId(2L);
-        user.setUsername("username");
-
-        User admin = new User();
-        admin.setId(1L);
-        Optional<User> optionalAdmin = Optional.of(admin);
-
-        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
-        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
-
-        //when
-        Throwable exception = assertThrows(EventNotFoundException.class, () ->
-                eventService.addUserToEvent("username", 1L, 1L));
-
-        //then
-        assertEquals("Event with id: " + event.getId() + " not found", exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
-
-    @Test
-    void addUserToEventNotExistingUsername() {
-        //given
-        user.setId(2L);
-        user.setUsername("username");
-
-        User admin = new User();
-        admin.setId(1L);
-        Optional<User> optionalAdmin = Optional.of(admin);
-
-        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
-
-        //when
-        Throwable exception = assertThrows(UsernameNotFoundException.class, () ->
-                eventService.addUserToEvent("username", 1L, 1L));
-
-        //then
-        assertEquals("User with username: " + user.getUsername() + " is not found", exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(eventRepository, times(0)).findById(anyLong());
-        verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
-
-    @Test
-    void addUserToEventNotExistingUser() {
-        //given
-        user.setId(2L);
-        user.setUsername("username");
-
-        User admin = new User();
-        admin.setId(1L);
-
-        //when
-        Throwable exception = assertThrows(UserNotFoundException.class, () ->
-                eventService.addUserToEvent("username", 1L, 1L));
-
-        //then
-        assertEquals("User with id: " + admin.getId() + " is not found", exception.getMessage());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(0)).findByUsername(anyString());
-        verify(eventRepository, times(0)).findById(anyLong());
-        verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
-*/
+//    @Test
+//    void addUserToEvent() throws UserActuallyInEventException, UserIsNotAdminException {
+//        //given
+//        User admin = new User();
+//        admin.setId(1L);
+//        Optional<User> optionalAdmin = Optional.of(admin);
+//
+//        user.setUsername("username");
+//
+//        EventUser adminEventUser = new EventUser();
+//        adminEventUser.setId(1L);
+//        adminEventUser.setUser(admin);
+//        adminEventUser.setAdmin(true);
+//        Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
+//
+//        EventUser addedEventUser = new EventUser();
+//        addedEventUser.setId(2L);
+//        addedEventUser.setUser(user);
+//        addedEventUser.setAdmin(false);
+//
+//        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
+//        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
+//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+//        when(eventUserRepository.findByUserAndEvent(admin, event)).thenReturn(optionalAdminEventUser);
+//        when(eventUserRepository.save(any(EventUser.class))).thenReturn(addedEventUser);
+//
+//        //when
+//        EventUser returnedEventUser = eventService.addUserToEvent("username", 1L, 1L);
+//
+//        //then
+//        assertNotNull(returnedEventUser);
+//        assertEquals("username", returnedEventUser.getUser().getUsername());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(1)).findByUsername(anyString());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(1)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void addUserToEventUserAlreadyInEvent() {
+//        //given
+//        user.setId(2L);
+//        user.setUsername("username");
+//
+//        User admin = new User();
+//        admin.setId(1L);
+//        Optional<User> optionalAdmin = Optional.of(admin);
+//
+//        EventUser adminEventUser = new EventUser();
+//        adminEventUser.setId(1L);
+//        adminEventUser.setUser(admin);
+//        adminEventUser.setAdmin(true);
+//        Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
+//
+//        EventUser addedEventUser = new EventUser();
+//        addedEventUser.setId(2L);
+//        addedEventUser.setUser(user);
+//        addedEventUser.setAdmin(false);
+//        Optional<EventUser> optionalAddedEventUser = Optional.of(addedEventUser);
+//
+//        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
+//        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
+//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+//        when(eventUserRepository.findByUserAndEvent(admin, event)).thenReturn(optionalAdminEventUser);
+//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalAddedEventUser);
+//
+//        //when
+//        Throwable exception = assertThrows(UserActuallyInEventException.class, () ->
+//                eventService.addUserToEvent("username", 1L, 1L));
+//
+//        //then
+//        assertEquals("User: username is actually in that event", exception.getMessage());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(1)).findByUsername(anyString());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void addUserToEventNotAdmin() {
+//        //given
+//        user.setId(2L);
+//        user.setUsername("username");
+//
+//        User admin = new User();
+//        admin.setId(1L);
+//        Optional<User> optionalAdmin = Optional.of(admin);
+//
+//
+//        EventUser adminEventUser = new EventUser();
+//        adminEventUser.setId(1L);
+//        adminEventUser.setUser(admin);
+//        adminEventUser.setAdmin(false);
+//        Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
+//
+//        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
+//        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
+//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+//        when(eventUserRepository.findByUserAndEvent(admin, event)).thenReturn(optionalAdminEventUser);
+//
+//        //when
+//        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
+//                eventService.addUserToEvent("username", 1L, 1L));
+//
+//        //then
+//        assertEquals("User with id: " + admin.getId() + " is not admin of that event.", exception.getMessage());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(1)).findByUsername(anyString());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void addUserToEventNotInEvent() {
+//        //given
+//        user.setId(2L);
+//        user.setUsername("username");
+//
+//        User admin = new User();
+//        admin.setId(1L);
+//        Optional<User> optionalAdmin = Optional.of(admin);
+//
+//        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
+//        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
+//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+//
+//        //when
+//        Throwable exception = assertThrows(UserIsNotInEventException.class, () ->
+//                eventService.addUserToEvent("username", 1L, 1L));
+//
+//        //then
+//        assertEquals("User with id: " + admin.getId() + " is not in event with id: " + event.getId() + " and cannot make this action", exception.getMessage());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(1)).findByUsername(anyString());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void addUserToEventNotExistingEvent() {
+//        //given
+//        user.setId(2L);
+//        user.setUsername("username");
+//
+//        User admin = new User();
+//        admin.setId(1L);
+//        Optional<User> optionalAdmin = Optional.of(admin);
+//
+//        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
+//        when(userRepository.findByUsername(anyString())).thenReturn(optionalUser);
+//
+//        //when
+//        Throwable exception = assertThrows(EventNotFoundException.class, () ->
+//                eventService.addUserToEvent("username", 1L, 1L));
+//
+//        //then
+//        assertEquals("Event with id: " + event.getId() + " not found", exception.getMessage());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(1)).findByUsername(anyString());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void addUserToEventNotExistingUsername() {
+//        //given
+//        user.setId(2L);
+//        user.setUsername("username");
+//
+//        User admin = new User();
+//        admin.setId(1L);
+//        Optional<User> optionalAdmin = Optional.of(admin);
+//
+//        when(userRepository.findById(anyLong())).thenReturn(optionalAdmin);
+//
+//        //when
+//        Throwable exception = assertThrows(UsernameNotFoundException.class, () ->
+//                eventService.addUserToEvent("username", 1L, 1L));
+//
+//        //then
+//        assertEquals("User with username: " + user.getUsername() + " is not found", exception.getMessage());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(1)).findByUsername(anyString());
+//        verify(eventRepository, times(0)).findById(anyLong());
+//        verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void addUserToEventNotExistingUser() {
+//        //given
+//        user.setId(2L);
+//        user.setUsername("username");
+//
+//        User admin = new User();
+//        admin.setId(1L);
+//
+//        //when
+//        Throwable exception = assertThrows(UserNotFoundException.class, () ->
+//                eventService.addUserToEvent("username", 1L, 1L));
+//
+//        //then
+//        assertEquals("User with id: " + admin.getId() + " is not found", exception.getMessage());
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(userRepository, times(0)).findByUsername(anyString());
+//        verify(eventRepository, times(0)).findById(anyLong());
+//        verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
 
     @Test
     void deleteEvent() throws UserIsNotAdminException {
@@ -659,36 +655,36 @@ class EventServiceImplTest {
         verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));
     }
 
-   /* @Test
-    void findAllEventUsers() {
-        //given
-        User u1 = new User();
-        User u2 = new User();
+//    @Test
+//    void findAllEventUsers() {
+//        //given
+//        User u1 = new User();
+//        User u2 = new User();
+//
+//        EventUser eventUser1 = new EventUser();
+//        eventUser1.setId(1L);
+//        eventUser1.setUser(u1);
+//        EventUser eventUser2 = new EventUser();
+//        eventUser2.setId(2L);
+//        eventUser2.setUser(u2);
+//
+//        List<EventUser> eventUsers = new ArrayList<>();
+//        eventUsers.add(eventUser1);
+//        eventUsers.add(eventUser2);
+//
+//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+//        when(eventUserRepository.findAllByEvent(event)).thenReturn(eventUsers);
+//
+//        //when
+//        List<User> returnedList = eventService.findAllEventUsers(event.getId());
+//
+//        //then
+//        assertNotNull(returnedList);
+//        assertEquals(2, returnedList.size());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(1)).findAllByEvent(any(Event.class));
+//    }
 
-        EventUser eventUser1 = new EventUser();
-        eventUser1.setId(1L);
-        eventUser1.setUser(u1);
-        EventUser eventUser2 = new EventUser();
-        eventUser2.setId(2L);
-        eventUser2.setUser(u2);
-
-        List<EventUser> eventUsers = new ArrayList<>();
-        eventUsers.add(eventUser1);
-        eventUsers.add(eventUser2);
-
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-        when(eventUserRepository.findAllByEvent(event)).thenReturn(eventUsers);
-
-        //when
-        List<User> returnedList = eventService.findAllEventUsers(event.getId());
-
-        //then
-        assertNotNull(returnedList);
-        assertEquals(2, returnedList.size());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(1)).findAllByEvent(any(Event.class));
-    }
-*/
     @Test
     void deleteUser() throws UserIsNotAdminException {
         //given
