@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.event.access.controller;
 
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
 import com.vidaloca.skibidi.event.access.service.InvitationService;
+import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class InvitationController {
     }
 
     @PostMapping("/event/{eventId}/invite")
-    public EventInvitation inviteUser(@PathVariable Long eventId, @RequestParam Long userId, HttpServletRequest request){
+    public EventInvitation inviteUser(@PathVariable Long eventId, @RequestParam Long userId, HttpServletRequest request) throws UserActuallyInEventException {
         return invitationService.inviteToEvent(eventId,userId, CurrentUser.currentUserId(request));
     }
 
