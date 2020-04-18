@@ -1,9 +1,5 @@
 package com.vidaloca.skibidi.user.model;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
@@ -12,10 +8,16 @@ import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.friendship.model.Relation;
 import com.vidaloca.skibidi.user.registration.validation.ValidEmail;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,7 +40,7 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event",cascade = CascadeType.ALL)
-    private List<EventUser> eventUsers;
+    private List<EventUser> eventUsers = new ArrayList<>();
 
 
     @Column(unique = true)
@@ -67,23 +69,23 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "invitor", cascade = CascadeType.ALL)
-    private List<Invitation> invitationsFromUser;
+    private List<Invitation> invitationsFromUser = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "invited", cascade = CascadeType.ALL)
-    private List<Invitation> invitationsToUser;
+    private List<Invitation> invitationsToUser = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Relation> relations;
+    private List<Relation> relations = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EventInvitation> eventInvitations;
+    private List<EventInvitation> eventInvitations = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EventRequest> eventRequests;
+    private List<EventRequest> eventRequests = new ArrayList<>();
 
     @JsonIgnore
     private boolean enabled = false;

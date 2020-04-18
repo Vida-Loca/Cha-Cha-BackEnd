@@ -1,6 +1,5 @@
 package com.vidaloca.skibidi.friendship.service;
 
-import com.sun.xml.bind.v2.util.CollisionCheckStack;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
@@ -56,7 +55,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public List<Event> findAllFriendsEvents(Long userId) {
         List<User> friends = findAllUserFriends(userId);
         List<EventUser> eventUserList = new ArrayList<>();
-        friends.forEach(u -> eventUserList.addAll(u.getEventUsers().stream().filter(EventUser::isAdmin).collect(Collectors.toList())));
+        friends.forEach(u -> eventUserList.addAll(u.getEventUsers().stream().collect(Collectors.toList())));
         return eventUserList.stream().map(EventUser::getEvent).collect(Collectors.toList());
 
     }
