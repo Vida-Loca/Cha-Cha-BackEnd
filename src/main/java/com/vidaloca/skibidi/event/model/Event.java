@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
 import com.vidaloca.skibidi.event.access.model.EventRequest;
-import com.vidaloca.skibidi.event.access.status.AccessStatus;
 import com.vidaloca.skibidi.event.type.EventType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +17,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,7 +41,7 @@ public class Event {
 
     @JsonBackReference
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventUser> eventUsers;
+    private List<EventUser> eventUsers = new ArrayList<>();
 
 
     @NotNull(message = "Name is obligatory")
@@ -56,11 +56,11 @@ public class Event {
 
     @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventInvitation> eventInvitations;
+    private List<EventInvitation> eventInvitations = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventRequest> eventRequests;
+    private List<EventRequest> eventRequests = new ArrayList<>();
 
     @NotNull
     @Enumerated(EnumType.STRING)
