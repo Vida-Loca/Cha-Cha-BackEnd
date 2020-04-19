@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
         EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         eu.getProducts().add(product);
         eventUserRepository.save(eu);
-        return product;
+        return productRepository.save(product);
     }
 
     @Override

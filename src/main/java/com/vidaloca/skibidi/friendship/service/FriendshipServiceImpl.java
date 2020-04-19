@@ -46,16 +46,20 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public List<User> findAllUserFriends(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        return relationRepository.findAllByUser(user).stream().filter(r -> r.getRelationStatus().equals(RelationStatus.FRIENDS)).
-                map(f -> userRepository.findById(f.getRelatedUserId()).orElseThrow(() -> new UserNotFoundException(f.getRelatedUserId())))
-                .collect(Collectors.toList());
+        List<Relation> relations = user.getRelations();
+        List<User> friends = new ArrayList<>();
+        for (Relation r: relations
+             ) {
+            friends.add(userRepository.findById(r.getRelatedUserId()).orElseThrow(()-> new UserNotFoundException(r.getRelatedUserId())));
+        }
+        return friends;
     }
 
     @Override
     public List<Event> findAllFriendsEvents(Long userId) {
         List<User> friends = findAllUserFriends(userId);
         List<EventUser> eventUserList = new ArrayList<>();
-        friends.forEach(u -> eventUserList.addAll(u.getEventUsers().stream().collect(Collectors.toList())));
+        friends.forEach(u -> eventUserList.addAll(new ArrayList<EventUser>(u.getEventUsers())));
         return eventUserList.stream().map(EventUser::getEvent).collect(Collectors.toList());
 
     }

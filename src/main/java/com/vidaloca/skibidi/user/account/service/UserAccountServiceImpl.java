@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.user.account.service;
 
 import com.vidaloca.skibidi.event.model.Event;
+import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
@@ -47,9 +49,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public List<Event> getAllUserEvents(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        List<Event> events = new ArrayList<>();
-        user.getEventUsers().forEach(eu -> events.add(eu.getEvent()));
-        return events;
+        List<EventUser> events = user.getEventUsers();
+        return events.stream().map(EventUser::getEvent).collect(Collectors.toList());
     }
 
     @Override

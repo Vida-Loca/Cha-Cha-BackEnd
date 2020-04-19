@@ -103,7 +103,7 @@ public class EventServiceImpl implements EventService {
         if (!eu.isAdmin())
             throw new UserIsNotAdminException(userId);
         EventUser eu2 = eventUserRepository.findByUserAndEvent(userToDelete, event).orElseThrow(() -> new UserIsNotInEventException(userToDelete.getId(), event.getId()));
-        eventUserRepository.deleteById(eu.getId());
+        eventUserRepository.delete(eu2);
         return "Successfully removed user from event";
 
     }

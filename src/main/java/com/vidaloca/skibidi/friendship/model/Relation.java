@@ -20,6 +20,11 @@ import java.time.LocalDateTime;
 public class Relation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="relation_id")
+    private Long relationId;
+
+    @NotNull
     @Column(name = "friend_id")
     private Long relatedUserId;
 
