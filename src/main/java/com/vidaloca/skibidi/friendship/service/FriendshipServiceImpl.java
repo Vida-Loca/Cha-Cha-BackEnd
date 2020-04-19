@@ -48,8 +48,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         List<Relation> relations = user.getRelations();
         List<User> friends = new ArrayList<>();
-        for (Relation r: relations
-             ) {
+        for (Relation r: relations) {
             friends.add(userRepository.findById(r.getRelatedUserId()).orElseThrow(()-> new UserNotFoundException(r.getRelatedUserId())));
         }
         return friends;

@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,10 +51,7 @@ class EventServiceImplTest {
     final String EVENT_NAME = "Event Name";
 
     Event event;
-    Optional<Event> optionalEvent;
-
     User user;
-    Optional<User> optionalUser;
 
     @BeforeEach
     void setUp() {
@@ -63,18 +61,16 @@ class EventServiceImplTest {
 
         event = new Event();
         event.setId(1L);
-        optionalEvent = Optional.of(event);
 
         user = new User();
         user.setId(1L);
-        optionalUser = Optional.of(user);
     }
 
     @Test
     void findById() {
         //given
         event.setName(EVENT_NAME);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
 
         //when
         Event returnedEvent = eventService.findById(EVENT_ID);
@@ -127,7 +123,7 @@ class EventServiceImplTest {
 
         event.setName(eventDto.getName());
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(eventRepository.save(any(Event.class))).thenReturn(event);
 
         //when
@@ -162,7 +158,7 @@ class EventServiceImplTest {
 
         event.setName(eventDto.getName());
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(eventRepository.save(any(Event.class))).thenReturn(event);
         when(addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumber(anyString(),
                 anyString(), anyString(), anyString(), anyString())).thenReturn(addressOptional);
@@ -219,8 +215,8 @@ class EventServiceImplTest {
         eventUser.setAdmin(true);
         Optional<EventUser> optionalEventUser = Optional.of(eventUser);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.ofNullable(event));
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalEventUser);
         when(eventRepository.save(any(Event.class))).thenReturn(event);
 
@@ -253,8 +249,8 @@ class EventServiceImplTest {
         eventUser.setAdmin(false);
         Optional<EventUser> optionalEventUser = Optional.of(eventUser);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.ofNullable(event));
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalEventUser);
 
         //when
@@ -278,8 +274,8 @@ class EventServiceImplTest {
         eventDto.setAddress(addressDto);
         eventDto.setAdditionalInformation("Info");
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.ofNullable(event));
 
         //when
         Throwable exception = assertThrows(UserIsNotInEventException.class, () ->
@@ -302,7 +298,7 @@ class EventServiceImplTest {
         eventDto.setAddress(addressDto);
         eventDto.setAdditionalInformation("Info");
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
 
         //when
         Throwable exception = assertThrows(EventNotFoundException.class, () ->
@@ -557,8 +553,8 @@ class EventServiceImplTest {
         adminEventUser.setAdmin(true);
         Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.ofNullable(event));
         when(eventUserRepository.findByUserAndEvent(any(User.class), any(Event.class))).thenReturn(optionalAdminEventUser);
 
         //when
@@ -580,8 +576,8 @@ class EventServiceImplTest {
         adminEventUser.setAdmin(false);
         Optional<EventUser> optionalAdminEventUser = Optional.of(adminEventUser);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.ofNullable(event));
         when(eventUserRepository.findByUserAndEvent(any(User.class), any(Event.class))).thenReturn(optionalAdminEventUser);
 
         //when
@@ -602,8 +598,8 @@ class EventServiceImplTest {
         adminEventUser.setId(event.getId());
         adminEventUser.setUser(user);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.ofNullable(event));
 
         //when
         Throwable exception = assertThrows(UserIsNotInEventException.class, () ->
@@ -624,7 +620,7 @@ class EventServiceImplTest {
         adminEventUser.setId(event.getId());
         adminEventUser.setUser(user);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
 
         //when
         Throwable exception = assertThrows(EventNotFoundException.class, () ->
@@ -690,7 +686,6 @@ class EventServiceImplTest {
         //given
         User userToDel = new User();
         userToDel.setId(2L);
-        Optional<User> optional = Optional.of(userToDel);
 
         EventUser eventUser1 = new EventUser();
         eventUser1.setId(1L);
@@ -700,21 +695,21 @@ class EventServiceImplTest {
         eventUser2.setId(2L);
         eventUser2.setUser(userToDel);
 
-        when(userRepository.findById(1L)).thenReturn(optionalUser);
-        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
-        when(userRepository.findById(2L)).thenReturn(optional);
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(userToDel));
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
         when(eventUserRepository.findByUserAndEvent(userToDel, event)).thenReturn(Optional.of(eventUser2));
 
         //when
-        String result = eventService.deleteUser(event.getId(), userToDel.getId(), user.getId());
+        String result = eventService.deleteUser(1L, 2L, 1L);
 
         //then
         assertEquals("Successfully removed user from event", result);
-        verify(userRepository, times(2)).findById(anyLong());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(1)).deleteById(anyLong());
+        then(userRepository).should(times(2)).findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+        then(eventUserRepository).should().delete(any(EventUser.class));
     }
 
     @Test
@@ -732,8 +727,8 @@ class EventServiceImplTest {
         eventUser2.setId(2L);
         eventUser2.setUser(userToDel);
 
-        when(userRepository.findById(1L)).thenReturn(optionalUser);
-        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
         when(userRepository.findById(2L)).thenReturn(optional);
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
 
@@ -765,8 +760,8 @@ class EventServiceImplTest {
         eventUser2.setId(2L);
         eventUser2.setUser(userToGrant);
 
-        when(userRepository.findById(1L)).thenReturn(optionalUser);
-        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
         when(userRepository.findById(2L)).thenReturn(optional);
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
         when(eventUserRepository.findByUserAndEvent(userToGrant, event)).thenReturn(Optional.of(eventUser2));
@@ -799,8 +794,8 @@ class EventServiceImplTest {
         eventUser2.setId(2L);
         eventUser2.setUser(userToGrant);
 
-        when(userRepository.findById(1L)).thenReturn(optionalUser);
-        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
         when(userRepository.findById(2L)).thenReturn(optional);
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
 
@@ -824,8 +819,8 @@ class EventServiceImplTest {
         eventUser.setUser(user);
         eventUser.setAdmin(true);
 
-        when(userRepository.findById(1L)).thenReturn(optionalUser);
-        when(eventRepository.findById(1L)).thenReturn(optionalEvent);
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser));
 
         //when
