@@ -57,7 +57,7 @@ public class EventServiceImpl implements EventService {
         User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         Event event = new Event();
         EventUser eu = new EventUser(user, event, true);
-        event.setEventUsers(List.of(eu));
+        event.getEventUsers().add(eu);
         return eventRepository.save(getEvent(eventDto, event));
     }
 

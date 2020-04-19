@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.user.account.service;
 
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
 import com.vidaloca.skibidi.user.account.model.ResetPasswordToken;
@@ -37,6 +38,9 @@ class UserAccountServiceImplTest {
     @Mock
     ResetPasswordMail resetPasswordMail;
 
+    @Mock
+    EventUserRepository eventUserRepository;
+
     @InjectMocks
     UserAccountServiceImpl userAccountService;
 
@@ -46,7 +50,7 @@ class UserAccountServiceImplTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        userAccountService = new UserAccountServiceImpl(userRepository, passwordEncoder,
+        userAccountService = new UserAccountServiceImpl(userRepository, eventUserRepository, passwordEncoder,
                 resetPasswordTokenRepository, resetPasswordMail);
 
         user = new User();

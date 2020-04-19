@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.user.account.service;
 
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
@@ -29,16 +30,18 @@ import java.util.stream.Collectors;
 public class UserAccountServiceImpl implements UserAccountService {
 
     private UserRepository userRepository;
+    private EventUserRepository eventUserRepository;
     private PasswordEncoder passwordEncoder;
     private ResetPasswordTokenRepository resetPasswordTokenRepository;
     private ResetPasswordMail resetPasswordMail;
 
     @Autowired
-    public UserAccountServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ResetPasswordTokenRepository resetPasswordTokenRepository, ResetPasswordMail resetPasswordMail) {
+    public UserAccountServiceImpl(UserRepository userRepository, EventUserRepository eventUserRepository, PasswordEncoder passwordEncoder, ResetPasswordTokenRepository resetPasswordTokenRepository, ResetPasswordMail resetPasswordMail) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.resetPasswordTokenRepository = resetPasswordTokenRepository;
         this.resetPasswordMail = resetPasswordMail;
+        this.eventUserRepository = eventUserRepository;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public List<Event> getAllUserEvents(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        List<EventUser> events = user.getEventUsers();
+        List<EventUser> events = eventUserRepository.findAllByUser(user);
         return events.stream().map(EventUser::getEvent).collect(Collectors.toList());
     }
 
