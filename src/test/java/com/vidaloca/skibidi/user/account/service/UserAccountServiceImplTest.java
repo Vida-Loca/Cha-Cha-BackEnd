@@ -13,23 +13,28 @@ import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserAccountServiceImplTest {
 
-    @Mock
+    @Mock(lenient = true)
     UserRepository userRepository;
     @Mock
     PasswordEncoder passwordEncoder;
@@ -37,34 +42,28 @@ class UserAccountServiceImplTest {
     ResetPasswordTokenRepository resetPasswordTokenRepository;
     @Mock
     ResetPasswordMail resetPasswordMail;
-
     @Mock
     EventUserRepository eventUserRepository;
 
     @InjectMocks
-    UserAccountServiceImpl userAccountService;
+    UserAccountServiceImpl service;
 
     User user;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        userAccountService = new UserAccountServiceImpl(userRepository, eventUserRepository, passwordEncoder,
-                resetPasswordTokenRepository, resetPasswordMail);
-
         user = new User();
         user.setId(1L);
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
     }
 
     @Test
     void getCurrentUser() {
         //given
-        Optional<User> userOptional = Optional.of(user);
-        when(userRepository.findById(anyLong())).thenReturn(userOptional);
 
         //when
-        User returned = userAccountService.getCurrentUser(user.getId());
+        User returned = service.getCurrentUser(user.getId());
 
         //then
         assertEquals(user, returned);
@@ -75,27 +74,24 @@ class UserAccountServiceImplTest {
     void getAllUserEvents() {
         //given
         Event event = new Event();
+        Event event1 = new Event();
         EventUser eventUser = new EventUser();
         eventUser.setEvent(event);
-        eventUser.setUser(user);
-        Event event1 = new Event();
         EventUser eventUser1 = new EventUser();
         eventUser1.setEvent(event1);
-        eventUser1.setUser(user);
-        user.getEventUsers().add(eventUser);
-        user.getEventUsers().add(eventUser1);
-        Optional<User> userOptional = Optional.of(user);
+        List<EventUser> eventUserList = new ArrayList<>();
+        eventUserList.add(eventUser);
+        eventUserList.add(eventUser1);
 
-        when(userRepository.findById(anyLong())).thenReturn(userOptional);
+        given(eventUserRepository.findAllByUser(user)).willReturn(eventUserList);
 
         //when
-        List<Event> returned = userAccountService.getAllUserEvents(user.getId());
+        List<Event> returned = service.getAllUserEvents(1L);
 
         //then
         assertEquals(2, returned.size());
-        assertEquals(event, returned.get(0));
-        assertEquals(event1, returned.get(1));
-        verify(userRepository, times(1)).findById(anyLong());
+        then(userRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findAllByUser(any(User.class));
     }
 
     @Test
@@ -104,12 +100,9 @@ class UserAccountServiceImplTest {
         Role role = new Role();
         role.setName("ADMIN");
         user.setRole(role);
-        Optional<User> userOptional = Optional.of(user);
-
-        when(userRepository.findById(anyLong())).thenReturn(userOptional);
 
         //when
-        boolean result = userAccountService.isUserAdmin(user.getId());
+        boolean result = service.isUserAdmin(user.getId());
 
         //then
         assertTrue(result);
@@ -121,12 +114,9 @@ class UserAccountServiceImplTest {
         Role role = new Role();
         role.setName("USER");
         user.setRole(role);
-        Optional<User> userOptional = Optional.of(user);
-
-        when(userRepository.findById(anyLong())).thenReturn(userOptional);
 
         //when
-        boolean result = userAccountService.isUserAdmin(user.getId());
+        boolean result = service.isUserAdmin(user.getId());
 
         //then
         assertFalse(result);
@@ -135,13 +125,10 @@ class UserAccountServiceImplTest {
     @Test
     void changePhoto() {
         //given
-        Optional<User> userOptional = Optional.of(user);
-
-        when(userRepository.findById(anyLong())).thenReturn(userOptional);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         //when
-        User returned = userAccountService.changePhoto(user.getId(), "TestURL");
+        User returned = service.changePhoto(user.getId(), "TestURL");
 
         //then
         assertEquals("TestURL", returned.getPicUrl());
@@ -154,13 +141,12 @@ class UserAccountServiceImplTest {
         //given
         String email = "mail@test.com";
         user.setEmail(email);
-        Optional<User> userOptional = Optional.of(user);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(userRepository.findByEmail(anyString())).thenReturn(userOptional);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
         //when
-        String result = userAccountService.resetPassword(request, email);
+        String result = service.resetPassword(request, email);
 
         //then
         assertEquals("Check your mail box", result);
@@ -182,7 +168,7 @@ class UserAccountServiceImplTest {
         when(resetPasswordTokenRepository.findByToken(anyString())).thenReturn(passwordToken);
 
         //when
-        String result = userAccountService.resetPasswordConfirm(user.getId(), "TOKEN");
+        String result = service.resetPasswordConfirm(user.getId(), "TOKEN");
 
         //then
         assertNull(result);
@@ -197,14 +183,12 @@ class UserAccountServiceImplTest {
         passwordDto.setPassword("password");
         passwordDto.setMatchingPassword("password");
         user.setCanChangePass(true);
-        Optional<User> userOptional = Optional.of(user);
 
-        when(userRepository.findById(anyLong())).thenReturn(userOptional);
         when(passwordEncoder.encode(passwordDto.getPassword())).thenReturn("password");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         //when
-        User returned = userAccountService.changePassword(user.getId(), passwordDto);
+        User returned = service.changePassword(user.getId(), passwordDto);
 
         //then
         assertEquals("password", returned.getPassword());

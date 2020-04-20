@@ -93,11 +93,6 @@ class FriendshipServiceImplTest {
         invitor_relation.setRelatedUserId(2L);
         invitor.getRelations().add(invitor_relation);
 
-        List<Relation> relationList = new ArrayList<>();
-        relationList.add(invitor_relation);
-
-        given(relationRepository.findAllByUser(invitor)).willReturn(relationList);
-
         //when
         List<User> result = service.findAllUserFriends(1L);
 
@@ -105,7 +100,6 @@ class FriendshipServiceImplTest {
         assertEquals("INVITED", result.get(0).getUsername());
         assertEquals(1, result.size());
         then(userRepository).should(times(2)).findById(anyLong());
-        then(relationRepository).should().findAllByUser(any(User.class));
     }
 
     @Test
@@ -123,18 +117,12 @@ class FriendshipServiceImplTest {
         eventUsers.add(eventUser);
         invited.setEventUsers(eventUsers);
 
-        List<Relation> relationList = new ArrayList<>();
-        relationList.add(invitor_relation);
-
-        given(relationRepository.findAllByUser(invitor)).willReturn(relationList);
-
         //when
         List<Event> result = service.findAllFriendsEvents(1L);
 
         //then
         assertEquals("EVENT", result.get(0).getName());
         then(userRepository).should(times(2)).findById(anyLong());
-        then(relationRepository).should().findAllByUser(any(User.class));
     }
 
     @Test
