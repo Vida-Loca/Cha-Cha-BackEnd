@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -118,10 +119,10 @@ class FriendshipServiceImplTest {
         invited.setEventUsers(eventUsers);
 
         //when
-        List<Event> result = (List<Event>) service.findAllFriendsEvents(1L);
+        Set<Event> result = service.findAllFriendsEvents(1L);
 
         //then
-        assertEquals("EVENT", result.get(0).getName());
+        assertEquals(1, result.size());
         then(userRepository).should(times(2)).findById(anyLong());
     }
 

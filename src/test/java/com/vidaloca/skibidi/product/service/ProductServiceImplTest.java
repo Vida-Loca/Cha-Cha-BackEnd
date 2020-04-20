@@ -206,10 +206,10 @@ class ProductServiceImplTest {
         product.setName("Test");
         product.setPrice(price);
         product.setProductCategory(productCategory);
-        Optional<Product> productOptional = Optional.of(product);
+
 
         when(productRepository.findByNameAndPriceAndProductCategory_Name(anyString(),
-                any(BigDecimal.class), anyString())).thenReturn(productOptional);
+                any(BigDecimal.class), anyString())).thenReturn(Optional.of(product));
 
         //when
         Product returned = productService.addProduct(productDto);
@@ -220,8 +220,8 @@ class ProductServiceImplTest {
         assertEquals("Category", returned.getProductCategory().getName());
         verify(productRepository, times(1))
                 .findByNameAndPriceAndProductCategory_Name(anyString(), any(BigDecimal.class), anyString());
-        verify(productCategoryRepository, times(0)).findByName(anyString());
-        verify(productCategoryRepository, times(0)).save(any(ProductCategory.class));
+        verify(productCategoryRepository, times(1)).findByName(anyString());
+        verify(productCategoryRepository, times(1)).save(any(ProductCategory.class));
     }
 
     @Test
