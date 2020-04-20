@@ -43,10 +43,9 @@ public class AdminController {
 
     @GetMapping("/user/{id}")
     public User getUserById(@PathVariable Long id) {
-        User toReturn = userRepository.findById(id).orElseThrow(
+        return userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(id)
         );
-        return toReturn;
     }
 
     @PutMapping("/grantUserAdmin/{id}")

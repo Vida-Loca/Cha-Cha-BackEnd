@@ -118,7 +118,7 @@ class FriendshipServiceImplTest {
         invited.setEventUsers(eventUsers);
 
         //when
-        List<Event> result = service.findAllFriendsEvents(1L);
+        List<Event> result = (List<Event>) service.findAllFriendsEvents(1L);
 
         //then
         assertEquals("EVENT", result.get(0).getName());
