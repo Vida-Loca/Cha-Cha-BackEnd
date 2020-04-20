@@ -64,7 +64,7 @@ public class EventController {
     }
 
     @DeleteMapping("/event/{eventId}/user")
-    public String deleteUserFromEvent(@PathVariable Long eventId, @RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
+    public String deleteUserFromEvent(@PathVariable Long eventId, @RequestParam Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
         return eventService.deleteUser(eventId, userToDeleteId, CurrentUser.currentUserId(request));
     }
 
