@@ -4,10 +4,7 @@ import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
-import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
-import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
-import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
+import com.vidaloca.skibidi.event.exception.model.*;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.model.*;
@@ -131,6 +128,30 @@ public class EventServiceImpl implements EventService {
         return (eu.isAdmin());
     }
 
+    @Override
+    public boolean leaveEvent(Long eventId, Long currentUserId) {
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        int counter = 0;
+        for (EventUser e : event.getEventUsers()){
+           if(e.isAdmin())
+               counter++;
+        }
+        if (eu.isAdmin() && counter < 2 )
+            throw new LastAdminException();
+        eventUserRepository.delete(eu);
+        return true;
+    }
+
+    @Override
+    public List<User> findAllEventAdmins(Long eventId, Long currentUserId) {
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        return event.getEventUsers().stream().filter(EventUser::isAdmin).map(EventUser::getUser).collect(Collectors.toList());
+    }
+
     private Address getAddress(AddressDto addressDto) {
         Address address = addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumber(addressDto.getCountry(),
                 addressDto.getCity(), addressDto.getPostcode(), addressDto.getStreet(), addressDto.getNumber()).orElse(null);
@@ -147,6 +168,7 @@ public class EventServiceImpl implements EventService {
         event.setStartTime(eventDto.getStartTime());
         event.setAdditionalInformation(eventDto.getAdditionalInformation());
         event.setEventType(eventDto.getEventType());
+        event.setCurrency(eventDto.getCurrency());
         return event;
     }
 }

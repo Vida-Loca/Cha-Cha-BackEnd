@@ -20,4 +20,6 @@ public interface ProductService {
 
     Product addProduct (ProductDto productDto);
 
+    Product updateProduct(ProductDto productDto, Long eventId, Long productId, Long userId);
+
 }

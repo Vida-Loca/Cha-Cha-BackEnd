@@ -95,8 +95,28 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product addProduct(ProductDto productDto) {
         Optional<Product> temp = productRepository.findByNameAndPriceAndProductCategory_Name(productDto.getName(),productDto.getPrice(),productDto.getProductCategory());
-        return temp.orElseGet(() -> Product.ProductBuilder.aProduct().withName(productDto.getName()).withPrice(getPrice(productDto.getPrice())).
+        return temp.orElse(Product.ProductBuilder.aProduct().withName(productDto.getName()).withPrice(getPrice(productDto.getPrice())).
                 withProductCategory(getProductCategory(productDto.getProductCategory())).build());
+    }
+
+    @Override
+    public Product updateProduct(ProductDto productDto, Long eventId, Long productId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eventUser = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        Product product = null;
+        for (Product p : eventUser.getProducts()){
+            if (p.getId().equals(productId)){
+                product = p;
+                break;
+            }
+        }
+        if (product == null)
+            return null; //need exception
+        product.setProductCategory(getProductCategory(productDto.getProductCategory()));
+        product.setName(productDto.getName());
+        product.setPrice(getPrice(productDto.getPrice()));
+        return productRepository.save(product);
     }
 
     private BigDecimal getPrice(BigDecimal price) {

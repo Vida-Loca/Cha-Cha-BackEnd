@@ -58,6 +58,11 @@ public class EventController {
         return eventService.deleteEvent(eventId, CurrentUser.currentUserId(request));
     }
 
+    @DeleteMapping("/event/{eventId}/leave")
+    public boolean leaveEvent(@PathVariable Long eventId, HttpServletRequest request){
+        return true;
+    }
+
     @DeleteMapping("/event/{eventId}/user")
     public String deleteUserFromEvent(@PathVariable Long eventId, @RequestParam("userToDeleteId") Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
         return eventService.deleteUser(eventId, userToDeleteId, CurrentUser.currentUserId(request));
@@ -71,6 +76,10 @@ public class EventController {
     @GetMapping("/event/{eventId}/isAdmin")
     public boolean isAdmin(@PathVariable("eventId") Long eventId, HttpServletRequest request) {
         return eventService.isCurrentUserAdminOfEvent(eventId, CurrentUser.currentUserId(request));
+    }
+    @GetMapping("/event/{eventId}/admin")
+    public List<User> findAllEventAdmins(@PathVariable Long eventId, HttpServletRequest request){
+        return eventService.findAllEventAdmins(eventId,CurrentUser.currentUserId(request));
     }
 
 }

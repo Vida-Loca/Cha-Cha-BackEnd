@@ -15,4 +15,5 @@ public class EventDto {
     private AddressDto address;
     private String additionalInformation;
     private EventType eventType;
+    private String currency;
 }

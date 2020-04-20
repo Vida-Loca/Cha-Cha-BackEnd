@@ -28,4 +28,9 @@ public interface EventService {
     String grantUserAdmin(Long eventId, Long userToGrantId, Long user_id) throws UserIsNotAdminException;
 
     boolean isCurrentUserAdminOfEvent(Long eventId, Long currentUserId);
+
+    boolean leaveEvent(Long eventId, Long currentUserId);
+
+    List<User> findAllEventAdmins(Long eventId, Long currentUserId);
+
 }

@@ -54,6 +54,8 @@ public class Event {
 
     private String additionalInformation;
 
+    private String currency;
+
     @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventInvitation> eventInvitations = new ArrayList<>();
