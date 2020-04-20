@@ -1,11 +1,9 @@
 package com.vidaloca.skibidi.event.controller;
 
 import com.vidaloca.skibidi.event.dto.EventDto;
-import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
-import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.event.model.Event;
-import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.event.service.EventService;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import com.vidaloca.skibidi.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -28,8 +28,7 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,34 +103,74 @@ class EventControllerTest {
         mockMvc.perform(post("/event")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(eventDto)))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void updateEvent() throws Exception {
+        AddressDto addressDto = new AddressDto("Country", "City",
+                "Postcode", "Street", "Num");
+        EventDto eventDto = new EventDto();
+        eventDto.setName("NAME");
+        eventDto.setAddress(addressDto);
+        eventDto.setEventType(EventType.PUBLIC);
+        eventDto.setAdditionalInformation("INFO");
+
+        mockMvc.perform(put("/event/{eventId}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(eventDto)))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void updateEvent() {
+    void deleteById() throws Exception {
+        mockMvc.perform(delete("/event/{eventId}", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteById() {
+    void leaveEvent() throws Exception {
+        mockMvc.perform(delete("/event/{eventId}/leave", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteUserFromEvent() {
+    void deleteUserFromEvent() throws Exception {
+        mockMvc.perform(delete("/event/{eventId}/user", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("userToDeleteId", "2"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void grantAdminForUser() {
+    void grantAdminForUser() throws Exception {
+        mockMvc.perform(put("/event/{eventId}/user/{userId}/grantAdmin", 1, 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void isAdmin() {
+    void isAdmin() throws Exception {
+        mockMvc.perform(get("/event/{eventId}/isAdmin", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
     }
 
-    private String asJson(EventDto eventDto) throws JsonProcessingException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    @Test
+    void findAllEventAdmins() throws Exception {
+        mockMvc.perform(get("/event/{eventId}/admin", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    private String asJson(Object o) throws JsonProcessingException {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDateFormat(df);
-        String jsonString = mapper.writeValueAsString(eventDto);
+        String jsonString = mapper.writeValueAsString(o);
         mapper.setDateFormat(df);
         return jsonString;
     }
