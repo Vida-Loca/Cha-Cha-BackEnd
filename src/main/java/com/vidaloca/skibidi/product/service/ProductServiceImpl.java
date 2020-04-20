@@ -79,6 +79,11 @@ public class ProductServiceImpl implements ProductService {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eventUser = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         eventUser.getProducts().removeIf(p -> p.getId().equals(productToDeleteId));
+        if (eventUser.isAdmin()){
+            for (EventUser eu : event.getEventUsers()){
+                eu.getProducts().removeIf(p->p.getId().equals(productToDeleteId));
+            }
+        }
         eventUserRepository.save(eventUser);
         return "Successfully delete products";
 
@@ -112,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         if (product == null)
-            return null; //need exception
+            throw new ProductNotFoundException(productId);//need exception
         product.setProductCategory(getProductCategory(productDto.getProductCategory()));
         product.setName(productDto.getName());
         product.setPrice(getPrice(productDto.getPrice()));
