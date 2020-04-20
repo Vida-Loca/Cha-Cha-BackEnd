@@ -3,6 +3,7 @@ package com.vidaloca.skibidi.event.service;
 import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
+import com.vidaloca.skibidi.event.access.repository.EventInvitationRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
@@ -44,6 +45,9 @@ class EventServiceImplTest {
     @Mock
     AddressRepository addressRepository;
 
+    @Mock
+    EventInvitationRepository eventInvitationRepository;
+
     @InjectMocks
     EventServiceImpl eventService;
 
@@ -57,7 +61,7 @@ class EventServiceImplTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        eventService = new EventServiceImpl(eventRepository, userRepository, eventUserRepository, addressRepository);
+        eventService = new EventServiceImpl(eventRepository, userRepository, eventUserRepository, addressRepository, eventInvitationRepository);
 
         event = new Event();
         event.setId(1L);

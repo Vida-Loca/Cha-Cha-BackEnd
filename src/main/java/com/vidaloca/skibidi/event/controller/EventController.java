@@ -60,7 +60,7 @@ public class EventController {
 
     @DeleteMapping("/event/{eventId}/leave")
     public boolean leaveEvent(@PathVariable Long eventId, HttpServletRequest request){
-        return true;
+        return eventService.leaveEvent(eventId,CurrentUser.currentUserId(request));
     }
 
     @DeleteMapping("/event/{eventId}/user")
