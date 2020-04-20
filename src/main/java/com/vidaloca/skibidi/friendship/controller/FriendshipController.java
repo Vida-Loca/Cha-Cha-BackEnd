@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class FriendshipController {
@@ -38,7 +39,7 @@ public class FriendshipController {
         return friendshipService.findAllUserFriends(userId);
     }
     @GetMapping("/user/friends/events")
-    public List<Event> getAllUserFriendsEvents(HttpServletRequest request){
+    public Set<Event> getAllUserFriendsEvents(HttpServletRequest request){
         return friendshipService.findAllFriendsEvents(CurrentUser.currentUserId(request));
     }
 

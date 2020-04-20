@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.friendship.model.Relation;
 import com.vidaloca.skibidi.user.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FriendshipService {
 
@@ -15,7 +16,7 @@ public interface FriendshipService {
 
     List<User> findAllUserFriends(Long userId);
 
-    List<Event> findAllFriendsEvents(Long userId);
+    Set<Event> findAllFriendsEvents(Long userId);
 
     List<Invitation> findAllUserInvitations(Long userId);
 

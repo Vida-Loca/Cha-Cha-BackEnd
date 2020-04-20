@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,11 +56,11 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public List<Event> findAllFriendsEvents(Long userId) {
+    public Set<Event> findAllFriendsEvents(Long userId) {
         List<User> friends = findAllUserFriends(userId);
         List<EventUser> eventUserList = new ArrayList<>();
         friends.forEach(u -> eventUserList.addAll(new ArrayList<EventUser>(u.getEventUsers())));
-        return eventUserList.stream().map(EventUser::getEvent).collect(Collectors.toList());
+        return eventUserList.stream().map(EventUser::getEvent).collect(Collectors.toSet());
 
     }
 
