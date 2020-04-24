@@ -2,7 +2,7 @@ package com.vidaloca.skibidi.event.access.controller;
 
 import com.vidaloca.skibidi.common.configuration.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
-import com.vidaloca.skibidi.event.access.service.InvitationService;
+import com.vidaloca.skibidi.event.access.service.RequestService;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,17 +22,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class InvitationControllerTest {
+class RequestControllerTest {
 
     @Mock
-    InvitationService service;
+    RequestService service;
     @Mock
     JwtAuthenticationFilter jwtAuthenticationFilter;
     @Mock
     JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
-    InvitationController controller;
+    RequestController controller;
 
     CurrentUser currentUser;
     MockMvc mockMvc;
@@ -46,39 +46,38 @@ class InvitationControllerTest {
     }
 
     @Test
-    void getAllInvitations() throws Exception {
-        mockMvc.perform(get("/event/{eventId}/invitations", 1)
+    void getAllEventRequests() throws Exception {
+        mockMvc.perform(get("/event/{eventId}/requests", 1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
-    void getAllUserInvitations() throws Exception {
-        mockMvc.perform(get("/user/event_invitations")
+    void getAllUserEventRequests() throws Exception {
+        mockMvc.perform(get("/user/event_requests")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
-    void inviteUser() throws Exception {
-        mockMvc.perform(post("/event/{eventId}/invite", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("userId", "1"))
+    void sendRequest() throws Exception {
+        mockMvc.perform(post("/event/{eventId}/send_request", 1)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
-    void acceptInvitation() throws Exception {
-        mockMvc.perform(put("/event/invite/{invitationId}/accept", 1)
+    void acceptRequest() throws Exception {
+        mockMvc.perform(put("/event/request/{requestId}/accept", 1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void rejectInvitation() throws Exception {
-        mockMvc.perform(put("/event/invite/{invitationId}/reject", 1)
+    void rejectRequest() throws Exception {
+        mockMvc.perform(put("/event/request/{requestId}/reject", 1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

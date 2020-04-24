@@ -36,17 +36,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class EventControllerTest {
     @Mock
-    EventService eventService;
+    EventService service;
     @Mock
     JwtAuthenticationFilter jwtAuthenticationFilter;
     @Mock
     JwtTokenProvider jwtTokenProvider;
 
-    CurrentUser currentUser;
-
     @InjectMocks
     EventController controller;
 
+    CurrentUser currentUser;
     MockMvc mockMvc;
     HttpServletRequest request;
 
@@ -75,7 +74,7 @@ class EventControllerTest {
         Event event = new Event();
         event.setName("NAME");
         eventList.add(event);
-        given(eventService.findAllEvents()).willReturn(eventList);
+        given(service.findAllEvents()).willReturn(eventList);
 
         mockMvc.perform(get("/event"))
                 .andExpect(status().isOk())
