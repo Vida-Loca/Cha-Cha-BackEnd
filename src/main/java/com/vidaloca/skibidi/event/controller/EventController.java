@@ -4,6 +4,7 @@ import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.service.EventService;
+import com.vidaloca.skibidi.event.service.EventUserService;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import com.vidaloca.skibidi.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +18,18 @@ import java.util.List;
 public class EventController {
 
     private EventService eventService;
+    private EventUserService eventUserService;
 
 
     @Autowired
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, EventUserService eventUserService) {
         this.eventService = eventService;
+        this.eventUserService = eventUserService;
     }
 
     @GetMapping("/event/{eventId}/users")
     public List<User> findAllEventUsers(@PathVariable Long eventId, HttpServletRequest request){
-        return eventService.findAllEventUsers(eventId,CurrentUser.currentUserId(request));
+        return eventUserService.findAllEventUsers(eventId,CurrentUser.currentUserId(request));
     }
 
     @GetMapping("/event")
@@ -58,26 +61,26 @@ public class EventController {
 
     @DeleteMapping("/event/{eventId}/leave")
     public boolean leaveEvent(@PathVariable Long eventId, HttpServletRequest request){
-        return eventService.leaveEvent(eventId,CurrentUser.currentUserId(request));
+        return eventUserService.leaveEvent(eventId,CurrentUser.currentUserId(request));
     }
 
     @DeleteMapping("/event/{eventId}/user")
     public String deleteUserFromEvent(@PathVariable Long eventId, @RequestParam Long userToDeleteId, HttpServletRequest request) throws UserIsNotAdminException {
-        return eventService.deleteUser(eventId, userToDeleteId, CurrentUser.currentUserId(request));
+        return eventUserService.deleteUser(eventId, userToDeleteId, CurrentUser.currentUserId(request));
     }
 
     @PutMapping("/event/{eventId}/user/{userId}/grantAdmin")
     public String grantAdminForUser(@PathVariable Long eventId, @PathVariable Long userId, HttpServletRequest request) throws UserIsNotAdminException {
-        return eventService.grantUserAdmin(eventId, userId, CurrentUser.currentUserId(request));
+        return eventUserService.grantUserAdmin(eventId, userId, CurrentUser.currentUserId(request));
     }
 
     @GetMapping("/event/{eventId}/isAdmin")
     public boolean isAdmin(@PathVariable("eventId") Long eventId, HttpServletRequest request) {
-        return eventService.isCurrentUserAdminOfEvent(eventId, CurrentUser.currentUserId(request));
+        return eventUserService.isCurrentUserAdminOfEvent(eventId, CurrentUser.currentUserId(request));
     }
     @GetMapping("/event/{eventId}/admin")
     public List<User> findAllEventAdmins(@PathVariable Long eventId, HttpServletRequest request){
-        return eventService.findAllEventAdmins(eventId,CurrentUser.currentUserId(request));
+        return eventUserService.findAllEventAdmins(eventId,CurrentUser.currentUserId(request));
     }
 
 }

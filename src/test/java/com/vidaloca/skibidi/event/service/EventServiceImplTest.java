@@ -3,7 +3,6 @@ package com.vidaloca.skibidi.event.service;
 import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.address.repository.AddressRepository;
-import com.vidaloca.skibidi.event.access.repository.EventInvitationRepository;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -30,7 +28,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,9 +42,6 @@ class EventServiceImplTest {
     @Mock
     AddressRepository addressRepository;
 
-    @Mock
-    EventInvitationRepository eventInvitationRepository;
-
     @InjectMocks
     EventServiceImpl eventService;
 
@@ -59,10 +53,6 @@ class EventServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        eventService = new EventServiceImpl(eventRepository, userRepository, eventUserRepository, addressRepository, eventInvitationRepository);
-
         event = new Event();
         event.setId(1L);
 
@@ -656,184 +646,154 @@ class EventServiceImplTest {
     }
 
 //    @Test
-//    void findAllEventUsers() {
+//    void deleteUser() throws UserIsNotAdminException {
 //        //given
-//        User u1 = new User();
-//        User u2 = new User();
+//        User userToDel = new User();
+//        userToDel.setId(2L);
 //
 //        EventUser eventUser1 = new EventUser();
 //        eventUser1.setId(1L);
-//        eventUser1.setUser(u1);
+//        eventUser1.setUser(user);
+//        eventUser1.setAdmin(true);
 //        EventUser eventUser2 = new EventUser();
 //        eventUser2.setId(2L);
-//        eventUser2.setUser(u2);
+//        eventUser2.setUser(userToDel);
 //
-//        List<EventUser> eventUsers = new ArrayList<>();
-//        eventUsers.add(eventUser1);
-//        eventUsers.add(eventUser2);
-//
-//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-//        when(eventUserRepository.findAllByEvent(event)).thenReturn(eventUsers);
+//        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+//        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
+//        when(userRepository.findById(2L)).thenReturn(Optional.of(userToDel));
+//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
+//        when(eventUserRepository.findByUserAndEvent(userToDel, event)).thenReturn(Optional.of(eventUser2));
 //
 //        //when
-//        List<User> returnedList = eventService.findAllEventUsers(event.getId());
+//        String result = eventService.deleteUser(1L, 2L, 1L);
 //
 //        //then
-//        assertNotNull(returnedList);
-//        assertEquals(2, returnedList.size());
-//        verify(eventRepository, times(1)).findById(anyLong());
-//        verify(eventUserRepository, times(1)).findAllByEvent(any(Event.class));
+//        assertEquals("Successfully removed user from event", result);
+//        then(userRepository).should(times(2)).findById(anyLong());
+//        then(eventRepository).should().findById(anyLong());
+//        then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+//        then(eventUserRepository).should().delete(any(EventUser.class));
 //    }
-
-    @Test
-    void deleteUser() throws UserIsNotAdminException {
-        //given
-        User userToDel = new User();
-        userToDel.setId(2L);
-
-        EventUser eventUser1 = new EventUser();
-        eventUser1.setId(1L);
-        eventUser1.setUser(user);
-        eventUser1.setAdmin(true);
-        EventUser eventUser2 = new EventUser();
-        eventUser2.setId(2L);
-        eventUser2.setUser(userToDel);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
-        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(userToDel));
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
-        when(eventUserRepository.findByUserAndEvent(userToDel, event)).thenReturn(Optional.of(eventUser2));
-
-        //when
-        String result = eventService.deleteUser(1L, 2L, 1L);
-
-        //then
-        assertEquals("Successfully removed user from event", result);
-        then(userRepository).should(times(2)).findById(anyLong());
-        then(eventRepository).should().findById(anyLong());
-        then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));
-        then(eventUserRepository).should().delete(any(EventUser.class));
-    }
-
-    @Test
-    void deleteUserNotAdmin() {
-        //given
-        User userToDel = new User();
-        userToDel.setId(2L);
-        Optional<User> optional = Optional.of(userToDel);
-
-        EventUser eventUser1 = new EventUser();
-        eventUser1.setId(1L);
-        eventUser1.setUser(user);
-        eventUser1.setAdmin(false);
-        EventUser eventUser2 = new EventUser();
-        eventUser2.setId(2L);
-        eventUser2.setUser(userToDel);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
-        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
-        when(userRepository.findById(2L)).thenReturn(optional);
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
-
-        //when
-        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
-                eventService.deleteUser(event.getId(), userToDel.getId(), user.getId()));
-
-        //then
-        assertEquals("User with id: " + user.getId() + " is not admin of that event.", exception.getMessage());
-        verify(userRepository, times(2)).findById(anyLong());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).deleteById(anyLong());
-    }
-
-    @Test
-    void grantUserAdmin() throws UserIsNotAdminException {
-        //given
-        User userToGrant = new User();
-        userToGrant.setId(2L);
-        userToGrant.setUsername("grant");
-        Optional<User> optional = Optional.of(userToGrant);
-
-        EventUser eventUser1 = new EventUser();
-        eventUser1.setId(1L);
-        eventUser1.setUser(user);
-        eventUser1.setAdmin(true);
-        EventUser eventUser2 = new EventUser();
-        eventUser2.setId(2L);
-        eventUser2.setUser(userToGrant);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
-        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
-        when(userRepository.findById(2L)).thenReturn(optional);
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
-        when(eventUserRepository.findByUserAndEvent(userToGrant, event)).thenReturn(Optional.of(eventUser2));
-
-        //when
-        String result = eventService.grantUserAdmin(event.getId(), userToGrant.getId(), user.getId());
-
-        //then
-        assertEquals("Successfully granted admin to " + userToGrant.getUsername(), result);
-        assertTrue(eventUser2.isAdmin());
-        verify(userRepository, times(2)).findById(anyLong());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(1)).save(any(EventUser.class));
-    }
-
-    @Test
-    void grantUserAdminNotAdmin() {
-        //given
-        User userToGrant = new User();
-        userToGrant.setId(2L);
-        userToGrant.setUsername("grant");
-        Optional<User> optional = Optional.of(userToGrant);
-
-        EventUser eventUser1 = new EventUser();
-        eventUser1.setId(1L);
-        eventUser1.setUser(user);
-        eventUser1.setAdmin(false);
-        EventUser eventUser2 = new EventUser();
-        eventUser2.setId(2L);
-        eventUser2.setUser(userToGrant);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
-        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
-        when(userRepository.findById(2L)).thenReturn(optional);
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
-
-        //when
-        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
-                eventService.grantUserAdmin(event.getId(), userToGrant.getId(), user.getId()));
-
-        //then
-        assertEquals("User with id: " + user.getId() + " is not admin of that event.", exception.getMessage());
-        verify(userRepository, times(2)).findById(anyLong());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(0)).save(any(EventUser.class));
-    }
-
-    @Test
-    void isCurrentUserAdminOfEvent() {
-        //given
-        EventUser eventUser = new EventUser();
-        eventUser.setId(1L);
-        eventUser.setUser(user);
-        eventUser.setAdmin(true);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
-        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser));
-
-        //when
-        boolean result = eventService.isCurrentUserAdminOfEvent(event.getId(), user.getId());
-
-        //then
-        assertTrue(result);
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(eventRepository, times(1)).findById(anyLong());
-        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-    }
+//
+//    @Test
+//    void deleteUserNotAdmin() {
+//        //given
+//        User userToDel = new User();
+//        userToDel.setId(2L);
+//        Optional<User> optional = Optional.of(userToDel);
+//
+//        EventUser eventUser1 = new EventUser();
+//        eventUser1.setId(1L);
+//        eventUser1.setUser(user);
+//        eventUser1.setAdmin(false);
+//        EventUser eventUser2 = new EventUser();
+//        eventUser2.setId(2L);
+//        eventUser2.setUser(userToDel);
+//
+//        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+//        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
+//        when(userRepository.findById(2L)).thenReturn(optional);
+//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
+//
+//        //when
+//        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
+//                eventService.deleteUser(event.getId(), userToDel.getId(), user.getId()));
+//
+//        //then
+//        assertEquals("User with id: " + user.getId() + " is not admin of that event.", exception.getMessage());
+//        verify(userRepository, times(2)).findById(anyLong());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).deleteById(anyLong());
+//    }
+//
+//    @Test
+//    void grantUserAdmin() throws UserIsNotAdminException {
+//        //given
+//        User userToGrant = new User();
+//        userToGrant.setId(2L);
+//        userToGrant.setUsername("grant");
+//        Optional<User> optional = Optional.of(userToGrant);
+//
+//        EventUser eventUser1 = new EventUser();
+//        eventUser1.setId(1L);
+//        eventUser1.setUser(user);
+//        eventUser1.setAdmin(true);
+//        EventUser eventUser2 = new EventUser();
+//        eventUser2.setId(2L);
+//        eventUser2.setUser(userToGrant);
+//
+//        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+//        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
+//        when(userRepository.findById(2L)).thenReturn(optional);
+//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
+//        when(eventUserRepository.findByUserAndEvent(userToGrant, event)).thenReturn(Optional.of(eventUser2));
+//
+//        //when
+//        String result = eventService.grantUserAdmin(event.getId(), userToGrant.getId(), user.getId());
+//
+//        //then
+//        assertEquals("Successfully granted admin to " + userToGrant.getUsername(), result);
+//        assertTrue(eventUser2.isAdmin());
+//        verify(userRepository, times(2)).findById(anyLong());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(1)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void grantUserAdminNotAdmin() {
+//        //given
+//        User userToGrant = new User();
+//        userToGrant.setId(2L);
+//        userToGrant.setUsername("grant");
+//        Optional<User> optional = Optional.of(userToGrant);
+//
+//        EventUser eventUser1 = new EventUser();
+//        eventUser1.setId(1L);
+//        eventUser1.setUser(user);
+//        eventUser1.setAdmin(false);
+//        EventUser eventUser2 = new EventUser();
+//        eventUser2.setId(2L);
+//        eventUser2.setUser(userToGrant);
+//
+//        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+//        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
+//        when(userRepository.findById(2L)).thenReturn(optional);
+//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser1));
+//
+//        //when
+//        Throwable exception = assertThrows(UserIsNotAdminException.class, () ->
+//                eventService.grantUserAdmin(event.getId(), userToGrant.getId(), user.getId()));
+//
+//        //then
+//        assertEquals("User with id: " + user.getId() + " is not admin of that event.", exception.getMessage());
+//        verify(userRepository, times(2)).findById(anyLong());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+//        verify(eventUserRepository, times(0)).save(any(EventUser.class));
+//    }
+//
+//    @Test
+//    void isCurrentUserAdminOfEvent() {
+//        //given
+//        EventUser eventUser = new EventUser();
+//        eventUser.setId(1L);
+//        eventUser.setUser(user);
+//        eventUser.setAdmin(true);
+//
+//        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+//        when(eventRepository.findById(1L)).thenReturn(Optional.ofNullable(event));
+//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(Optional.of(eventUser));
+//
+//        //when
+//        boolean result = eventService.isCurrentUserAdminOfEvent(event.getId(), user.getId());
+//
+//        //then
+//        assertTrue(result);
+//        verify(userRepository, times(1)).findById(anyLong());
+//        verify(eventRepository, times(1)).findById(anyLong());
+//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+//    }
 }

@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.service.EventService;
+import com.vidaloca.skibidi.event.service.EventUserService;
 import com.vidaloca.skibidi.event.type.EventType;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import com.vidaloca.skibidi.user.model.User;
@@ -37,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EventControllerTest {
     @Mock
     EventService service;
+    @Mock
+    EventUserService eUService;
     @Mock
     JwtAuthenticationFilter jwtAuthenticationFilter;
     @Mock
