@@ -54,8 +54,7 @@ public class InvitationServiceImpl implements InvitationService {
             throw new UserActuallyInEventException(user.getUsername());
         if (eu.isAdmin() || eu.getEvent().getEventType().canUserInvite())
             return eventInvitationRepository.save(
-                    EventInvitation.builder().event(event).user(user).accessStatus(AccessStatus.PROCESSING).
-                            invitationDate(LocalDateTime.now()).build());
+                    EventInvitation.builder().event(event).user(user).build());
         throw new UserCantInviteToEventException(currentUserId);
     }
 

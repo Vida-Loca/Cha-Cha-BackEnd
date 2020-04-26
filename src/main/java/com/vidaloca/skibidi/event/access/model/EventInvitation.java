@@ -33,10 +33,13 @@ public class EventInvitation {
     @JoinColumn(name="user_id")
     private User user;
 
+    @NotNull
+    @Builder.Default
     private AccessStatus accessStatus = AccessStatus.PROCESSING;
 
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Builder.Default
     private LocalDateTime invitationDate = LocalDateTime.now();
 
 }

@@ -50,8 +50,7 @@ public class RequestServiceImpl implements RequestService {
         Optional<EventUser> eu = eventUserRepository.findByUserAndEvent(user,event);
         if (eu.isPresent())
             throw new UserActuallyInEventException(user.getUsername());
-        EventRequest eventRequest = EventRequest.builder().event(event).user(user).accessStatus(AccessStatus.PROCESSING).
-                requestDate(LocalDateTime.now()).build();
+        EventRequest eventRequest = EventRequest.builder().event(event).user(user).build();
         return eventRequestRepository.save(eventRequest);
     }
 

@@ -3,15 +3,18 @@ package com.vidaloca.skibidi.friendship.model;
 import com.vidaloca.skibidi.friendship.status.InvitationStatus;
 import com.vidaloca.skibidi.user.model.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "invitation")
 public class Invitation {
     @Id
@@ -29,50 +32,9 @@ public class Invitation {
     @JoinColumn(name="invited_id")
     private User invited;
 
+    @NotNull
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private InvitationStatus invitationStatus;
+    private InvitationStatus invitationStatus = InvitationStatus.PROCESSING;
 
-
-    public static final class InvitationBuilder {
-        private Long id;
-        private User invitor;
-        private User invited;
-        private InvitationStatus invitationStatus;
-
-        private InvitationBuilder() {
-        }
-
-        public static InvitationBuilder anInvitation() {
-            return new InvitationBuilder();
-        }
-
-        public InvitationBuilder withId(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public InvitationBuilder withInvitor(User invitor) {
-            this.invitor = invitor;
-            return this;
-        }
-
-        public InvitationBuilder withInvited(User invited) {
-            this.invited = invited;
-            return this;
-        }
-
-        public InvitationBuilder withInvitationStatus(InvitationStatus invitationStatus) {
-            this.invitationStatus = invitationStatus;
-            return this;
-        }
-
-        public Invitation build() {
-            Invitation invitation = new Invitation();
-            invitation.setId(id);
-            invitation.setInvitor(invitor);
-            invitation.setInvited(invited);
-            invitation.setInvitationStatus(invitationStatus);
-            return invitation;
-        }
-    }
 }

@@ -14,6 +14,8 @@ public class AddressDto {
     private String postcode;
     private String street;
     private String number;
+    private Float longitude;
+    private Float latitude;
 
     public String getCountry() {
         return country;

@@ -3,6 +3,7 @@ package com.vidaloca.skibidi.address.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vidaloca.skibidi.event.model.Event;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -17,6 +18,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,69 +42,7 @@ public class Address {
     @NotNull(message = "Number is obligatory")
     @NotEmpty(message = "Number cannot be empty")
     private String number;
+    private Float latitude ;
+    private Float longitude;
 
-
-    public static final class AddressBuilder {
-        private Long id;
-        private List<Event> events;
-        private String country;
-        private String city;
-        private String postcode;
-        private String street;
-        private String number;
-
-        private AddressBuilder() {
-        }
-
-        public static AddressBuilder anAddress() {
-            return new AddressBuilder();
-        }
-
-        public AddressBuilder withId(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public AddressBuilder withEvents(List<Event> events) {
-            this.events = events;
-            return this;
-        }
-
-        public AddressBuilder withCountry(String country) {
-            this.country = country;
-            return this;
-        }
-
-        public AddressBuilder withCity(String city) {
-            this.city = city;
-            return this;
-        }
-
-        public AddressBuilder withPostcode(String postcode) {
-            this.postcode = postcode;
-            return this;
-        }
-
-        public AddressBuilder withStreet(String street) {
-            this.street = street;
-            return this;
-        }
-
-        public AddressBuilder withNumber(String number) {
-            this.number = number;
-            return this;
-        }
-
-        public Address build() {
-            Address address = new Address();
-            address.setId(id);
-            address.setEvents(events);
-            address.setCountry(country);
-            address.setCity(city);
-            address.setPostcode(postcode);
-            address.setStreet(street);
-            address.setNumber(number);
-            return address;
-        }
-    }
 }

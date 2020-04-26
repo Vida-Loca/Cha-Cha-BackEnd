@@ -18,7 +18,6 @@ import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -88,8 +87,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                 return invitationRepository.save(invitation.get());
             }
         }
-        Invitation invitation1 = Invitation.InvitationBuilder.anInvitation().withInvitor(invitor).withInvited(invited).
-                withInvitationStatus(InvitationStatus.PROCESSING).build();
+        Invitation invitation1 = Invitation.builder().invitor(invitor).invited(invited).build();
         return invitationRepository.save(invitation1);
     }
 
@@ -110,12 +108,11 @@ public class FriendshipServiceImpl implements FriendshipService {
             throw new UserNotAllowedException(invitedId, "accept");
         invitation.setInvitationStatus(InvitationStatus.ACCEPTED);
         invitationRepository.save(invitation);
-        Relation relation1 = Relation.RelationBuilder.aRelation().withUser(invitation.getInvitor()).
-                withRelatedUserId(invited.getId()).withRelationStartDate(LocalDateTime.now()).
-                withRelationStatus(RelationStatus.FRIENDS).build();
+        Relation relation1 = Relation.builder().user(invitation.getInvitor()).
+                relatedUserId(invited.getId()).relationStatus(RelationStatus.FRIENDS).build();
         relationRepository.save(relation1);
-        Relation relation2 = Relation.RelationBuilder.aRelation().withUser(invited).withRelatedUserId(invitation.getInvitor().getId()).
-                withRelationStartDate(LocalDateTime.now()).withRelationStatus(RelationStatus.FRIENDS).build();
+        Relation relation2 = Relation.builder().user(invited).relatedUserId(invitation.getInvitor().getId()).
+                relationStatus(RelationStatus.FRIENDS).build();
         return relationRepository.save(relation2);
     }
 

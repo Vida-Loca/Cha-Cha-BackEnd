@@ -16,4 +16,5 @@ public class EventDto {
     private String additionalInformation;
     private EventType eventType;
     private String currency;
+    private boolean isOver;
 }

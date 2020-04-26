@@ -168,8 +168,9 @@ public class EventServiceImpl implements EventService {
                 addressDto.getCity(), addressDto.getPostcode(), addressDto.getStreet(), addressDto.getNumber()).orElse(null);
         if (address != null)
             return address;
-        return Address.AddressBuilder.anAddress().withCountry(addressDto.getCountry()).withCity(addressDto.getCity()).withPostcode(addressDto.getPostcode()).
-                withStreet(addressDto.getStreet()).withNumber(addressDto.getNumber()).build();
+        return Address.builder().country(addressDto.getCountry()).street(addressDto.getStreet()).postcode(addressDto.getPostcode()).
+                number(addressDto.getNumber()).city(addressDto.getCity()).latitude(addressDto.getLatitude()).
+                longitude(addressDto.getLongitude()).build();
     }
 
     private Event getEvent(EventDto eventDto, Event event) {
@@ -180,6 +181,7 @@ public class EventServiceImpl implements EventService {
         event.setAdditionalInformation(eventDto.getAdditionalInformation());
         event.setEventType(eventDto.getEventType());
         event.setCurrency(eventDto.getCurrency());
+        event.setOver(eventDto.isOver());
         return event;
     }
 }
