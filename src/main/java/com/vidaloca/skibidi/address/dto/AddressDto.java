@@ -17,6 +17,14 @@ public class AddressDto {
     private Float longitude;
     private Float latitude;
 
+    public AddressDto(String country, String city, String postcode, String street, String number) {
+        this.country = country;
+        this.city = city;
+        this.postcode = postcode;
+        this.street = street;
+        this.number = number;
+    }
+
     public String getCountry() {
         return country;
     }

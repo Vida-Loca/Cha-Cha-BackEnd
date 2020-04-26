@@ -197,8 +197,8 @@ class FriendshipServiceImplTest {
         invitation.setInvitor(invitor);
         invitation.setInvited(invited);
 
-        Relation relation2 = Relation.RelationBuilder.aRelation().withUser(invited).withRelatedUserId(invitor.getId()).
-                withRelationStartDate(LocalDateTime.now()).withRelationStatus(RelationStatus.FRIENDS).build();
+        Relation relation2 = Relation.builder().user(invited).relatedUserId(invitor.getId()).
+                relationStartDate(LocalDateTime.now()).relationStatus(RelationStatus.FRIENDS).build();
 
         given(invitationRepository.findById(1L)).willReturn(Optional.of(invitation));
         given(relationRepository.save(any(Relation.class))).willReturn(relation2);
