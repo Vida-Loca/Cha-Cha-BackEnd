@@ -38,5 +38,6 @@ public class Post {
     @Builder.Default
     private Integer likes = 0;
 
+    @Builder.Default
     private boolean isUpdated = false;
 }

@@ -49,9 +49,11 @@ public class EventUser {
             joinColumns = @JoinColumn(name = "event_user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
+    @Builder.Default
     private List<Product> products = new ArrayList<>();
 
     @NotNull(message = "isAdmin cannot be null")
+    @Builder.Default
     private boolean isAdmin = false;
 
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "eventUser")
