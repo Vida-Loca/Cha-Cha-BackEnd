@@ -9,6 +9,7 @@ import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.friendship.model.Relation;
 import com.vidaloca.skibidi.user.registration.validation.ValidEmail;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -25,6 +26,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -59,7 +61,8 @@ public class User {
     private String picUrl;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime joined;
+    @Builder.Default
+    private LocalDateTime joined = LocalDateTime.now();
 
     @Column(unique = true)
     @ValidEmail
@@ -88,10 +91,16 @@ public class User {
     private List<EventRequest> eventRequests = new ArrayList<>();
 
     @JsonIgnore
+    @Builder.Default
     private boolean enabled = false;
 
     @JsonIgnore
+    @Builder.Default
     private boolean canChangePass = false;
+    @Builder.Default
+    private boolean isWarned = false;
+    @Builder.Default
+    private boolean isBanned = false;
 
     @Override
     public String toString() {

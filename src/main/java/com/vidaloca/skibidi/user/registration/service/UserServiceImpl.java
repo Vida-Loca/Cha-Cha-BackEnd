@@ -52,22 +52,20 @@ public class UserServiceImpl implements UserService {
             throw new UsernameExistsException(
                     "There is an account with that username: " + accountDto.getUsername());
         }
-        User user = new User();
-        user.setUsername(accountDto.getUsername());
-        user.setName(accountDto.getName());
-        user.setSurname(accountDto.getSurname());
-        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
-        user.setEmail(accountDto.getEmail());
-        user.setPicUrl(accountDto.getPicUrl());
-        user.setJoined(LocalDateTime.now());
+        User user = User.builder().username(accountDto.getUsername()).name(accountDto.getName()).surname(accountDto.getSurname()).
+                password(passwordEncoder.encode(accountDto.getPassword())).email(accountDto.getEmail()).picUrl(accountDto.getPicUrl()).
+                role(getRole()).build();
+        return userRepository.save(user);
+    }
+
+    private Role getRole(){
         Role role = roleRepository.findByName("USER").orElse(null);
         if (role == null){
             role = new Role();
             role.setName("USER");
             role = roleRepository.save(role);
         }
-        user.setRole(role);
-        return userRepository.save(user);
+        return  role;
     }
 
     private boolean emailExists(String email) {
