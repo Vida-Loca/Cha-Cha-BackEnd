@@ -83,6 +83,79 @@ class UserServiceImplTest {
     }
 
     @Test
+    void registerNewUserAccountNullRole() throws EmailExistsException, UsernameExistsException {
+        //given
+        UserRegistrationDto accountDto = new UserRegistrationDto("NAME", "SURNAME", "USERNAME", "PASSWORD",
+                "PASSWORD", "EMAIL", "URL");
+
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.empty());
+        given(userRepository.findByUsername(anyString())).willReturn(Optional.empty());
+        given(roleRepository.findByName("USER")).willReturn(Optional.empty());
+        given(userRepository.save(any(User.class))).willReturn(user);
+
+        //when
+        User result = service.registerNewUserAccount(accountDto);
+
+        //then
+        then(userRepository).should().findByEmail(anyString());
+        then(userRepository).should().findByUsername(anyString());
+        then(passwordEncoder).should().encode(any());
+        then(roleRepository).should().findByName(anyString());
+        then(roleRepository).should().save(any(Role.class));
+        then(userRepository).should().save(any(User.class));
+    }
+
+    @Test
+    void registerNewUserAccountWithExistingEmail() {
+        //given
+        UserRegistrationDto accountDto = new UserRegistrationDto("NAME", "SURNAME", "USERNAME", "PASSWORD",
+                "PASSWORD", "EMAIL", "URL");
+
+        Role role = new Role();
+        role.setName("USER");
+
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
+
+        //when
+        Throwable result = assertThrows(EmailExistsException.class, () -> {
+            service.registerNewUserAccount(accountDto);
+        });
+
+        //then
+        assertEquals("There is an account with that email address:EMAIL", result.getMessage());
+        then(userRepository).should().findByEmail(anyString());
+        then(userRepository).shouldHaveNoMoreInteractions();
+        then(passwordEncoder).shouldHaveNoInteractions();
+        then(roleRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void registerNewUserAccountWithExistingUsername() {
+        //given
+        UserRegistrationDto accountDto = new UserRegistrationDto("NAME", "SURNAME", "USERNAME", "PASSWORD",
+                "PASSWORD", "EMAIL", "URL");
+
+        Role role = new Role();
+        role.setName("USER");
+
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.empty());
+        given(userRepository.findByUsername(anyString())).willReturn(Optional.of(user));
+
+        //when
+        Throwable result = assertThrows(UsernameExistsException.class, () -> {
+            service.registerNewUserAccount(accountDto);
+        });
+
+        //then
+        assertEquals("There is an account with that username: USERNAME", result.getMessage());
+        then(userRepository).should().findByEmail(anyString());
+        then(userRepository).should().findByUsername(anyString());
+        then(userRepository).shouldHaveNoMoreInteractions();
+        then(passwordEncoder).shouldHaveNoInteractions();
+        then(roleRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
     void getUser() {
         //given
         given(tokenRepository.findByToken(token)).willReturn(verificationToken);
@@ -143,6 +216,36 @@ class UserServiceImplTest {
         assertEquals("valid", result);
         then(tokenRepository).should().findByToken(anyString());
         then(userRepository).should().save(any(User.class));
+    }
+
+    @Test
+    void validateVerificationTokenInvalidTk() {
+        //given
+        given(tokenRepository.findByToken(token)).willReturn(null);
+
+        //when
+        String result = service.validateVerificationToken(token);
+
+        //then
+        assertEquals("invalidToken", result);
+        then(tokenRepository).should().findByToken(anyString());
+        then(userRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    void validateVerificationTokenExpiredTk() {
+        //given
+        Date date = new Date();
+        verificationToken.setExpiryDate(date);
+        given(tokenRepository.findByToken(token)).willReturn(verificationToken);
+
+        //when
+        String result = service.validateVerificationToken(token);
+
+        //then
+        assertEquals("expired", result);
+        then(tokenRepository).should().findByToken(anyString());
+        then(userRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test

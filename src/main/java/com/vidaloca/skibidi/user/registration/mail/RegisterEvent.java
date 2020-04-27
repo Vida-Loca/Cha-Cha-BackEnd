@@ -10,8 +10,7 @@ public class RegisterEvent extends ApplicationEvent {
     private Locale locale;
     private User user;
 
-    public RegisterEvent(
-            User user, Locale locale, String appUrl) {
+    public RegisterEvent(User user, Locale locale, String appUrl) {
         super(user);
 
         this.user = user;

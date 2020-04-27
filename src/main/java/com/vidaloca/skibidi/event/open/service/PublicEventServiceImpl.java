@@ -1,7 +1,6 @@
 package com.vidaloca.skibidi.event.open.service;
 
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
-import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
@@ -9,7 +8,6 @@ import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.type.EventType;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
-import com.vidaloca.skibidi.user.exception.UsernameNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

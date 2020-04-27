@@ -14,13 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,12 +39,12 @@ class UserAccountControllerTest {
 
     CurrentUser currentUser;
     MockMvc mockMvc;
-    HttpServletRequest request;
+    MockHttpServletRequest request;
 
     @BeforeEach
     void setUp() {
         currentUser = new CurrentUser(jwtAuthenticationFilter, jwtTokenProvider);
-        request = mock(HttpServletRequest.class);
+        request = new MockHttpServletRequest();
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 

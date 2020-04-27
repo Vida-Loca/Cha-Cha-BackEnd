@@ -2,6 +2,10 @@ package com.vidaloca.skibidi.friendship.service;
 
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
+import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
+import com.vidaloca.skibidi.friendship.exception.RelationNotFoundException;
+import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.friendship.model.Relation;
 import com.vidaloca.skibidi.friendship.repository.InvitationRepository;
@@ -23,8 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -170,6 +173,100 @@ class FriendshipServiceImplTest {
     }
 
     @Test
+    void inviteFriendNotAllowed() {
+        //given
+        Relation relation = new Relation();
+        relation.setRelationStatus(RelationStatus.FRIENDS);
+
+        given(relationRepository.findByUserAndRelatedUserId(invitor, 2L)).willReturn(Optional.of(relation));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.inviteFriend(1L, 2L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not allowed to invite", result.getMessage());
+        then(userRepository).should(times(2)).findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(invitationRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void inviteFriendInvitationExistAccepted() {
+        //given
+        Invitation invitation = new Invitation();
+        invitation.setId(1L);
+        invitation.setInvitationStatus(InvitationStatus.ACCEPTED);
+        invitation.setInvitor(invitor);
+        invitation.setInvited(invited);
+
+        given(relationRepository.findByUserAndRelatedUserId(invitor, 2L)).willReturn(Optional.empty());
+        given(invitationRepository.findByInvitorAndInvited(invitor, invited)).willReturn(Optional.of(invitation));
+
+        //when
+        Exception result = assertThrows(InvitationExistsException.class, () -> {
+            service.inviteFriend(1L, 2L);
+        });
+
+        //then
+        assertEquals("Invitatnion of users with ids: 1 and 2 already exists. AccessStatus : Accepted",
+                result.getMessage());
+        then(userRepository).should(times(2)).findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(invitationRepository).should().findByInvitorAndInvited(any(User.class), any(User.class));
+    }
+
+
+    @Test
+    void inviteFriendInvitationExistProcessing() {
+        //given
+        Invitation invitation = new Invitation();
+        invitation.setId(1L);
+        invitation.setInvitationStatus(InvitationStatus.PROCESSING);
+        invitation.setInvitor(invitor);
+        invitation.setInvited(invited);
+
+        given(relationRepository.findByUserAndRelatedUserId(invitor, 2L)).willReturn(Optional.empty());
+        given(invitationRepository.findByInvitorAndInvited(invitor, invited)).willReturn(Optional.of(invitation));
+
+        //when
+        Exception result = assertThrows(InvitationExistsException.class, () -> {
+            service.inviteFriend(1L, 2L);
+        });
+
+        //then
+        assertEquals("Invitatnion of users with ids: 1 and 2 already exists. AccessStatus : Processing",
+                result.getMessage());
+        then(userRepository).should(times(2)).findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(invitationRepository).should().findByInvitorAndInvited(any(User.class), any(User.class));
+    }
+
+    @Test
+    void inviteFriendInvitationExist() {
+        //given
+        Invitation invitation = new Invitation();
+        invitation.setId(1L);
+        invitation.setInvitationStatus(InvitationStatus.CANCELLED);
+        invitation.setInvitor(invitor);
+        invitation.setInvited(invited);
+
+        given(relationRepository.findByUserAndRelatedUserId(invitor, 2L)).willReturn(Optional.empty());
+        given(invitationRepository.findByInvitorAndInvited(invitor, invited)).willReturn(Optional.of(invitation));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(invitation);
+
+        //when
+        Invitation result = service.inviteFriend(1L, 2L);
+
+        //then
+        assertEquals("Processing", result.getInvitationStatus().getDescription());
+        then(userRepository).should(times(2)).findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(invitationRepository).should().findByInvitorAndInvited(any(User.class), any(User.class));
+    }
+
+    @Test
     void cancelInvitation() {
         //given
         Invitation invitation = new Invitation();
@@ -187,6 +284,43 @@ class FriendshipServiceImplTest {
         assertEquals("Canceled", result.getInvitationStatus().getDescription());
         then(invitationRepository).should().findById(anyLong());
         then(invitationRepository).should().save(any(Invitation.class));
+    }
+
+    @Test
+    void cancelInvitationNotFoundInv() {
+        //given
+        given(invitationRepository.findById(1L)).willReturn(Optional.empty());
+
+        //when
+        Exception result = assertThrows(InvitationNotFoundException.class, () -> {
+            service.cancelInvitation(1L, 1L);
+        });
+
+        //then
+        assertEquals("Friendship with id: 1 not found", result.getMessage());
+        then(invitationRepository).should().findById(anyLong());
+        then(invitationRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    void cancelInvitationNotAllowed() {
+        //given
+        Invitation invitation = new Invitation();
+        invitation.setId(1L);
+        invitation.setInvitor(invitor);
+        invitation.setInvited(invited);
+
+        given(invitationRepository.findById(1L)).willReturn(Optional.of(invitation));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.cancelInvitation(1L, 3L);
+        });
+
+        //then
+        assertEquals("User with id: 3 is not allowed to cancel", result.getMessage());
+        then(invitationRepository).should().findById(anyLong());
+        then(invitationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -215,6 +349,29 @@ class FriendshipServiceImplTest {
     }
 
     @Test
+    void acceptInvitationNotAllowed() {
+        //given
+        Invitation invitation = new Invitation();
+        invitation.setId(1L);
+        invitation.setInvitor(invitor);
+        invitation.setInvited(invited);
+
+        given(invitationRepository.findById(1L)).willReturn(Optional.of(invitation));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.acceptInvitation(1L, 1L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not allowed to accept", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(invitationRepository).should().findById(anyLong());
+        then(invitationRepository).shouldHaveNoMoreInteractions();
+        then(relationRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
     void rejectInvitation() {
         //given
         Invitation invitation = new Invitation();
@@ -232,6 +389,27 @@ class FriendshipServiceImplTest {
         assertEquals("Rejected", result.getInvitationStatus().getDescription());
         then(invitationRepository).should().findById(anyLong());
         then(invitationRepository).should().save(any(Invitation.class));
+    }
+
+    @Test
+    void rejectInvitationNotAllowed() {
+        //given
+        Invitation invitation = new Invitation();
+        invitation.setId(1L);
+        invitation.setInvitor(invitor);
+        invitation.setInvited(invited);
+
+        given(invitationRepository.findById(1L)).willReturn(Optional.of(invitation));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.rejectInvitation(1L, 1L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not allowed to reject", result.getMessage());
+        then(invitationRepository).should().findById(anyLong());
+        then(invitationRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -261,6 +439,49 @@ class FriendshipServiceImplTest {
     }
 
     @Test
+    void removeFriendNotFoundRel() {
+        //given
+        given(relationRepository.findByUserAndRelatedUserId(any(User.class), anyLong())).willReturn(Optional.empty());
+
+        //when
+        Exception result = assertThrows(RelationNotFoundException.class, () -> {
+            service.removeFriend(1L, 2L);
+        });
+
+        //then
+        assertEquals("Relation between users with ids: 1 and 2 not exists", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(invitationRepository).shouldHaveNoInteractions();
+        then(userRepository).shouldHaveNoMoreInteractions();
+        then(relationRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    void removeFriendNotAllowed() {
+        //given
+        Relation relation = new Relation();
+        relation.setRelationStatus(RelationStatus.BLOCKED);
+        relation.setUser(invitor);
+        relation.setRelatedUserId(2L);
+
+        given(relationRepository.findByUserAndRelatedUserId(any(User.class), anyLong())).willReturn(Optional.of(relation));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.removeFriend(1L, 1L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not allowed to remove", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(userRepository).shouldHaveNoMoreInteractions();
+        then(invitationRepository).shouldHaveNoInteractions();
+        then(relationRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
     void blockUser() {
         //given
         Relation relation = new Relation();
@@ -279,5 +500,27 @@ class FriendshipServiceImplTest {
         then(userRepository).should(times(2)).findById(anyLong());
         then(relationRepository).should(times(2)).findByUserAndRelatedUserId(any(User.class), anyLong());
         then(relationRepository).should(times(2)).save(any(Relation.class));
+    }
+
+    @Test
+    void blockUserNotAllowed() {
+        //given
+        Relation relation = new Relation();
+        relation.setRelationStatus(RelationStatus.BLOCKED);
+        relation.setUser(invitor);
+        relation.setRelatedUserId(2L);
+
+        given(relationRepository.findByUserAndRelatedUserId(any(User.class), anyLong())).willReturn(Optional.of(relation));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.blockUser(1L, 1L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not allowed to block", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
+        then(relationRepository).shouldHaveNoMoreInteractions();
     }
 }

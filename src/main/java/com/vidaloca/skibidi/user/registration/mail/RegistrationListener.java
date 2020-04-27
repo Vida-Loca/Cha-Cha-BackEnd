@@ -35,7 +35,7 @@ public class RegistrationListener implements ApplicationListener<RegisterEvent> 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setText("Clik link to verify your account : " + confirmationUrl);
+        email.setText("Click link to verify your account : " + confirmationUrl);
         mailSender.send(email);
     }
 

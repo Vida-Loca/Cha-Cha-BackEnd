@@ -4,6 +4,7 @@ import com.vidaloca.skibidi.event.access.exception.IsNotProcessingException;
 import com.vidaloca.skibidi.event.access.exception.RequestNotFoundException;
 import com.vidaloca.skibidi.event.access.exception.UserCantAcceptRequestException;
 import com.vidaloca.skibidi.event.access.exception.UserCantRequestToEventException;
+import com.vidaloca.skibidi.event.access.exception.UserCantRejectRequestException;
 import com.vidaloca.skibidi.event.access.model.EventRequest;
 import com.vidaloca.skibidi.event.access.repository.EventRequestRepository;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
@@ -20,7 +21,6 @@ import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -80,7 +80,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = request.getEvent();
         EventUser eventUser = eventUserRepository.findByUserAndEvent(user,event).orElseThrow(()-> new UserIsNotInEventException(currentUserId,event.getId()));
         if (!eventUser.isAdmin())
-            throw new UserCantAcceptRequestException(currentUserId);
+            throw new UserCantRejectRequestException(currentUserId);
         if (!request.getAccessStatus().equals(AccessStatus.PROCESSING))
             throw new IsNotProcessingException("Request", requestId);
         request.setAccessStatus(AccessStatus.REJECTED);

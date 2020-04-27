@@ -5,6 +5,7 @@ import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.product.dto.ProductDto;
+import com.vidaloca.skibidi.product.exception.model.ProductNotFoundException;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.product.model.ProductCategory;
 import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;
@@ -23,9 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,15 +37,15 @@ class ProductServiceImplTest {
     ProductRepository productRepository;
     @Mock
     ProductCategoryRepository productCategoryRepository;
-    @Mock
+    @Mock(lenient = true)
     EventRepository eventRepository;
-    @Mock
+    @Mock(lenient = true)
     EventUserRepository eventUserRepository;
-    @Mock
+    @Mock(lenient = true)
     UserRepository userRepository;
 
     @InjectMocks
-    ProductServiceImpl productService;
+    ProductServiceImpl service;
 
     User user;
     Event event;
@@ -63,56 +65,47 @@ class ProductServiceImplTest {
         product = new Product();
         product.setId(1L);
         product.setName("Product");
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(eventRepository.findById(1L)).willReturn(Optional.of(event));
+        given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
     }
 
-//    @Test
-//    void addProductToEvent() {
-//        //given
-//        Optional<User> optionalUser = Optional.of(user);
-//        Optional<Event> optionalEvent = Optional.of(event);
-//        Optional<EventUser> optionalEventUser = Optional.of(eventUser);
-//        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalEventUser);
-//        when(eventUserRepository.save(any(EventUser.class))).thenReturn(eventUser);
-//
-//        //when
-//        EventUser returned = productService.addProductToEvent(product, event.getId(), user.getId());
-//
-//        //then
-//        assertEquals(1, returned.getProducts().size());
-//        assertEquals("Product", returned.getProducts().get(0).getName());
-//        verify(userRepository, times(1)).findById(anyLong());
-//        verify(eventRepository, times(1)).findById(anyLong());
-//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-//        verify(eventUserRepository, times(1)).save(any(EventUser.class));
-//    }
-//
-//    @Test
-//    void addExistingProductToEvent() {
-//        //given
-//        Optional<User> optionalUser = Optional.of(user);
-//        Optional<Event> optionalEvent = Optional.of(event);
-//        Optional<EventUser> optionalEventUser = Optional.of(eventUser);
-//        Optional<Product> optionalProduct = Optional.of(product);
-//        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-//        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-//        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalEventUser);
-//        when(productRepository.findById(anyLong())).thenReturn(optionalProduct);
-//        when(eventUserRepository.save(any(EventUser.class))).thenReturn(eventUser);
-//
-//        //when
-//        EventUser returned = productService.addExistingProductToEvent(product.getId(), event.getId(), user.getId());
-//
-//        //then
-//        assertEquals(1, returned.getProducts().size());
-//        assertEquals("Product", returned.getProducts().get(0).getName());
-//        verify(userRepository, times(1)).findById(anyLong());
-//        verify(eventRepository, times(1)).findById(anyLong());
-//        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-//        verify(productRepository, times(1)).findById(anyLong());
-//        verify(eventUserRepository, times(1)).save(any(EventUser.class));
-//    }
+    @Test
+    void addProductToEvent() {
+        //given
+        given(eventUserRepository.save(any(EventUser.class))).willReturn(eventUser);
+        given(productRepository.save(any(Product.class))).willReturn(product);
+
+        //when
+        Product result = service.addProductToEvent(product, 1L, 1L);
+
+        //then
+        assertEquals(product, result);
+        then(userRepository).should().findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
+        then(eventUserRepository).should().save(any(EventUser.class));
+        then(productRepository).should().save(any(Product.class));
+    }
+
+    @Test
+    void addExistingProductToEvent() {
+        //given
+        given(productRepository.findById(1L)).willReturn(Optional.of(product));
+        given(eventUserRepository.save(any(EventUser.class))).willReturn(eventUser);
+
+        //when
+        Product result = service.addExistingProductToEvent(1L, 1L, 1L);
+
+        //then
+        assertEquals(1, eventUser.getProducts().size());
+        then(userRepository).should().findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
+        then(productRepository).should().findById(anyLong());
+        then(eventUserRepository).should().save(any(EventUser.class));
+    }
 
     @Test
     void findAllEventProducts() {
@@ -131,7 +124,7 @@ class ProductServiceImplTest {
         when(eventUserRepository.findAllByEvent_Id(event.getId())).thenReturn(eventUsers);
 
         //when
-        List<Product> returned = productService.findAllEventProducts(event.getId());
+        List<Product> returned = service.findAllEventProducts(event.getId());
 
         //then
         assertEquals(2, returned.size());
@@ -143,23 +136,37 @@ class ProductServiceImplTest {
         //given
         eventUser.getProducts().add(product);
         int sizeBefore = eventUser.getProducts().size();
-        Optional<User> optionalUser = Optional.of(user);
-        Optional<Event> optionalEvent = Optional.of(event);
-        Optional<EventUser> optionalEventUser = Optional.of(eventUser);
 
-        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
-        when(eventRepository.findById(anyLong())).thenReturn(optionalEvent);
-        when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalEventUser);
         when(eventUserRepository.save(any(EventUser.class))).thenReturn(eventUser);
 
         //when
-        String result = productService.deleteProduct(event.getId(), product.getId(), user.getId());
+        String result = service.deleteProduct(event.getId(), product.getId(), user.getId());
         int sizeAfter = eventUser.getProducts().size();
 
         //then
         assertEquals("Successfully delete products", result);
         assertEquals(0, eventUser.getProducts().size());
         assertNotEquals(sizeBefore, sizeAfter);
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(eventRepository, times(1)).findById(anyLong());
+        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+        verify(eventUserRepository, times(1)).save(any(EventUser.class));
+    }
+
+    @Test
+    void deleteProductFromAdmin() {
+        //given
+        eventUser.getProducts().add(product);
+        eventUser.setAdmin(true);
+        event.getEventUsers().add(eventUser);
+        when(eventUserRepository.save(any(EventUser.class))).thenReturn(eventUser);
+
+        //when
+        String result = service.deleteProduct(event.getId(), product.getId(), user.getId());
+
+        //then
+        assertEquals("Successfully delete products", result);
+        assertEquals(0, eventUser.getProducts().size());
         verify(userRepository, times(1)).findById(anyLong());
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
@@ -179,7 +186,7 @@ class ProductServiceImplTest {
         when(eventUserRepository.findByUserAndEvent(user, event)).thenReturn(optionalEventUser);
 
         //when
-        List<Product> returned = productService.findUserEventProducts(event.getId(), user.getId());
+        List<Product> returned = service.findUserEventProducts(event.getId(), user.getId());
 
         //then
         assertEquals(1, returned.size());
@@ -212,7 +219,7 @@ class ProductServiceImplTest {
                 any(BigDecimal.class), anyString())).thenReturn(Optional.of(product));
 
         //when
-        Product returned = productService.addProduct(productDto);
+        Product returned = service.addProduct(productDto);
 
         //then
         assertEquals("Test", returned.getName());
@@ -245,7 +252,7 @@ class ProductServiceImplTest {
         when(productCategoryRepository.findByName("Category")).thenReturn(productCategoryOptional);
 
         //when
-        Product returned = productService.addProduct(productDto);
+        Product returned = service.addProduct(productDto);
 
         //then
         assertEquals("Test", returned.getName());
@@ -279,7 +286,7 @@ class ProductServiceImplTest {
         when(productCategoryRepository.save(any(ProductCategory.class))).thenReturn(productCategory);
 
         //when
-        Product returned = productService.addProduct(productDto);
+        Product returned = service.addProduct(productDto);
 
         //then
         assertEquals("Test", returned.getName());
@@ -289,5 +296,53 @@ class ProductServiceImplTest {
                 .findByNameAndPriceAndProductCategory_Name(anyString(), any(BigDecimal.class), anyString());
         verify(productCategoryRepository, times(1)).findByName(anyString());
         verify(productCategoryRepository, times(1)).save(any(ProductCategory.class));
+    }
+
+    @Test
+    void updateProduct() {
+        //given
+        eventUser.getProducts().add(product);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setPrice(new BigDecimal(10));
+        productDto.setProductCategory("cat");
+        productDto.setName("name");
+
+        given(productRepository.save(any(Product.class))).willReturn(product);
+
+        //when
+        Product result = service.updateProduct(productDto, 1L, 1L, 1L);
+
+        //then
+        assertEquals("name", result.getName());
+        then(userRepository).should().findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
+        then(productRepository).should().save(any(Product.class));
+    }
+
+    @Test
+    void updateProductReturnNullProduct() {
+        //given
+        Product pr = new Product();
+        pr.setId(3L);
+        eventUser.getProducts().add(pr);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setPrice(new BigDecimal(10));
+        productDto.setProductCategory("cat");
+        productDto.setName("name");
+
+        //when
+        Exception result = assertThrows(ProductNotFoundException.class, () -> {
+            service.updateProduct(productDto, 1L, 1L, 1L);
+        });
+
+        //then
+        assertEquals("Product with id: 1 not found", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
+        then(productRepository).shouldHaveNoMoreInteractions();
     }
 }

@@ -5,6 +5,7 @@ import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.event.type.EventType;
+import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -56,6 +58,29 @@ class PublicEventServiceImplTest {
         then(userRepository).should().findById(anyLong());
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should().save(any(EventUser.class));
+    }
+
+    @Test
+    void joinEventUserNotAllowed() {
+        //given
+        User user = new User();
+        Event event = new Event();
+        event.setEventType(EventType.PRIVATE);
+        EventUser eventUser = new EventUser();
+
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(eventRepository.findById(1L)).willReturn(Optional.of(event));
+
+        //when
+        Exception result = assertThrows(UserNotAllowedException.class, () -> {
+            service.joinEvent(1L, 1L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not allowed to join that event", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).shouldHaveNoInteractions();
     }
 
     @Test
