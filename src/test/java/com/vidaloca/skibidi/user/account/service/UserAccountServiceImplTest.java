@@ -7,6 +7,7 @@ import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
 import com.vidaloca.skibidi.user.account.model.ResetPasswordToken;
 import com.vidaloca.skibidi.user.account.repository.ResetPasswordTokenRepository;
+import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
 import com.vidaloca.skibidi.user.model.Role;
 import com.vidaloca.skibidi.user.model.User;
@@ -157,6 +158,27 @@ class UserAccountServiceImplTest {
     }
 
     @Test
+    void resetPasswordEmailNotFound() {
+        //given
+        String email = "mail@test.com";
+        user.setEmail(email);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        //when
+        Exception result = assertThrows(EmailNotFoundException.class, () -> {
+            service.resetPassword(request, email);
+        });
+
+        //then
+        assertEquals("User with following email :mail@test.com not found", result.getMessage());
+        then(userRepository).should().findByEmail(anyString());
+        then(resetPasswordTokenRepository).shouldHaveNoInteractions();
+        then(resetPasswordMail).shouldHaveNoInteractions();
+    }
+
+    @Test
     void resetPasswordConfirm() {
         //given
         ResetPasswordToken passwordToken = new ResetPasswordToken();
@@ -174,6 +196,46 @@ class UserAccountServiceImplTest {
         assertNull(result);
         verify(resetPasswordTokenRepository, times(1)).findByToken(anyString());
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void resetPasswordConfirmInvalid() {
+        //given
+        ResetPasswordToken passwordToken = new ResetPasswordToken();
+        passwordToken.setId(1L);
+        passwordToken.setToken("TOKEN");
+        passwordToken.setUser(user);
+        passwordToken.setExpiryDate(LocalDateTime.MIN);
+
+        when(resetPasswordTokenRepository.findByToken(anyString())).thenReturn(passwordToken);
+
+        //when
+        String result = service.resetPasswordConfirm(2L, "TOKEN");
+
+        //then
+        assertEquals("invalidToken", result);
+        then(resetPasswordTokenRepository).should().findByToken("TOKEN");
+        then(userRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void resetPasswordConfirmExpired() {
+        //given
+        ResetPasswordToken passwordToken = new ResetPasswordToken();
+        passwordToken.setId(1L);
+        passwordToken.setToken("TOKEN");
+        passwordToken.setUser(user);
+        passwordToken.setExpiryDate(LocalDateTime.MIN);
+
+        when(resetPasswordTokenRepository.findByToken(anyString())).thenReturn(passwordToken);
+
+        //when
+        String result = service.resetPasswordConfirm(user.getId(), "TOKEN");
+
+        //then
+        assertEquals("expired", result);
+        then(resetPasswordTokenRepository).should().findByToken("TOKEN");
+        then(userRepository).shouldHaveNoInteractions();
     }
 
     @Test
@@ -195,5 +257,43 @@ class UserAccountServiceImplTest {
         verify(userRepository, times(1)).findById(anyLong());
         verify(passwordEncoder, times(1)).encode(any(CharSequence.class));
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void changePasswordNotAllowed() throws PasswordsNotMatchesException {
+        //given
+        PasswordDto passwordDto = new PasswordDto();
+        passwordDto.setPassword("password");
+        passwordDto.setMatchingPassword("password");
+        user.setCanChangePass(false);
+
+        //when
+        User returned = service.changePassword(user.getId(), passwordDto);
+
+        //then
+        assertNull(returned);
+        then(userRepository).should().findById(anyLong());
+        then(passwordEncoder).shouldHaveNoInteractions();
+        then(userRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    void changePasswordNotMatching() throws PasswordsNotMatchesException {
+        //given
+        PasswordDto passwordDto = new PasswordDto();
+        passwordDto.setPassword("password");
+        passwordDto.setMatchingPassword("not_matching");
+        user.setCanChangePass(true);
+
+        //when
+        Throwable result = assertThrows(PasswordsNotMatchesException.class, () -> {
+            service.changePassword(1L, passwordDto);
+        });
+
+        //then
+        assertEquals("Passwords not matches", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(passwordEncoder).shouldHaveNoInteractions();
+        then(userRepository).shouldHaveNoMoreInteractions();
     }
 }
