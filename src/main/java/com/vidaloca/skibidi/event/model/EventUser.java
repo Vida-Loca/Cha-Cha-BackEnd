@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.event.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vidaloca.skibidi.event.forum.model.Post;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.user.model.User;
 import lombok.AllArgsConstructor;
@@ -52,5 +53,8 @@ public class EventUser {
 
     @NotNull(message = "isAdmin cannot be null")
     private boolean isAdmin = false;
+
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "eventUser")
+    private List<Post> posts;
 
 }
