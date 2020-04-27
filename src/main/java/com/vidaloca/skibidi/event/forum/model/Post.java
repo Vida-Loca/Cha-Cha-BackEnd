@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.event.forum.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.user.model.User;
@@ -25,6 +26,7 @@ public class Post {
     @Column(name = "post_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     @JoinColumn(name = "event_user_id")
     private EventUser eventUser;
