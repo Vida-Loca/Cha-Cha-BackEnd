@@ -4,6 +4,7 @@ import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
+import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
 import com.vidaloca.skibidi.user.account.model.ResetPasswordToken;
@@ -60,6 +61,14 @@ public class UserAccountServiceImpl implements UserAccountService {
     public boolean isUserAdmin(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         return user.getRole().getName().equals("ADMIN");
+    }
+
+    @Override
+    public User changeNames(NamesDto namesDto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        user.setName(namesDto.getName());
+        user.setSurname(namesDto.getSurname());
+        return userRepository.save(user);
     }
 
     @Override

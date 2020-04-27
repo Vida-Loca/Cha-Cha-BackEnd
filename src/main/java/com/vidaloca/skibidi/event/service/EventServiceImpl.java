@@ -77,8 +77,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private Address getAddress(AddressDto addressDto) {
-        Address address = addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumber(addressDto.getCountry(),
-                addressDto.getCity(), addressDto.getPostcode(), addressDto.getStreet(), addressDto.getNumber()).orElse(null);
+        Address address = addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumberAAndLatitudeAndLongitude(addressDto.getCountry(),
+                addressDto.getCity(), addressDto.getPostcode(), addressDto.getStreet(), addressDto.getNumber(),addressDto.getLatitude(),addressDto.getLongitude()).orElse(null);
         if (address != null)
             return address;
         return Address.builder().country(addressDto.getCountry()).street(addressDto.getStreet()).postcode(addressDto.getPostcode()).

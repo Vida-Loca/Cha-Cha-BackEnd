@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.user.account.controller;
 
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
+import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.service.UserAccountService;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
@@ -40,6 +41,11 @@ public class UserAccountController {
     @PutMapping("/user/changePhoto")
     public User changePhoto(HttpServletRequest request, @RequestParam("url") String url) {
         return userAccountService.changePhoto(CurrentUser.currentUserId(request), url);
+    }
+
+    @PutMapping("/user/changeNames")
+    public User changeNames(HttpServletRequest request, @RequestBody NamesDto namesDto){
+        return userAccountService.changeNames(namesDto,CurrentUser.currentUserId(request));
     }
 
     @PostMapping("/user/resetPassword")

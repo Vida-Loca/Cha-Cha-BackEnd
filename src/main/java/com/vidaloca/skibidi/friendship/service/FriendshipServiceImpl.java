@@ -49,17 +49,19 @@ public class FriendshipServiceImpl implements FriendshipService {
         List<Relation> relations = user.getRelations();
         List<User> friends = new ArrayList<>();
         for (Relation r: relations) {
-            friends.add(userRepository.findById(r.getRelatedUserId()).orElseThrow(()-> new UserNotFoundException(r.getRelatedUserId())));
+            if (r.getRelationStatus() == RelationStatus.FRIENDS)
+                friends.add(userRepository.findById(r.getRelatedUserId()).orElseThrow(()-> new UserNotFoundException(r.getRelatedUserId())));
         }
         return friends;
     }
 
     @Override
     public Set<Event> findAllFriendsEvents(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         List<User> friends = findAllUserFriends(userId);
         List<EventUser> eventUserList = new ArrayList<>();
         friends.forEach(u -> eventUserList.addAll(new ArrayList<EventUser>(u.getEventUsers())));
-        return eventUserList.stream().map(EventUser::getEvent).collect(Collectors.toSet());
+        return eventUserList.stream().filter(EventUser::isAdmin).filter(eu -> eu.getUser() != user ).map(EventUser::getEvent).collect(Collectors.toSet());
 
     }
 

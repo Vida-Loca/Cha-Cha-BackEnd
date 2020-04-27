@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.user.account.service;
 
 import com.vidaloca.skibidi.event.model.Event;
+import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
 import com.vidaloca.skibidi.user.model.User;
@@ -15,6 +16,8 @@ public interface UserAccountService {
 
     boolean isUserAdmin(Long userId);
 
+    User changeNames (NamesDto namesDto, Long userId);
+
     User changePhoto (Long userId, String photoUrl);
 
     String resetPassword (HttpServletRequest request, String email);
@@ -22,6 +25,7 @@ public interface UserAccountService {
     String resetPasswordConfirm (Long userId, String token);
 
     User changePassword (Long userId, PasswordDto passwordDto) throws PasswordsNotMatchesException;
+
 
 
 }
