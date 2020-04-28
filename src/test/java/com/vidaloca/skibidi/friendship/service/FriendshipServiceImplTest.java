@@ -113,10 +113,12 @@ class FriendshipServiceImplTest {
         invitor_relation.setRelationStatus(RelationStatus.FRIENDS);
         invitor_relation.setUser(invitor);
         invitor_relation.setRelatedUserId(2L);
+
         invitor.getRelations().add(invitor_relation);
 
         eventUser.setUser(invited);
         eventUser.setEvent(event);
+        eventUser.setAdmin(true);
         List<EventUser> eventUsers = new ArrayList<>();
         eventUsers.add(eventUser);
         invited.setEventUsers(eventUsers);
@@ -126,7 +128,7 @@ class FriendshipServiceImplTest {
 
         //then
         assertEquals(1, result.size());
-        then(userRepository).should(times(2)).findById(anyLong());
+        then(userRepository).should(times(3)).findById(anyLong());
     }
 
     @Test

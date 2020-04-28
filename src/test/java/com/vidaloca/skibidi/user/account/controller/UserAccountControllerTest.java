@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vidaloca.skibidi.common.configuration.security.JwtAuthenticationFilter;
 import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
+import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.service.UserAccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +77,18 @@ class UserAccountControllerTest {
         mockMvc.perform(put("/user/changePhoto")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("url", "url"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void changeNames() throws Exception {
+        NamesDto dto = new NamesDto();
+        dto.setName("name");
+        dto.setSurname("surname");
+
+        mockMvc.perform(put("/user/changeNames")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(dto)))
                 .andExpect(status().isOk());
     }
 

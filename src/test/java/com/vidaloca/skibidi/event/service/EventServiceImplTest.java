@@ -135,7 +135,7 @@ class EventServiceImplTest {
     void addNewEventExistingAddress() {
         //given
         AddressDto addressDto = new AddressDto("Country", "City",
-                "Postcode", "Street", "Num");
+                "Postcode", "Street", "Num", 10f, 10f);
         EventDto eventDto = new EventDto();
         eventDto.setName("EventName");
         eventDto.setStartTime(LocalDateTime.now());
@@ -155,7 +155,7 @@ class EventServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(eventRepository.save(any(Event.class))).thenReturn(event);
         when(addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumberAAndLatitudeAndLongitude(anyString(),
-                anyString(), anyString(), anyString(), anyString(),anyFloat(),anyFloat())).thenReturn(addressOptional);
+                anyString(), anyString(), anyString(), anyString(), anyFloat(), anyFloat())).thenReturn(addressOptional);
 
         //when
         Event returnedEvent = eventService.addNewEvent(eventDto, 1L);
