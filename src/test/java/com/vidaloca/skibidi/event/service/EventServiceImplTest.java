@@ -154,7 +154,7 @@ class EventServiceImplTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(eventRepository.save(any(Event.class))).thenReturn(event);
-        when(addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumberAAndLatitudeAndLongitude(anyString(),
+        when(addressRepository.findByCountryAndCityAndPostcodeAndStreetAndNumberAndLatitudeAndLongitude(anyString(),
                 anyString(), anyString(), anyString(), anyString(),anyFloat(),anyFloat())).thenReturn(addressOptional);
 
         //when
