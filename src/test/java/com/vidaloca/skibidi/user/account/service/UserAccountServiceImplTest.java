@@ -3,6 +3,7 @@ package com.vidaloca.skibidi.user.account.service;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
+import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import com.vidaloca.skibidi.user.account.mail.ResetPasswordMail;
 import com.vidaloca.skibidi.user.account.model.ResetPasswordToken;
@@ -176,6 +177,23 @@ class UserAccountServiceImplTest {
         then(userRepository).should().findByEmail(anyString());
         then(resetPasswordTokenRepository).shouldHaveNoInteractions();
         then(resetPasswordMail).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void changeNames() {
+        //given
+        NamesDto dto = new NamesDto("name", "surname");
+
+        given(userRepository.save(any(User.class))).willReturn(user);
+
+        //when
+        User result = service.changeNames(dto, 1L);
+
+        //then
+        assertEquals("name", result.getName());
+        assertEquals("surname", result.getSurname());
+        then(userRepository).should().findById(anyLong());
+        then(userRepository).should().save(any(User.class));
     }
 
     @Test

@@ -75,7 +75,6 @@ class ProductServiceImplTest {
     void addProductToEvent() {
         //given
         given(eventUserRepository.save(any(EventUser.class))).willReturn(eventUser);
-        given(productRepository.save(any(Product.class))).willReturn(product);
 
         //when
         Product result = service.addProductToEvent(product, 1L, 1L);
@@ -86,7 +85,6 @@ class ProductServiceImplTest {
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
         then(eventUserRepository).should().save(any(EventUser.class));
-        then(productRepository).should().save(any(Product.class));
     }
 
     @Test
