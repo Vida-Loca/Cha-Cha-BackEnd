@@ -100,8 +100,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product addProduct(ProductDto productDto) {
         Optional<Product> temp = productRepository.findByNameAndPriceAndProductCategory_Name(productDto.getName(),productDto.getPrice(),productDto.getProductCategory());
-        return temp.orElse(Product.ProductBuilder.aProduct().withName(productDto.getName()).withPrice(getPrice(productDto.getPrice())).
-                withProductCategory(getProductCategory(productDto.getProductCategory())).build());
+        return temp.orElse(productRepository.save(Product.ProductBuilder.aProduct().withName(productDto.getName()).withPrice(getPrice(productDto.getPrice())).
+                withProductCategory(getProductCategory(productDto.getProductCategory())).build()));
     }
 
     @Override

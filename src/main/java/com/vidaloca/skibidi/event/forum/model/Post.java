@@ -13,6 +13,7 @@ import org.hibernate.annotations.Fetch;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Data
@@ -39,6 +40,10 @@ public class Post {
 
     @Builder.Default
     private Integer likes = 0;
+
+    @ManyToMany( mappedBy = "likes",  cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    private Set<EventUser> likers;
 
     @Builder.Default
     private boolean isUpdated = false;
