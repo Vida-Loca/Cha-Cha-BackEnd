@@ -45,7 +45,7 @@ public class ForumController {
         return postService.likePost(postId,CurrentUser.currentUserId(request));
     }
 
-    @DeleteMapping("/event/fourm/{postId}")
+    @DeleteMapping("/event/forum/{postId}")
     public boolean deletePost(@PathVariable Long postId, HttpServletRequest request){
         return postService.deletePost(postId,CurrentUser.currentUserId(request));
     }

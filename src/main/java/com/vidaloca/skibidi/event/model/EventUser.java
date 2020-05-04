@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "event_user")
@@ -51,12 +53,19 @@ public class EventUser {
     )
     @Builder.Default
     private List<Product> products = new ArrayList<>();
+    @Builder.Default
+    @ManyToMany (cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "event_user_post",
+            joinColumns = @JoinColumn(name = "event_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private Set<Post> likes =  new HashSet<>();
 
     @NotNull(message = "isAdmin cannot be null")
     @Builder.Default
     private boolean isAdmin = false;
 
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "eventUser")
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
 }

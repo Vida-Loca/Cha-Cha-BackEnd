@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -57,7 +57,7 @@ public class PostServiceImpl implements PostService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        return Post.builder().eventUser(eu).text(postDto.getPost()).build();
+        return postRepository.save(Post.builder().eventUser(eu).text(postDto.getPost()).build());
     }
 
     @Override
@@ -92,7 +92,12 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException(postId));
         EventUser eu = eventUserRepository.findByUserAndEvent(user, post.getEventUser().getEvent()).orElseThrow(()
                 -> new UserIsNotInEventException(user.getId(), post.getEventUser().getEvent().getId()));
-        post.setLikes(post.getLikes() + 1);
+        if (eu.getLikes().stream().noneMatch(p -> p.equals(post))) {
+            post.getLikers().add(eu);
+        } else {
+            post.getLikers().remove(eu);
+        }
+        post.setLikes(post.getLikers().size());
         return postRepository.save(post);
     }
 }
