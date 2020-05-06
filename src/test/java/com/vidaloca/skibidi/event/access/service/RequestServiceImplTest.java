@@ -111,7 +111,7 @@ class RequestServiceImplTest {
         });
 
         //then
-        assertEquals("User: null is actually in that event", result.getMessage());
+        assertEquals("User: null is actually in that event.", result.getMessage());
         then(userRepository).should().findById(anyLong());
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));

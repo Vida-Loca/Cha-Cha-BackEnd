@@ -284,7 +284,7 @@ class EventUserServiceImplTest {
         });
 
         //then
-        assertEquals("you are the last admin in this event. Before leaving give admin to another user",
+        assertEquals("You are the last admin in this event. Before leaving give admin to another user.",
                 result.getMessage());
         then(userRepository).should().findById(anyLong());
         then(eventRepository).should().findById(anyLong());

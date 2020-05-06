@@ -2,7 +2,9 @@ package com.vidaloca.skibidi.user.registration.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
+import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,7 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,9 +32,13 @@ class RegistrationControllerIT {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Test
     @Transactional
     void registerUserAccount() throws Exception {
+        List<User> userListBefore = (List<User>) userRepository.findAll();
         UserRegistrationDto dto = new UserRegistrationDto();
         dto.setName("TestName");
         dto.setSurname("TestSurname");
@@ -45,11 +53,15 @@ class RegistrationControllerIT {
                 .content(asJson(dto)))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        List<User> userListAfter = (List<User>) userRepository.findAll();
+        assertNotEquals(userListBefore, userListAfter);
     }
 
     @Test
     @Transactional
     void registerUserAccountExistingUsername() throws Exception {
+        List<User> userListBefore = (List<User>) userRepository.findAll();
         UserRegistrationDto dto = new UserRegistrationDto();
         dto.setName("TestName");
         dto.setSurname("TestSurname");
@@ -64,11 +76,15 @@ class RegistrationControllerIT {
                 .content(asJson(dto)))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        List<User> userListAfter = (List<User>) userRepository.findAll();
+        assertEquals(userListBefore, userListAfter);
     }
 
     @Test
     @Transactional
     void registerUserAccountExistingEmail() throws Exception {
+        List<User> userListBefore = (List<User>) userRepository.findAll();
         UserRegistrationDto dto = new UserRegistrationDto();
         dto.setName("TestName");
         dto.setSurname("TestSurname");
@@ -83,6 +99,9 @@ class RegistrationControllerIT {
                 .content(asJson(dto)))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        List<User> userListAfter = (List<User>) userRepository.findAll();
+        assertEquals(userListBefore, userListAfter);
     }
 
     @Test

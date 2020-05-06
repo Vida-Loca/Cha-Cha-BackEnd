@@ -104,7 +104,7 @@ class InvitationServiceImplTest {
         });
 
         //then
-        assertEquals("User: Username2 is actually in that event", result.getMessage());
+        assertEquals("User: Username2 is actually in that event.", result.getMessage());
         then(userRepository).should(times(2)).findById(anyLong());
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));

@@ -82,7 +82,7 @@ class EventServiceImplTest {
         Exception exception = assertThrows(EventNotFoundException.class, () ->
                 eventService.findById(EVENT_ID));
 
-        assertEquals("Event with id: " + EVENT_ID + " not found", exception.getMessage());
+        assertEquals("Event with id: " + EVENT_ID + " not found.", exception.getMessage());
         verify(eventRepository, times(1)).findById(anyLong());
         verifyNoMoreInteractions(eventRepository);
     }
@@ -275,7 +275,7 @@ class EventServiceImplTest {
                 eventService.updateEvent(eventDto, eventId, userId));
 
         //then
-        assertEquals("User with id: 1 is not in event with id: 1 and cannot make this action", exception.getMessage());
+        assertEquals("User with id: 1 is not in event with id: 1 and cannot make this action.", exception.getMessage());
     }
 
     @Test
@@ -298,7 +298,7 @@ class EventServiceImplTest {
                 eventService.updateEvent(eventDto, eventId, userId));
 
         //then
-        assertEquals("Event with id: " + eventId + " not found", exception.getMessage());
+        assertEquals("Event with id: " + eventId + " not found.", exception.getMessage());
     }
 
     @Test
@@ -384,7 +384,7 @@ class EventServiceImplTest {
                 eventService.deleteEvent(event.getId(), user.getId()));
 
         //then
-        assertEquals("User with id: " + user.getId() + " is not in event with id: " + event.getId() + " and cannot make this action",
+        assertEquals("User with id: " + user.getId() + " is not in event with id: " + event.getId() + " and cannot make this action.",
                 exception.getMessage());
         verify(userRepository, times(1)).findById(anyLong());
         verify(eventRepository, times(1)).findById(anyLong());
@@ -405,7 +405,7 @@ class EventServiceImplTest {
                 eventService.deleteEvent(event.getId(), user.getId()));
 
         //then
-        assertEquals("Event with id: " + event.getId() + " not found", exception.getMessage());
+        assertEquals("Event with id: " + event.getId() + " not found.", exception.getMessage());
         verify(userRepository, times(1)).findById(anyLong());
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(0)).findByUserAndEvent(any(User.class), any(Event.class));

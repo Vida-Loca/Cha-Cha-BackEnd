@@ -302,7 +302,7 @@ class PostServiceImplTest {
         });
 
         //then
-        assertEquals("User with id: 1 is not in event with id: 3 and cannot make this action", result.getMessage());
+        assertEquals("User with id: 1 is not in event with id: 3 and cannot make this action.", result.getMessage());
         then(userRepository).should().findById(anyLong());
         then(postRepository).should().findById(anyLong());
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
