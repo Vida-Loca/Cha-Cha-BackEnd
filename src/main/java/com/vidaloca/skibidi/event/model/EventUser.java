@@ -53,6 +53,7 @@ public class EventUser {
     )
     @Builder.Default
     private List<Product> products = new ArrayList<>();
+    @JsonIgnore
     @Builder.Default
     @ManyToMany (cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "event_user_post",
@@ -64,7 +65,7 @@ public class EventUser {
     @NotNull(message = "isAdmin cannot be null")
     @Builder.Default
     private boolean isAdmin = false;
-
+    @JsonIgnore
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "eventUser")
     private List<Post> posts = new ArrayList<>();
 

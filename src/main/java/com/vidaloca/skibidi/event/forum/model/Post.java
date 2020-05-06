@@ -25,7 +25,6 @@ public class Post {
     @Column(name = "post_id")
     private Long id;
 
-    @JsonIgnore
     @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     @JoinColumn(name = "event_user_id")
     private EventUser eventUser;
