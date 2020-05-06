@@ -36,7 +36,6 @@ class RegistrationControllerIT {
     UserRepository userRepository;
 
     @Test
-    @Transactional
     void registerUserAccount() throws Exception {
         List<User> userListBefore = (List<User>) userRepository.findAll();
         UserRegistrationDto dto = new UserRegistrationDto();
