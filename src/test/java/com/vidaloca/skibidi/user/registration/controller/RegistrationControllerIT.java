@@ -1,36 +1,23 @@
 package com.vidaloca.skibidi.user.registration.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vidaloca.skibidi.BaseIT;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Sql("/data-test.sql")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = "/application.properties")
-@AutoConfigureMockMvc
-class RegistrationControllerIT {
-
-    @Autowired
-    MockMvc mockMvc;
+class RegistrationControllerIT extends BaseIT {
 
     @Autowired
     UserRepository userRepository;
@@ -127,14 +114,5 @@ class RegistrationControllerIT {
     @Transactional
     void confirmRegistration() {
 
-    }
-
-    private String asJson(Object o) throws JsonProcessingException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setDateFormat(df);
-        String jsonString = mapper.writeValueAsString(o);
-        mapper.setDateFormat(df);
-        return jsonString;
     }
 }
