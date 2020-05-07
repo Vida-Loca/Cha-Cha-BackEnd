@@ -98,10 +98,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product addProduct(ProductDto productDto) {
-        Optional<Product> temp = productRepository.findByNameAndPriceAndProductCategory_Name(productDto.getName(),productDto.getPrice(),productDto.getProductCategory());
-        return temp.orElse(productRepository.save(Product.ProductBuilder.aProduct().withName(productDto.getName()).withPrice(getPrice(productDto.getPrice())).
-                withProductCategory(getProductCategory(productDto.getProductCategory())).build()));
+    public Product addProduct(ProductDto productDto,Long eventId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        Optional<Product> temp = productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(productDto.getName(),productDto.getPrice(),productDto.getProductCategory(),eu);
+        temp.ifPresent(product -> product.setQuantity(product.getQuantity() + productDto.getQuantity()));
+        return temp.orElse(productRepository.save(Product.builder().name(productDto.getName()).price(getPrice(productDto.getPrice())).
+                productCategory(getProductCategory(productDto.getProductCategory())).quantity(productDto.getQuantity()).eventUser(eu).build()));
     }
 
     @Override
@@ -134,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private ProductCategory addProductCategory(String name) {
-        ProductCategory productCategory = ProductCategory.ProductCategoryBuilder.aProductCategory().withName(name).build();
+        ProductCategory productCategory = ProductCategory.builder().name(name).build();
         return productCategoryRepository.save(productCategory);
     }
 }

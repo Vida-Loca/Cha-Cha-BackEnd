@@ -213,18 +213,18 @@ class ProductServiceImplTest {
         product.setProductCategory(productCategory);
 
 
-        when(productRepository.findByNameAndPriceAndProductCategory_Name(anyString(),
-                any(BigDecimal.class), anyString())).thenReturn(Optional.of(product));
+        when(productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(),
+                any(BigDecimal.class), anyString(),eventUserRepository.findById(1L).get())).thenReturn(Optional.of(product));
 
         //when
-        Product returned = service.addProduct(productDto);
+        Product returned = service.addProduct(productDto,1L,1L);
 
         //then
         assertEquals("Test", returned.getName());
         assertEquals("20.20", returned.getPrice().toString());
         assertEquals("Category", returned.getProductCategory().getName());
         verify(productRepository, times(1))
-                .findByNameAndPriceAndProductCategory_Name(anyString(), any(BigDecimal.class), anyString());
+                .findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(), any(BigDecimal.class), anyString(),eventUserRepository.findById(1L).get());
         verify(productCategoryRepository, times(1)).findByName(anyString());
         verify(productCategoryRepository, times(1)).save(any(ProductCategory.class));
     }

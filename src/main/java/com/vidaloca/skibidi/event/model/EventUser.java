@@ -46,11 +46,7 @@ public class EventUser {
     private Event event;
 
     @JsonIgnore
-    @ManyToMany (cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(name = "event_user_product",
-            joinColumns = @JoinColumn(name = "event_user_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
+    @OneToMany (mappedBy = "eventUser",  cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @Builder.Default
     private List<Product> products = new ArrayList<>();
     @JsonIgnore

@@ -18,7 +18,7 @@ public interface ProductService {
 
     List<Product> findUserEventProducts(Long eventId, Long userId);
 
-    Product addProduct (ProductDto productDto);
+    Product addProduct (ProductDto productDto,Long eventId, Long userId);
 
     Product updateProduct(ProductDto productDto, Long eventId, Long productId, Long userId);
 
