@@ -56,6 +56,20 @@ class LoginControllerIT {
                 .andDo(print());
     }
 
+    @Test
+    @Transactional
+    void authenticateUserWrongUsername() throws Exception {
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername("wrong");
+        loginDto.setPassword("password");
+
+        mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(loginDto)))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
     private String asJson(Object o) throws JsonProcessingException {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         ObjectMapper mapper = new ObjectMapper();
