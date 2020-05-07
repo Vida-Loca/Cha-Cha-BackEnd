@@ -78,14 +78,12 @@ public class ProductServiceImpl implements ProductService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eventUser = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        eventUser.getProducts().removeIf(p -> p.getId().equals(productToDeleteId));
-        if (eventUser.isAdmin()){
-            for (EventUser eu : event.getEventUsers()){
-                eu.getProducts().removeIf(p->p.getId().equals(productToDeleteId));
-            }
+        Product product = productRepository.findById(productToDeleteId).orElseThrow(()-> new ProductNotFoundException(productToDeleteId));
+        if (eventUser.isAdmin() || product.getEventUser().equals(eventUser)){
+            productRepository.delete(product);
+            return "Successfully delete products";
         }
-        eventUserRepository.save(eventUser);
-        return "Successfully delete products";
+        return "User is not allowed to delete product";
 
     }
 
