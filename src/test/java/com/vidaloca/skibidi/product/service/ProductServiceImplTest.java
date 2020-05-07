@@ -201,6 +201,7 @@ class ProductServiceImplTest {
         productDto.setName("Test");
         productDto.setPrice(price);
         productDto.setProductCategory("Category");
+        productDto.setQuantity(2);
 
         ProductCategory productCategory = new ProductCategory();
         productCategory.setId(1L);
@@ -212,9 +213,8 @@ class ProductServiceImplTest {
         product.setPrice(price);
         product.setProductCategory(productCategory);
 
-
-        when(productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(),
-                any(BigDecimal.class), anyString(),eventUserRepository.findById(1L).get())).thenReturn(Optional.of(product));
+        given(productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(productDto.getName(),productDto.getPrice(),productDto.getProductCategory(), eventUser))
+                .willReturn(Optional.of(product));
 
         //when
         Product returned = service.addProduct(productDto,1L,1L);
@@ -224,7 +224,7 @@ class ProductServiceImplTest {
         assertEquals("20.20", returned.getPrice().toString());
         assertEquals("Category", returned.getProductCategory().getName());
         verify(productRepository, times(1))
-                .findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(), any(BigDecimal.class), anyString(),eventUserRepository.findById(1L).get());
+                .findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(), any(BigDecimal.class), anyString(), any(EventUser.class));
         verify(productCategoryRepository, times(1)).findByName(anyString());
         verify(productCategoryRepository, times(1)).save(any(ProductCategory.class));
     }
