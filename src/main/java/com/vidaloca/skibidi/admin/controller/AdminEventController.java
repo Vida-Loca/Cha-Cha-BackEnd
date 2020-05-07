@@ -28,41 +28,9 @@ public class AdminEventController {
         return eventService.findById(id);
     }
 
-    @DeleteMapping("/event/{eventId}")
-    public String deleteById(@PathVariable Long eventId) {
-        return eventService.deleteById(eventId);
+    @DeleteMapping("/event/{id}")
+    public String deleteById(@PathVariable Long id) {
+        return eventService.deleteById(id);
     }
-
-//    @GetMapping("/getAllUsers")
-//    public List<User> getAllUsers() {
-//        return (List<User>) userRepository.findAll();
-//    }
-//
-//    @GetMapping("/user/{id}")
-//    public User getUserById(@PathVariable Long id) {
-//        return userRepository.findById(id).orElseThrow(
-//                () -> new UserNotFoundException(id)
-//        );
-//    }
-//
-//    @PutMapping("/grantUserAdmin/{id}")
-//    public User grantUserAdmin(@PathVariable("id") Long userId) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-//        Role role = roleRepository.findByName("ADMIN").orElse(null);
-//        user.setRole(role);
-//        return userRepository.save(user);
-//    }
-//
-//    @DeleteMapping("/deleteUser/{id}")
-//    public void deleteUser(HttpServletRequest request, @PathVariable("id") Long userId) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-//        userRepository.delete(user);
-//    }
-//
-//    @GetMapping("/getAllProducts")
-//    public List<Product> getAllProducts() {
-//        return (List<Product>) productRepository.findAll();
-//    }
-
 
 }

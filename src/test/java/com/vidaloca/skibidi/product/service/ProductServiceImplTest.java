@@ -132,23 +132,21 @@ class ProductServiceImplTest {
     @Test
     void deleteProduct() {
         //given
+        product.setEventUser(eventUser);
         eventUser.getProducts().add(product);
-        int sizeBefore = eventUser.getProducts().size();
 
-        when(eventUserRepository.save(any(EventUser.class))).thenReturn(eventUser);
+        given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
 
         //when
         String result = service.deleteProduct(event.getId(), product.getId(), user.getId());
-        int sizeAfter = eventUser.getProducts().size();
 
         //then
         assertEquals("Successfully delete products", result);
-        assertEquals(0, eventUser.getProducts().size());
-        assertNotEquals(sizeBefore, sizeAfter);
         verify(userRepository, times(1)).findById(anyLong());
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(1)).save(any(EventUser.class));
+        verify(productRepository, times(1)).findById(anyLong());
+        verify(productRepository, times(1)).delete(any(Product.class));
     }
 
     @Test
@@ -157,18 +155,19 @@ class ProductServiceImplTest {
         eventUser.getProducts().add(product);
         eventUser.setAdmin(true);
         event.getEventUsers().add(eventUser);
-        when(eventUserRepository.save(any(EventUser.class))).thenReturn(eventUser);
+
+        given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
 
         //when
         String result = service.deleteProduct(event.getId(), product.getId(), user.getId());
 
         //then
         assertEquals("Successfully delete products", result);
-        assertEquals(0, eventUser.getProducts().size());
         verify(userRepository, times(1)).findById(anyLong());
         verify(eventRepository, times(1)).findById(anyLong());
         verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
-        verify(eventUserRepository, times(1)).save(any(EventUser.class));
+        verify(productRepository, times(1)).findById(anyLong());
+        verify(productRepository, times(1)).delete(any(Product.class));
     }
 
     @Test

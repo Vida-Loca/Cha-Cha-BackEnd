@@ -12,4 +12,7 @@ public interface AdminUserService {
 
     String deleteUserById(Long id);
 
+    User grantAdminAuthority(Long id);
+
+    User punishUser(Long id);
 }
