@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -40,7 +42,7 @@ public class Post {
 
     @ManyToMany( mappedBy = "likes",  cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
-    private Set<EventUser> likers = new HashSet<>();
+    private List<EventUser> likers = new ArrayList<>();
 
     @Builder.Default
     private boolean isUpdated = false;

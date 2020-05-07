@@ -56,7 +56,7 @@ public class EventUser {
             joinColumns = @JoinColumn(name = "event_user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id")
     )
-    private Set<Post> likes =  new HashSet<>();
+    private List<Post> likes =  new ArrayList<>();
 
     @NotNull(message = "isAdmin cannot be null")
     @Builder.Default
