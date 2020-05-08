@@ -40,8 +40,12 @@ public class Post {
     @Builder.Default
     private Integer likes = 0;
 
-    @ManyToMany( mappedBy = "likes",  cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+    @ManyToMany( cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
+     @JoinTable(name = "event_user_likes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_user_id")
+    )
     private List<EventUser> likers = new ArrayList<>();
 
     @Builder.Default
