@@ -51,18 +51,14 @@ public class EventUser {
     private List<Product> products = new ArrayList<>();
     @JsonIgnore
     @Builder.Default
-    @ManyToMany (cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(name = "event_user_post",
-            joinColumns = @JoinColumn(name = "event_user_id"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
-    )
+    @ManyToMany (mappedBy = "likers", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Post> likes =  new ArrayList<>();
 
     @NotNull(message = "isAdmin cannot be null")
     @Builder.Default
     private boolean isAdmin = false;
     @JsonIgnore
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "eventUser")
+    @OneToMany(cascade = {CascadeType.ALL},mappedBy = "eventUser")
     private List<Post> posts = new ArrayList<>();
 
 }
