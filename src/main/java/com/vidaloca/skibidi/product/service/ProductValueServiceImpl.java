@@ -11,6 +11,7 @@ import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.product.model.ProductCategory;
 import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.product.repository.ProductRepository;
+import com.vidaloca.skibidi.product.views.UserExpenses;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductValueServiceImpl implements ProductValueService {
@@ -107,5 +110,21 @@ public class ProductValueServiceImpl implements ProductValueService {
             total = total.add(p.getPrice().multiply(BigDecimal.valueOf(p.getQuantity())));
         }
         return total;
+    }
+
+    @Override
+    public List<UserExpenses> totalUsersExpenses(Long eventId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        if(eventUserRepository.findByUserAndEvent(user, event).isEmpty())
+            throw new UserIsNotInEventException(user.getId(), event.getId());
+        List<UserExpenses> userExpensesList = new ArrayList<>();
+        UserExpenses userExpenses = new UserExpenses();
+        for (EventUser eu : event.getEventUsers()){
+            userExpenses.setEventUser(eu);
+            userExpenses.setExpenses(totalAmountOfCurrentUser(eventId,userId));
+            userExpensesList.add(userExpenses);
+        }
+        return userExpensesList;
     }
 }

@@ -38,6 +38,6 @@ public class ProductValueController {
     }
     @GetMapping("/event/{eventId}/product_category/{productCategoryId}/amount")
     public BigDecimal getTotalProductCategoryAmount(@PathVariable Long eventId, @PathVariable Long productCategoryId, HttpServletRequest request){
-        return productValueService.totalAmountOfProduct(productCategoryId,eventId,CurrentUser.currentUserId(request));
+        return productValueService.totalAmountOfProductCategory(productCategoryId,eventId,CurrentUser.currentUserId(request));
     }
 }
