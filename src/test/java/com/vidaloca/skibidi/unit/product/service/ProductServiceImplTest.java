@@ -152,6 +152,26 @@ class ProductServiceImplTest {
     }
 
     @Test
+    void deleteProductNotAllowed() {
+        //given
+        EventUser eu = new EventUser();
+        product.setEventUser(eu);
+        eventUser.setAdmin(false);
+
+        given(productRepository.findById(product.getId())).willReturn(Optional.of(product));
+
+        //when
+        String result = service.deleteProduct(event.getId(), product.getId(), user.getId());
+
+        //then
+        assertEquals("User is not allowed to delete product", result);
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(eventRepository, times(1)).findById(anyLong());
+        verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
+        verify(productRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     void deleteProductFromAdmin() {
         //given
         eventUser.getProducts().add(product);
