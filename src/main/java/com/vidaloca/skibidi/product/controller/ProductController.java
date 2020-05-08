@@ -30,13 +30,7 @@ public class ProductController {
     @PostMapping("/event/{eventId}/productNew")
     public Product addProductToEvent(@Valid @RequestBody ProductDto productDto, @PathVariable Long eventId,
                                        HttpServletRequest request) {
-        return productService.addProductToEvent(productService.addProduct(productDto,eventId,CurrentUser.currentUserId(request)), eventId, CurrentUser.currentUserId(request));
-    }
-
-    @CrossOrigin
-    @PostMapping("/event/{eventId}/product")
-    public Product addProductToEvent(@RequestParam Long productId, @PathVariable Long eventId, HttpServletRequest request) {
-        return productService.addExistingProductToEvent(productId, eventId, CurrentUser.currentUserId(request));
+        return productService.addProductToEvent(productDto, eventId, CurrentUser.currentUserId(request));
     }
 
     @PutMapping("/event/{eventId}/product/{productId}")

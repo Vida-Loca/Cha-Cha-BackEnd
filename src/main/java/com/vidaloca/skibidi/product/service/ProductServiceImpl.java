@@ -45,25 +45,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product addProductToEvent(Product product, Long eventId, Long userId) {
+    public Product addProductToEvent(ProductDto productDto, Long eventId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        eu.getProducts().add(product);
-        eventUserRepository.save(eu);
-        return product;
+        Optional<Product> temp = productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(productDto.getName(),productDto.getPrice(),productDto.getProductCategory(),eu);
+        if (temp.isPresent()){
+            temp.get().setQuantity(temp.get().getQuantity() + productDto.getQuantity());
+            return productRepository.save(temp.get());
+        }
+        Product product = Product.builder().name(productDto.getName()).productCategory(getProductCategory(productDto.getProductCategory())).
+                eventUser(eu).price(getPrice(productDto.getPrice())).quantity(productDto.getQuantity()).build();
+        return productRepository.save(product);
     }
 
-    @Override
-    public Product addExistingProductToEvent(Long productId, Long eventId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
-        eu.getProducts().add(product);
-        eventUserRepository.save(eu);
-        return product;
-    }
 
     @Override
     public List<Product> findAllEventProducts(Long eventId) {
@@ -93,17 +88,6 @@ public class ProductServiceImpl implements ProductService {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eventUser = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
         return eventUser.getProducts();
-    }
-
-    @Override
-    public Product addProduct(ProductDto productDto,Long eventId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
-        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        Optional<Product> temp = productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(productDto.getName(),productDto.getPrice(),productDto.getProductCategory(),eu);
-        temp.ifPresent(product -> product.setQuantity(product.getQuantity() + productDto.getQuantity()));
-        return temp.orElse(productRepository.save(Product.builder().name(productDto.getName()).price(getPrice(productDto.getPrice())).
-                productCategory(getProductCategory(productDto.getProductCategory())).quantity(productDto.getQuantity()).eventUser(eu).build()));
     }
 
     @Override

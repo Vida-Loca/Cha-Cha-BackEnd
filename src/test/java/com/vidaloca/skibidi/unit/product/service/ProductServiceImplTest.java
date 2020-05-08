@@ -73,6 +73,7 @@ class ProductServiceImplTest {
         given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
     }
 
+/*
     @Test
     void addProductToEvent() {
         //given
@@ -106,6 +107,7 @@ class ProductServiceImplTest {
         then(productRepository).should().findById(anyLong());
         then(eventUserRepository).should().save(any(EventUser.class));
     }
+*/
 
     @Test
     void findAllEventProducts() {
@@ -194,7 +196,7 @@ class ProductServiceImplTest {
         verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
     }
 
-    @Test
+   /* @Test
     void addExistingProduct() {
         //given
         BigDecimal price = new BigDecimal("20.20");
@@ -229,7 +231,7 @@ class ProductServiceImplTest {
         verify(productCategoryRepository, times(1)).findByName(anyString());
         verify(productCategoryRepository, times(1)).save(any(ProductCategory.class));
     }
-
+*/
     @Test
     void updateProduct() {
         //given

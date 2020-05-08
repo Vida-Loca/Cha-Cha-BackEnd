@@ -8,17 +8,13 @@ import java.util.List;
 
 public interface ProductService {
 
-    Product addProductToEvent(Product product, Long eventId, Long userId);
-
-    Product addExistingProductToEvent(Long productId, Long eventId, Long userId);
+    Product addProductToEvent(ProductDto productDto, Long eventId, Long userId);
 
     String deleteProduct(Long eventId, Long productToDeleteId, Long userId);
 
     List<Product> findAllEventProducts(Long eventId);
 
     List<Product> findUserEventProducts(Long eventId, Long userId);
-
-    Product addProduct (ProductDto productDto,Long eventId, Long userId);
 
     Product updateProduct(ProductDto productDto, Long eventId, Long productId, Long userId);
 
