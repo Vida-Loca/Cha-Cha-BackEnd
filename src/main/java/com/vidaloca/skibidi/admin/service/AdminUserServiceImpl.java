@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,19 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public List<User> findAllUsers() {
         return (List<User>) userRepository.findAll();
+    }
+
+    @Override
+    public List<User> findAllAdmins() {
+        List<User> admins = new ArrayList<>();
+        Role admin = roleRepository.findByName("ADMIN").orElse(null);
+        List<User> allUsers = (List<User>) userRepository.findAll();
+        for (User user : allUsers) {
+            if (user.getRole() == admin) {
+                admins.add(user);
+            }
+        }
+        return admins;
     }
 
     @Override
