@@ -8,6 +8,8 @@ public interface AdminUserService {
 
     List<User> findAllUsers();
 
+    List<User> findAllAdmins();
+
     User findUserById(Long id);
 
     String deleteUserById(Long id);

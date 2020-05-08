@@ -23,6 +23,11 @@ public class AdminUserController {
         return service.findAllUsers();
     }
 
+    @GetMapping("/getAllAdmins")
+    public List<User> getAllAdmins() {
+        return service.findAllAdmins();
+    }
+
     @GetMapping("/user/{id}")
     public User getUserById(@PathVariable Long id) {
         return service.findUserById(id);

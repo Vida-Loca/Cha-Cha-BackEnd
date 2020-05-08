@@ -309,30 +309,30 @@ class PostServiceImplTest {
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
         then(postRepository).shouldHaveNoMoreInteractions();
     }
-//
-//    @Test
-//    void likePostActuallyLiked() {
-//        //given
-//        Post post = new Post();
-//        post.setId(1L);
-//        post.setEventUser(eventUser);
-//        post.getLikers().add(eventUser);
-//
-//        eventUser.getLikes().add(post);
-//
-//        given(postRepository.findById(1L)).willReturn(Optional.of(post));
-//        given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
-//        given(postRepository.save(post)).willReturn(post);
-//
-//        //when
-//        Post result = service.likePost(1L, 1L);
-//
-//        //then
-//        assertEquals(1, result.getLikes());
-//        then(userRepository).should().findById(anyLong());
-//        then(postRepository).should().findById(anyLong());
-//        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
-//        then(postRepository).should().save(any(Post.class));
-//    }
+
+    @Test
+    void likePostActuallyLiked() {
+        //given
+        Post post = new Post();
+        post.setId(1L);
+        post.setEventUser(eventUser);
+        post.getLikers().add(eventUser);
+
+        eventUser.getLikes().add(post);
+
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+        given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
+        given(postRepository.save(post)).willReturn(post);
+
+        //when
+        Post result = service.likePost(1L, 1L);
+
+        //then
+        assertEquals(0, result.getLikes());
+        then(userRepository).should().findById(anyLong());
+        then(postRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
+        then(postRepository).should().save(any(Post.class));
+    }
 
 }

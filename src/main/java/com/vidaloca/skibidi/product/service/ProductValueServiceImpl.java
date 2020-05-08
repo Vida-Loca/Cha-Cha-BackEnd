@@ -19,8 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
+=======
+>>>>>>> 4d5d331cb8590b85a239fbeb18ae413fbe32cdf1
 
 @Service
 public class ProductValueServiceImpl implements ProductValueService {
@@ -98,7 +101,7 @@ public class ProductValueServiceImpl implements ProductValueService {
 
     @Override
     public BigDecimal totalAmountOfEventUser(Long eventId, Long userId, Long currentUserId) {
-        User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User currentUser = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         if(eventUserRepository.findByUserAndEvent(currentUser, event).isEmpty())
             throw new UserIsNotInEventException(currentUser.getId(), event.getId());
