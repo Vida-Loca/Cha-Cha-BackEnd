@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class RegistrationControllerIT extends BaseIT {
@@ -112,7 +115,31 @@ class RegistrationControllerIT extends BaseIT {
 
     @Test
     @Transactional
-    void confirmRegistration() {
+    void confirmRegistration() throws Exception {
+        mockMvc.perform(get("/registrationConfirm")
+                .param("token", "valid"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Successfully registration")))
+                .andDo(print());
+    }
 
+    @Test
+    @Transactional
+    void confirmRegistrationExpired() throws Exception {
+        mockMvc.perform(get("/registrationConfirm")
+                .param("token", "expired"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Something went wrong")))
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    void confirmRegistrationInvalid() throws Exception {
+        mockMvc.perform(get("/registrationConfirm")
+                .param("token", "notExisting"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Something went wrong")))
+                .andDo(print());
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
@@ -34,9 +35,13 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public String deleteUserById(Long id) {
-        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        userRepository.deleteById(id);
-        return "User deleted successfully";
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            userRepository.deleteById(id);
+            return "User deleted successfully";
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 
     @Override
@@ -51,7 +56,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     public User punishUser(Long id) {
         boolean bool;
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        bool = user.isBanned() ? false : true;
+        bool = !user.isBanned();
         user.setBanned(bool);
         return userRepository.save(user);
     }
