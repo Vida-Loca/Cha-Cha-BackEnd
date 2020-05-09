@@ -10,6 +10,7 @@ import com.vidaloca.skibidi.product.model.ProductCategory;
 import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;
 import com.vidaloca.skibidi.product.repository.ProductRepository;
 import com.vidaloca.skibidi.product.service.ProductValueServiceImpl;
+import com.vidaloca.skibidi.product.views.UserExpenses;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -235,5 +237,40 @@ class ProductValueServiceImplTest {
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
         then(productCategoryRepository).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void totalUsersExpenses() {
+        //given
+        BigDecimal price = new BigDecimal(10.00);
+        Product product = new Product();
+        product.setPrice(price);
+        eventUser.getProducts().add(product);
+
+        //when
+        List<UserExpenses> result = service.totalUsersExpenses(1L, 1L);
+
+        //then
+        assertNotNull(result);
+        then(userRepository).should(times(2)).findById(anyLong());
+        then(eventRepository).should(times(2)).findById(anyLong());
+        then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+    }
+
+    @Test
+    void totalUsersExpensesThrowUserIsNotInEvent() {
+        //given
+        given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.empty());
+
+        //when
+        Exception result = assertThrows(UserIsNotInEventException.class, () -> {
+            service.totalUsersExpenses(1L, 1L);
+        });
+
+        //then
+        assertEquals("User with id: 1 is not in event with id: 1 and cannot make this action.", result.getMessage());
+        then(userRepository).should().findById(anyLong());
+        then(eventRepository).should().findById(anyLong());
+        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
     }
 }

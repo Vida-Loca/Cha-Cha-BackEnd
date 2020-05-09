@@ -27,7 +27,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
@@ -73,41 +74,60 @@ class ProductServiceImplTest {
         given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
     }
 
-/*
     @Test
     void addProductToEvent() {
         //given
-        given(eventUserRepository.save(any(EventUser.class))).willReturn(eventUser);
+        BigDecimal price = new BigDecimal("20.20");
+        ProductDto productDto = new ProductDto();
+        productDto.setName("Test");
+        productDto.setPrice(price);
+        productDto.setProductCategory("Category");
+        productDto.setQuantity(2);
 
         //when
-        Product result = service.addProductToEvent(product, 1L, 1L);
+        Product result = service.addProductToEvent(productDto, 1L, 1L);
 
         //then
-        assertEquals(product, result);
+
         then(userRepository).should().findById(anyLong());
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
-        then(eventUserRepository).should().save(any(EventUser.class));
+        then(productRepository).should().findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(), any(BigDecimal.class), anyString(), any(EventUser.class));
     }
 
     @Test
-    void addExistingProductToEvent() {
+    void addExistingProduct() {
         //given
-        given(productRepository.findById(1L)).willReturn(Optional.of(product));
-        given(eventUserRepository.save(any(EventUser.class))).willReturn(eventUser);
+        BigDecimal price = new BigDecimal("20.20");
+        ProductDto productDto = new ProductDto();
+        productDto.setName("Test");
+        productDto.setPrice(price);
+        productDto.setProductCategory("Category");
+        productDto.setQuantity(2);
+
+        ProductCategory productCategory = new ProductCategory();
+        productCategory.setId(1L);
+        productCategory.setName("Category");
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Test");
+        product.setPrice(price);
+        product.setProductCategory(productCategory);
+        product.setQuantity(1);
+
+        given(productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(productDto.getName(),productDto.getPrice(),productDto.getProductCategory(), eventUser))
+                .willReturn(Optional.of(product));
 
         //when
-        Product result = service.addExistingProductToEvent(1L, 1L, 1L);
+        Product returned = service.addProductToEvent(productDto,1L,1L);
 
         //then
-        assertEquals(1, eventUser.getProducts().size());
         then(userRepository).should().findById(anyLong());
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
-        then(productRepository).should().findById(anyLong());
-        then(eventUserRepository).should().save(any(EventUser.class));
+        then(productRepository).should().findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(), any(BigDecimal.class), anyString(), any(EventUser.class));
     }
-*/
 
     @Test
     void findAllEventProducts() {
@@ -216,42 +236,6 @@ class ProductServiceImplTest {
         verify(eventUserRepository, times(1)).findByUserAndEvent(any(User.class), any(Event.class));
     }
 
-   /* @Test
-    void addExistingProduct() {
-        //given
-        BigDecimal price = new BigDecimal("20.20");
-        ProductDto productDto = new ProductDto();
-        productDto.setName("Test");
-        productDto.setPrice(price);
-        productDto.setProductCategory("Category");
-        productDto.setQuantity(2);
-
-        ProductCategory productCategory = new ProductCategory();
-        productCategory.setId(1L);
-        productCategory.setName("Category");
-
-        Product product = new Product();
-        product.setId(1L);
-        product.setName("Test");
-        product.setPrice(price);
-        product.setProductCategory(productCategory);
-
-        given(productRepository.findByNameAndPriceAndProductCategory_NameAndEventUser(productDto.getName(),productDto.getPrice(),productDto.getProductCategory(), eventUser))
-                .willReturn(Optional.of(product));
-
-        //when
-        Product returned = service.addProduct(productDto,1L,1L);
-
-        //then
-        assertEquals("Test", returned.getName());
-        assertEquals("20.20", returned.getPrice().toString());
-        assertEquals("Category", returned.getProductCategory().getName());
-        verify(productRepository, times(1))
-                .findByNameAndPriceAndProductCategory_NameAndEventUser(anyString(), any(BigDecimal.class), anyString(), any(EventUser.class));
-        verify(productCategoryRepository, times(1)).findByName(anyString());
-        verify(productCategoryRepository, times(1)).save(any(ProductCategory.class));
-    }
-*/
     @Test
     void updateProduct() {
         //given

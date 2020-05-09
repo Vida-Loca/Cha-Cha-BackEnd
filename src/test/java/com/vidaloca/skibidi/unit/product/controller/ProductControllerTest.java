@@ -73,14 +73,6 @@ class ProductControllerTest {
     }
 
     @Test
-    void addProductToEvent() throws Exception {
-        mockMvc.perform(post("/event/{eventId}/product", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("productId", "1"))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
     void updateProduct() throws Exception {
         ProductDto productDto = new ProductDto();
         productDto.setName("Name");

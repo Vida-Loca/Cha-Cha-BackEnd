@@ -19,11 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
-=======
->>>>>>> 4d5d331cb8590b85a239fbeb18ae413fbe32cdf1
 
 @Service
 public class ProductValueServiceImpl implements ProductValueService {

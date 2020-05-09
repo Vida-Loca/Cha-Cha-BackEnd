@@ -3,13 +3,8 @@ package com.vidaloca.skibidi.integration.user.account.controller;
 import com.vidaloca.skibidi.BaseIT;
 import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
-import com.vidaloca.skibidi.user.account.repository.ResetPasswordTokenRepository;
-import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -21,23 +16,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserAccountControllerIT extends BaseIT {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ResetPasswordTokenRepository passwordTokenRepository;
-
 
     @Test
     @Transactional
     void getCurrentUser() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(get("/user")
                 .header("Authorization", "Bearer " + token))
@@ -50,14 +33,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void getAllUserEvents() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(get("/user/event")
                 .header("Authorization", "Bearer " + token))
@@ -69,14 +45,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void isAdminReturnFalse() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(get("/user/isAdmin")
                 .header("Authorization", "Bearer " + token))
@@ -88,14 +57,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void isAdminReturnTrue() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "admin1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("admin1", "password");
 
         mockMvc.perform(get("/user/isAdmin")
                 .header("Authorization", "Bearer " + token))
@@ -107,14 +69,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void changePhoto() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         String url = "NewUrl";
         mockMvc.perform(put("/user/changePhoto")
@@ -128,14 +83,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void changeNames() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         NamesDto dto = new NamesDto();
         dto.setName("NewName");
@@ -154,14 +102,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void resetPasswordPost() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(post("/user/resetPassword")
                 .header("Authorization", "Bearer " + token)
@@ -174,14 +115,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void resetPasswordPostInvalidEmail() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(post("/user/resetPassword")
                 .header("Authorization", "Bearer " + token)
@@ -194,20 +128,13 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void confirmResetPassword() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         assertFalse(userRepository.findByUsername("testowy1").get().isCanChangePass());
 
         mockMvc.perform(get("/user/changePassword")
                 .header("Authorization", "Bearer " + token)
-                .param("userId", "11")
+                .param("userId", "10")
                 .param("token", "valid"))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -219,18 +146,11 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void confirmResetPasswordInvalidToken() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(get("/user/changePassword")
                 .header("Authorization", "Bearer " + token)
-                .param("userId", "11")
+                .param("userId", "10")
                 .param("token", "invalid"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is("invalidToken")))
@@ -242,18 +162,11 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void confirmResetPasswordExpiredToken() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(get("/user/changePassword")
                 .header("Authorization", "Bearer " + token)
-                .param("userId", "11")
+                .param("userId", "10")
                 .param("token", "expired"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is("expired")))
@@ -265,14 +178,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void resetPasswordPut() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "changePass",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("changePass", "password");
 
         PasswordDto dto = new PasswordDto();
         dto.setPassword("newPassword");
@@ -293,14 +199,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void resetPasswordPutNotMatching() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "changePass",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("changePass", "password");
 
         PasswordDto dto = new PasswordDto();
         dto.setPassword("newPassword");
@@ -318,14 +217,7 @@ class UserAccountControllerIT extends BaseIT {
     @Test
     @Transactional
     void resetPasswordPutCantChange() throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        "testowy1",
-                        "password"
-                )
-        );
-
-        String token = jwtTokenProvider.generateToken(authentication);
+        String token = authenticateUser("testowy1", "password");
 
         PasswordDto dto = new PasswordDto();
         dto.setPassword("newPassword");
