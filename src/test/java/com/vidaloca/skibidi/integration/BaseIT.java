@@ -3,6 +3,8 @@ package com.vidaloca.skibidi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
+import com.vidaloca.skibidi.product.repository.ProductCategoryRepository;
+import com.vidaloca.skibidi.product.repository.ProductRepository;
 import com.vidaloca.skibidi.user.account.repository.ResetPasswordTokenRepository;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,12 @@ public abstract class BaseIT {
 
     @Autowired
     protected UserRepository userRepository;
+
+    @Autowired
+    protected ProductRepository productRepository;
+
+    @Autowired
+    protected ProductCategoryRepository productCategoryRepository;
 
     @Autowired
     protected ResetPasswordTokenRepository passwordTokenRepository;

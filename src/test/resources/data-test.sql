@@ -21,4 +21,4 @@ INSERT INTO verification_token VALUES (10, '2020-10-10T20:21', 'valid', 13);
 INSERT INTO verification_token VALUES (11, '2000-10-10T20:21', 'expired', 13);
 
 INSERT INTO product_category VALUES (10, 'FOOD');
-INSERT INTO product VALUES (10, 'TestProduct', 10.00, 2, 10, 10);
+INSERT INTO product VALUES (10, 'TestProduct', 10, 2, 10, 10);
