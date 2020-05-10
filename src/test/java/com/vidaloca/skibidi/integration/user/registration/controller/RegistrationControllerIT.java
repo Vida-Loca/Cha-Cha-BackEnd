@@ -76,7 +76,7 @@ class RegistrationControllerIT extends BaseIT {
         dto.setUsername("testUsername");
         dto.setPassword("password");
         dto.setMatchingPassword("password");
-        dto.setEmail("test1@o2.pl");
+        dto.setEmail("test10@o2.pl");
         dto.setPicUrl("picUrl");
 
         mockMvc.perform(post("/registration")

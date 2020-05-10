@@ -25,8 +25,8 @@ class UserAccountControllerIT extends BaseIT {
         mockMvc.perform(get("/user")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("test1")))
-                .andExpect(jsonPath("$.surname", is("Test1")))
+                .andExpect(jsonPath("$.name", is("Name10")))
+                .andExpect(jsonPath("$.surname", is("Surname10")))
                 .andDo(print());
     }
 
@@ -106,7 +106,7 @@ class UserAccountControllerIT extends BaseIT {
 
         mockMvc.perform(post("/user/resetPassword")
                 .header("Authorization", "Bearer " + token)
-                .param("email", "test1@o2.pl"))
+                .param("email", "test10@o2.pl"))
                 .andExpect(jsonPath("$", is("Check your mail box")))
                 .andExpect(status().isOk())
                 .andDo(print());

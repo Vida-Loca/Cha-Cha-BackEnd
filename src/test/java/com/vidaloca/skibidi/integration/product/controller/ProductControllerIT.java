@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,7 +29,8 @@ class ProductControllerIT extends BaseIT {
         mockMvc.perform(get("/event/{eventId}/product", 10)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name", is("TestProduct")))
+                .andExpect(jsonPath("$.[0].name", is("FoodEvent10")))
+                .andExpect(jsonPath("$", hasSize(3)))
                 .andDo(print());
     }
 
@@ -36,9 +38,9 @@ class ProductControllerIT extends BaseIT {
     @Transactional
     void addProductToEvent_ExistingProduct() throws Exception {
         List<Product> before = (List<Product>) productRepository.findAll();
-        BigDecimal price = new BigDecimal(10);
+        BigDecimal price = new BigDecimal(1);
         ProductDto productDto = new ProductDto();
-        productDto.setName("TestProduct");
+        productDto.setName("FoodEvent10");
         productDto.setQuantity(3);
         productDto.setProductCategory("FOOD");
         productDto.setPrice(price);
@@ -54,6 +56,26 @@ class ProductControllerIT extends BaseIT {
 
         List<Product> after = (List<Product>) productRepository.findAll();
         assertEquals(before.size(), after.size());
+    }
+
+    @Test
+    @Transactional
+    void addProductToEvent_InvalidPrice() throws Exception {
+        BigDecimal price = new BigDecimal(-1);
+        ProductDto productDto = new ProductDto();
+        productDto.setName("Invalid");
+        productDto.setQuantity(3);
+        productDto.setProductCategory("FOOD");
+        productDto.setPrice(price);
+
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(post("/event/{eventId}/productNew", 10)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(productDto)))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
@@ -155,16 +177,62 @@ class ProductControllerIT extends BaseIT {
 
     @Test
     @Transactional
-    void getEventUserProducts() {
+    void getEventUserProducts() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(get("/event/{eventId}/user/{userId}/products", 10, 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void getMyEventUserProducts() {
+    void getMyEventUserProducts() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(get("/event/{eventId}/myproducts", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void deleteProductFromEvent() {
+    void deleteProductFromEvent() throws Exception {
+        List<Product> before = (List<Product>) productRepository.findAll();
+
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(delete("/event/{eventId}/product", 10)
+                .header("Authorization", "Bearer " + token)
+                .param("productToDeleteId", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Successfully delete products")))
+                .andDo(print());
+
+        List<Product> after = (List<Product>) productRepository.findAll();
+
+        assertNotEquals(before, after);
+    }
+
+    @Test
+    @Transactional
+    void deleteProductFromEventNotAllowed() throws Exception {
+        List<Product> before = (List<Product>) productRepository.findAll();
+
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(delete("/event/{eventId}/product", 11)
+                .header("Authorization", "Bearer " + token)
+                .param("productToDeleteId", "11"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("User is not allowed to delete product")));
+
+        List<Product> after = (List<Product>) productRepository.findAll();
+
+        assertEquals(before, after);
     }
 }
