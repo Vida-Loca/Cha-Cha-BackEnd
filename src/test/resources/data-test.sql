@@ -7,7 +7,7 @@ INSERT INTO userr VALUES (12, false, 'admin1@o2.pl', true, false, false, '2001-0
 INSERT INTO userr VALUES (13, false, 'toConfirm@o2.pl', false, false, false, '2001-01-03T10:33', 'Name13', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl13', 'Surname13', 'confirm', 1);
 INSERT INTO userr VALUES (14, false, 'test14@o2.pl', true, false, false, '2001-01-01T10:22', 'Name14', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl14', 'Surname14', 'testowy2', 1);
 INSERT INTO userr VALUES (15, false, 'test15@o2.pl', true, false, false, '2001-01-01T10:22', 'Name15', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl15', 'Surname15', 'testowy3', 1);
-
+INSERT INTO userr VALUES (16, false, 'test16@o2.pl', true, false, false, '2001-01-01T10:22', 'Name16', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl16', 'Surname16', 'testowy4', 1);
 
 INSERT INTO reset_password_token VALUES (10, '2020-10-10T20:21', 'valid', 10);
 INSERT INTO reset_password_token VALUES (11, '2000-10-10T20:21', 'expired', 10);
@@ -41,5 +41,24 @@ INSERT INTO event_user VALUES (12, true, 11, 11);
 /* product - id, name, price, quantity, eventUserId, productCategoryId */
 INSERT INTO product VALUES (11, 'FoodEvent11', 3.2, 2, 12, 10);
 INSERT INTO product VALUES (14, 'Food1Event11', 13.1, 1, 11, 10);
+
+/* invitation - id, status, invitedId, invitorId */
+INSERT INTO invitation VALUES (10, 'PROCESSING', 12, 10);
+INSERT INTO invitation VALUES (11, 'PROCESSING', 10, 15);
+INSERT INTO invitation VALUES (12, 'CANCELLED', 16, 10);
+INSERT INTO invitation VALUES (13, 'ACCEPTED', 14, 10);
+
+/* user_friend - id, friendId, startDate, status, userId */
+INSERT INTO user_friend VALUES (10, 14, '2020-03-10T20:21', 'FRIENDS', 10);
+INSERT INTO user_friend VALUES (11, 10, '2020-03-10T20:21', 'FRIENDS', 14);
+
+INSERT INTO user_friend VALUES (12, 14, '2020-03-10T20:21', 'FRIENDS', 15);
+INSERT INTO user_friend VALUES (13, 15, '2020-03-10T20:21', 'FRIENDS', 14);
+
+INSERT INTO user_friend VALUES (14, 10, '2020-03-10T20:21', 'FRIENDS', 11);
+INSERT INTO user_friend VALUES (15, 11, '2020-03-10T20:21', 'FRIENDS', 10);
+
+INSERT INTO user_friend VALUES (16, 14, '2020-03-10T20:21', 'BLOCKED', 16);
+INSERT INTO user_friend VALUES (17, 16, '2020-03-10T20:21', 'BLOCKED', 14);
 
 
