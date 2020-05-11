@@ -124,7 +124,7 @@ class UserServiceImplTest {
         });
 
         //then
-        assertEquals("There is an account with that email address:EMAIL", result.getMessage());
+        assertEquals("Account with email: EMAIL already exists", result.getMessage());
         then(userRepository).should().findByEmail(anyString());
         then(userRepository).shouldHaveNoMoreInteractions();
         then(passwordEncoder).shouldHaveNoInteractions();
@@ -149,7 +149,7 @@ class UserServiceImplTest {
         });
 
         //then
-        assertEquals("There is an account with that username: USERNAME", result.getMessage());
+        assertEquals("Account with username: USERNAME already exists", result.getMessage());
         then(userRepository).should().findByEmail(anyString());
         then(userRepository).should().findByUsername(anyString());
         then(userRepository).shouldHaveNoMoreInteractions();

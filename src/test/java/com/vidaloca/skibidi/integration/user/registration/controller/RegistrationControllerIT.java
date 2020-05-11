@@ -59,7 +59,7 @@ class RegistrationControllerIT extends BaseIT {
         mockMvc.perform(post("/registration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(dto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andDo(print());
 
         List<User> userListAfter = (List<User>) userRepository.findAll();
@@ -82,7 +82,7 @@ class RegistrationControllerIT extends BaseIT {
         mockMvc.perform(post("/registration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(dto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andDo(print());
 
         List<User> userListAfter = (List<User>) userRepository.findAll();
@@ -114,7 +114,7 @@ class RegistrationControllerIT extends BaseIT {
         mockMvc.perform(get("/registrationConfirm")
                 .param("token", "valid"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is("Successfully registration")))
+                .andExpect(jsonPath("$", is("Success")))
                 .andDo(print());
     }
 
@@ -123,8 +123,8 @@ class RegistrationControllerIT extends BaseIT {
     void confirmRegistrationExpired() throws Exception {
         mockMvc.perform(get("/registrationConfirm")
                 .param("token", "expired"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is("Something went wrong")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$", is("Token is not valid")))
                 .andDo(print());
     }
 
@@ -133,8 +133,8 @@ class RegistrationControllerIT extends BaseIT {
     void confirmRegistrationInvalid() throws Exception {
         mockMvc.perform(get("/registrationConfirm")
                 .param("token", "notExisting"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is("Something went wrong")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$", is("Token is not valid")))
                 .andDo(print());
     }
 }

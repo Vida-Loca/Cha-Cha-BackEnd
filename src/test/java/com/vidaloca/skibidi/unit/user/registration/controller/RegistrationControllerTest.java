@@ -6,8 +6,6 @@ import com.vidaloca.skibidi.user.model.Role;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.controller.RegistrationController;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
-import com.vidaloca.skibidi.user.registration.exception.EmailExistsException;
-import com.vidaloca.skibidi.user.registration.exception.UsernameExistsException;
 import com.vidaloca.skibidi.user.registration.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,12 +48,15 @@ class RegistrationControllerTest {
     }
 
     @Test
-    void registerUserAccount() throws Exception, EmailExistsException, UsernameExistsException {
+    void registerUserAccount() throws Exception {
         request.setServerName("server");
         request.setServerPort(1000);
         request.setContextPath("contextPath");
 
         User user = new User();
+        user.setId(1L);
+        user.setUsername("username");
+        user.setEmail("mail");
 
         UserRegistrationDto dto = new UserRegistrationDto();
         dto.setName("name");
@@ -75,52 +76,6 @@ class RegistrationControllerTest {
     }
 
     @Test
-    void registerUserAccountEmailExist() throws Exception, EmailExistsException, UsernameExistsException {
-        request.setServerName("server");
-        request.setServerPort(1000);
-        request.setContextPath("contextPath");
-
-        UserRegistrationDto dto = new UserRegistrationDto();
-        dto.setName("name");
-        dto.setSurname("surname");
-        dto.setEmail("mail");
-        dto.setPassword("pass");
-        dto.setMatchingPassword("pass");
-        dto.setPicUrl("url");
-        dto.setUsername("username");
-
-        given(userService.registerNewUserAccount(dto)).willThrow(EmailExistsException.class);
-
-        mockMvc.perform(post("/registration")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJson(dto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void registerUserAccountUsernameExist() throws Exception, EmailExistsException, UsernameExistsException {
-        request.setServerName("server");
-        request.setServerPort(1000);
-        request.setContextPath("contextPath");
-
-        UserRegistrationDto dto = new UserRegistrationDto();
-        dto.setName("name");
-        dto.setSurname("surname");
-        dto.setEmail("mail");
-        dto.setPassword("pass");
-        dto.setMatchingPassword("pass");
-        dto.setPicUrl("url");
-        dto.setUsername("username");
-
-        given(userService.registerNewUserAccount(dto)).willThrow(UsernameExistsException.class);
-
-        mockMvc.perform(post("/registration")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJson(dto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void confirmRegistration() throws Exception {
         Role role = new Role();
         role.setId(1L);
@@ -130,17 +85,6 @@ class RegistrationControllerTest {
 
         given(userService.validateVerificationToken(anyString())).willReturn("valid");
         given(userService.getUser(anyString())).willReturn(user);
-
-        mockMvc.perform(get("/registrationConfirm")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("token", "token"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void confirmRegistrationWentWrong() throws Exception {
-
-        given(userService.validateVerificationToken(anyString())).willReturn("expired");
 
         mockMvc.perform(get("/registrationConfirm")
                 .contentType(MediaType.APPLICATION_JSON)
