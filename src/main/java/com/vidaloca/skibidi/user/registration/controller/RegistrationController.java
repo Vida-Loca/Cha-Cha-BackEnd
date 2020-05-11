@@ -56,9 +56,9 @@ public class RegistrationController {
         throw new TokenNotValidException();
     }
 
-    private String getAppUrl(HttpServletRequest request) {
+   /* private String getAppUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-    }
+    }*/
 
     private void authWithoutPassword(User user) {
         List<String> role = new ArrayList<>();

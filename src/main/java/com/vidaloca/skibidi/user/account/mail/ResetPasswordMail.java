@@ -38,7 +38,7 @@ public class ResetPasswordMail {
     }
 
     public void sendMail(HttpServletRequest request, String token, User user) {
-        mailSender.send(constructResetTokenEmail(getAppUrl(request), token, user));
+        mailSender.send(constructResetTokenEmail("http://localhost:3000", token, user));
     }
 
     private String getAppUrl(HttpServletRequest request) {
