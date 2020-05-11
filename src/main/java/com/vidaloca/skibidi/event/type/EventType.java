@@ -24,4 +24,5 @@ public enum EventType {
     public boolean canUserAcceptRequest(){
         return this == NORMAL;
     }
+    public boolean isVisible() { return this != SECRET;}
 }

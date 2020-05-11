@@ -34,7 +34,7 @@ public class EventController {
 
     @GetMapping("/event")
     public List<Event> getEvents() {
-        return (List<Event>) eventService.findAllEvents();
+        return eventService.findAllEvents();
     }
 
     @GetMapping("/event/{eventId}")

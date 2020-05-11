@@ -67,7 +67,7 @@ public class PostServiceImpl implements PostService {
         if (post.getEventUser().getUser() != user)
             throw new IsNotUsersPostException(postId,userId);
         post.setText(postDto.getPost());
-        post.setTimePosted(LocalDateTime.now());
+       // post.setTimePosted(LocalDateTime.now());
         post.setUpdated(true);
         return postRepository.save(post);
     }
@@ -76,12 +76,9 @@ public class PostServiceImpl implements PostService {
     public boolean deletePost(Long postId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         Post post = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException(postId));
-        EventUser eu = eventUserRepository.findByUserAndEvent(user, post.getEventUser().getEvent()).orElse(null);
-        if (post.getEventUser().getUser() != user && eu == null)
-            throw new IsNotUsersPostException(postId,userId);
-        if (eu != null && !eu.isAdmin()){
-            throw new IsNotUsersPostException(postId,userId);
-        }
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, post.getEventUser().getEvent()).orElseThrow(()-> new UserIsNotInEventException(userId, post.getEventUser().getEvent().getId()));
+        if (!post.getEventUser().equals(eu) && !eu.isAdmin())
+            throw new IsNotUsersPostException(postId, userId);
         postRepository.deleteById(postId);
         return true;
     }

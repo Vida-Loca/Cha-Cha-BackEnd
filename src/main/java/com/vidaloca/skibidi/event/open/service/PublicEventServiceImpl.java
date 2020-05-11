@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PublicEventServiceImpl implements PublicEventService {
@@ -41,6 +42,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     @Override
     public List<Event> findAllPublicEvents() {
-        return eventRepository.findAllByEventType(EventType.PUBLIC);
+        List <Event> events = (List<Event>) eventRepository.findAll();
+        return events.stream().filter(e -> e.getEventType().canUserInvite()).filter(e->!e.isOver()).collect(Collectors.toList());
     }
 }

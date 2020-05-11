@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//JAN LEWANDOWSKI COPYRIGHT
+
 @Service
 public class AdminEventUserServiceImpl implements AdminEventUserService {
 
@@ -43,5 +45,16 @@ public class AdminEventUserServiceImpl implements AdminEventUserService {
         EventUser eu = eventUserRepository.findByUserAndEvent(userToDelete, event).orElseThrow(() -> new UserIsNotInEventException(userToDelete.getId(), event.getId()));
         eventUserRepository.delete(eu);
         return "Successfully removed user from event";
+    }
+
+    // Function below returns actuall isAdmin status after change by admin
+    @Override
+    public boolean grantTakeUserEventAdmin(Long eventId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
+        eu.setAdmin(!eu.isAdmin());
+        eventUserRepository.save(eu);
+        return eu.isAdmin();
     }
 }

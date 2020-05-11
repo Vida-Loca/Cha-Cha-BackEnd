@@ -9,4 +9,7 @@ public interface AdminEventUserService {
     List<User> findAllEventUsers(Long eventId);
 
     String deleteUserFromEvent(Long userToDeleteId, Long eventId);
+
+    boolean grantTakeUserEventAdmin(Long eventId, Long userId);
+
 }

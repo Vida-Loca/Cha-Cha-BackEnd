@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.friendship.service;
 
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.event.type.EventType;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
 import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.RelationNotFoundException;
@@ -61,7 +62,9 @@ public class FriendshipServiceImpl implements FriendshipService {
         List<User> friends = findAllUserFriends(userId);
         List<EventUser> eventUserList = new ArrayList<>();
         friends.forEach(u -> eventUserList.addAll(new ArrayList<EventUser>(u.getEventUsers())));
-        return eventUserList.stream().filter(EventUser::isAdmin).filter(eu -> eu.getUser() != user ).map(EventUser::getEvent).collect(Collectors.toSet());
+        return eventUserList.stream().filter(EventUser::isAdmin).filter(eu-> eu.getEvent().getEventType().isVisible()).
+                filter(eu -> !eu.getEvent().isOver()).
+                filter(eu -> eu.getUser() != user ).map(EventUser::getEvent).collect(Collectors.toSet());
 
     }
 
