@@ -42,7 +42,7 @@ class RegistrationListenerTest {
         user.setEmail("mail");
         locale = Locale.ENGLISH;
 
-        registerEvent = new RegisterEvent(user, locale, appUrl);
+        registerEvent = new RegisterEvent(user, locale);
         registerEvent.setAppUrl(appUrl);
         registerEvent.setUser(user);
         registerEvent.setLocale(locale);

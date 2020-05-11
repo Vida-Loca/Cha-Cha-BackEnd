@@ -41,16 +41,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User registerNewUserAccount(UserRegistrationDto accountDto)
-            throws EmailExistsException, UsernameExistsException {
+    public User registerNewUserAccount(UserRegistrationDto accountDto) {
 
         if (emailExists(accountDto.getEmail())) {
-            throw new EmailExistsException(
-                    "There is an account with that email address:" + accountDto.getEmail());
+            throw new EmailExistsException(accountDto.getEmail());
         }
         if (userRepository.findByUsername(accountDto.getUsername()).isPresent()) {
-            throw new UsernameExistsException(
-                    "There is an account with that username: " + accountDto.getUsername());
+            throw new UsernameExistsException(accountDto.getUsername());
         }
         User user = User.builder().username(accountDto.getUsername()).name(accountDto.getName()).surname(accountDto.getSurname()).
                 password(passwordEncoder.encode(accountDto.getPassword())).email(accountDto.getEmail()).picUrl(accountDto.getPicUrl()).

@@ -57,4 +57,10 @@ public class AdminEventUserServiceImpl implements AdminEventUserService {
         eventUserRepository.save(eu);
         return eu.isAdmin();
     }
+
+    @Override
+    public List<User> findAllEventAdmins(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
+        return event.getEventUsers().stream().filter(EventUser::isAdmin).map(EventUser::getUser).collect(Collectors.toList());
+    }
 }

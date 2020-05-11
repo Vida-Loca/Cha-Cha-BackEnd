@@ -1,6 +1,7 @@
 package com.vidaloca.skibidi.product.controller;
 
 import com.vidaloca.skibidi.product.service.ProductValueService;
+import com.vidaloca.skibidi.product.views.UserExpenses;
 import com.vidaloca.skibidi.user.account.current.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 public class ProductValueController {
@@ -39,5 +41,9 @@ public class ProductValueController {
     @GetMapping("/event/{eventId}/product_category/{productCategoryId}/amount")
     public BigDecimal getTotalProductCategoryAmount(@PathVariable Long eventId, @PathVariable Long productCategoryId, HttpServletRequest request){
         return productValueService.totalAmountOfProductCategory(productCategoryId,eventId,CurrentUser.currentUserId(request));
+    }
+    @GetMapping("/event/{eventId}/users_expenses")
+    public List<UserExpenses> getAllUsersExpenses(@PathVariable Long eventId, HttpServletRequest request){
+        return productValueService.totalUsersExpenses(eventId,CurrentUser.currentUserId(request));
     }
 }

@@ -6,16 +6,17 @@ import org.springframework.context.ApplicationEvent;
 import java.util.Locale;
 
 public class RegisterEvent extends ApplicationEvent {
+    private static final String URL = "http://localhost:3000";
     private String appUrl;
     private Locale locale;
     private User user;
 
-    public RegisterEvent(User user, Locale locale, String appUrl) {
+    public RegisterEvent(User user, Locale locale) {
         super(user);
 
         this.user = user;
         this.locale = locale;
-        this.appUrl = appUrl;
+        this.appUrl = URL;
     }
 
     public String getAppUrl() {

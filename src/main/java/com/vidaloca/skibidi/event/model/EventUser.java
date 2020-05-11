@@ -46,12 +46,12 @@ public class EventUser {
     private Event event;
 
     @JsonIgnore
-    @OneToMany (mappedBy = "eventUser",  cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany (mappedBy = "eventUser", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Product> products = new ArrayList<>();
     @JsonIgnore
     @Builder.Default
-    @ManyToMany (mappedBy = "likers", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany (mappedBy = "likers", cascade = CascadeType.ALL)
     private List<Post> likes =  new ArrayList<>();
 
     @NotNull(message = "isAdmin cannot be null")

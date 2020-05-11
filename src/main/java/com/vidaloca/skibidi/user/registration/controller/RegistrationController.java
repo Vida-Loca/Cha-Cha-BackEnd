@@ -1,5 +1,6 @@
 package com.vidaloca.skibidi.user.registration.controller;
 
+import com.vidaloca.skibidi.user.registration.exception.TokenNotValidException;
 import com.vidaloca.skibidi.user.registration.exception.UsernameExistsException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.model.VerificationToken;
@@ -38,18 +39,10 @@ public class RegistrationController {
 
     @CrossOrigin
     @PostMapping ("/registration")
-    public String registerUserAccount(@RequestBody UserRegistrationDto accountDto, final HttpServletRequest request) {
-       try {
-           final User registered = userService.registerNewUserAccount(accountDto);
-           eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale(), getAppUrl(request)));
-           return "Successfully registration";
-       }
-       catch (EmailExistsException ex){
-           return "Email exists";
-       }
-       catch (UsernameExistsException ex){
-           return "Username exists";
-       }
+    public User registerUserAccount(@RequestBody UserRegistrationDto accountDto, final HttpServletRequest request) {
+        User registered = userService.registerNewUserAccount(accountDto);
+        eventPublisher.publishEvent(new RegisterEvent(registered, request.getLocale()));
+        return registered;
     }
 
     @GetMapping("/registrationConfirm")
@@ -58,9 +51,9 @@ public class RegistrationController {
         if (result.equals("valid")) {
             final User user = userService.getUser(token);
             authWithoutPassword(user);
-            return "Successfully registration";
+            return "Success";
         }
-        return "Something went wrong";
+        throw new TokenNotValidException();
     }
 
     private String getAppUrl(HttpServletRequest request) {

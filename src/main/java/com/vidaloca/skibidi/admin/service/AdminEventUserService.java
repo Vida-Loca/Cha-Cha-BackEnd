@@ -12,4 +12,6 @@ public interface AdminEventUserService {
 
     boolean grantTakeUserEventAdmin(Long eventId, Long userId);
 
+    List<User> findAllEventAdmins(Long eventId);
+
 }
