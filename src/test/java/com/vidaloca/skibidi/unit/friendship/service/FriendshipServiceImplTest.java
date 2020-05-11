@@ -2,6 +2,7 @@ package com.vidaloca.skibidi.unit.friendship.service;
 
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
+import com.vidaloca.skibidi.event.type.EventType;
 import com.vidaloca.skibidi.friendship.exception.InvitationExistsException;
 import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.RelationNotFoundException;
@@ -117,6 +118,7 @@ class FriendshipServiceImplTest {
 
         invitor.getRelations().add(invitor_relation);
 
+        event.setEventType(EventType.PUBLIC);
         eventUser.setUser(invited);
         eventUser.setEvent(event);
         eventUser.setAdmin(true);

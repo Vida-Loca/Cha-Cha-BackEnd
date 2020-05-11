@@ -214,37 +214,14 @@ class PostServiceImplTest {
     }
 
     @Test
-    void deletePostNotOwner() {
-        //given
-        User u = new User();
-        eventUser.setUser(u);
-        post = new Post();
-        post.setId(1L);
-        post.setEventUser(eventUser);
-
-        given(postRepository.findById(1L)).willReturn(Optional.of(post));
-        given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.empty());
-
-        //when
-        Exception result = assertThrows(IsNotUsersPostException.class, () -> {
-            service.deletePost(1L, 1L);
-        });
-
-        //then
-        assertEquals("User with id: 1 can't change/delete post with id: 1", result.getMessage());
-        then(userRepository).should().findById(anyLong());
-        then(postRepository).should().findById(anyLong());
-        then(eventUserRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
-        then(postRepository).shouldHaveNoMoreInteractions();
-    }
-
-    @Test
-    void deletePostNotAdmin() {
+    void deletePostNotAdminAndNotOwner() {
         //given
         eventUser.setAdmin(false);
+        EventUser eu = new EventUser();
+        eu.setEvent(event);
         post = new Post();
         post.setId(1L);
-        post.setEventUser(eventUser);
+        post.setEventUser(eu);
 
         given(postRepository.findById(1L)).willReturn(Optional.of(post));
         given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));

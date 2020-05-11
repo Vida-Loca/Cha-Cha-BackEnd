@@ -41,12 +41,22 @@ INSERT INTO event_user VALUES (12, true, 11, 11);
 /* product - id, name, price, quantity, eventUserId, productCategoryId */
 INSERT INTO product VALUES (11, 'FoodEvent11', 3.2, 2, 12, 10);
 INSERT INTO product VALUES (14, 'Food1Event11', 13.1, 1, 11, 10);
-
+/* event - id, info, currency, eventType, isOver, name, startTime, addressId
+   event_user - id, isAdmin, eventId, userId */
+INSERT INTO event VALUES (12, 'info11', 'PLN', 'PRIVATE', false, 'TestEvent12', '2020-12-10T20:21', 10);
+INSERT INTO event_user VALUES (15, true, 12, 10);
+INSERT INTO event_user VALUES (16, true, 12, 14);
+INSERT INTO event_user VALUES (17, true, 12, 15);
 /* invitation - id, status, invitedId, invitorId */
 INSERT INTO invitation VALUES (10, 'PROCESSING', 12, 10);
 INSERT INTO invitation VALUES (11, 'PROCESSING', 10, 15);
 INSERT INTO invitation VALUES (12, 'CANCELLED', 16, 10);
 INSERT INTO invitation VALUES (13, 'ACCEPTED', 14, 10);
+
+/* post - id, isUpdated, likes, text, timePosted, eventUserId */
+INSERT INTO post VALUES (10, false, 1, 'TestPost10', '2020-07-10T20:21', 10);
+INSERT INTO post VALUES (11, false, 0, 'TestPost11', '2020-07-10T20:24', 13);
+INSERT INTO event_user_likes VALUES (11, 10);
 
 /* user_friend - id, friendId, startDate, status, userId */
 INSERT INTO user_friend VALUES (10, 14, '2020-03-10T20:21', 'FRIENDS', 10);

@@ -90,10 +90,12 @@ class PublicEventServiceImplTest {
         List<Event> events = new ArrayList<>();
         Event event = new Event();
         Event event1 = new Event();
+        event.setEventType(EventType.PUBLIC);
+        event1.setEventType(EventType.PUBLIC);
         events.add(event);
         events.add(event1);
 
-        given(eventRepository.findAllByEventType(EventType.PUBLIC)).willReturn(events);
+        given(eventRepository.findAll()).willReturn(events);
 
         //when
         List<Event> result = service.findAllPublicEvents();
@@ -101,6 +103,6 @@ class PublicEventServiceImplTest {
         //then
         assertEquals(events, result);
         assertEquals(2, result.size());
-        then(eventRepository).should().findAllByEventType(any(EventType.class));
+        then(eventRepository).should().findAll();
     }
 }

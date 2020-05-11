@@ -38,7 +38,7 @@ class UserAccountControllerIT extends BaseIT {
         mockMvc.perform(get("/user/event")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(3)))
                 .andDo(print());
     }
 
