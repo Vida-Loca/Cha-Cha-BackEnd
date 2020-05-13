@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.product.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 

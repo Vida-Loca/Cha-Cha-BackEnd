@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.event.forum.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.event.forum.dto.PostDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

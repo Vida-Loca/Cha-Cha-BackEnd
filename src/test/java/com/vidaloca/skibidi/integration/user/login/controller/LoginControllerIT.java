@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.user.login.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.user.login.dto.LoginDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

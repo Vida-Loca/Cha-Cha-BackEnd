@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.user.registration.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.registration.dto.UserRegistrationDto;
 import org.junit.jupiter.api.Test;

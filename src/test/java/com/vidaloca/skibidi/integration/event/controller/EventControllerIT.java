@@ -1,17 +1,18 @@
 package com.vidaloca.skibidi.integration.event.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.address.dto.AddressDto;
 import com.vidaloca.skibidi.event.dto.EventDto;
 import com.vidaloca.skibidi.event.type.EventType;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +58,7 @@ class EventControllerIT extends BaseIT {
     @Test
     @Transactional
     void addNewEvent() throws Exception {
-        String stringDate = "2020-10-15T20:21";
+        LocalDateTime data = LocalDateTime.parse("2020-09-10T20:20");
         AddressDto addressDto = new AddressDto();
         addressDto.setCountry("Country");
         addressDto.setCity("City");
@@ -66,9 +67,10 @@ class EventControllerIT extends BaseIT {
         addressDto.setStreet("Street");
         addressDto.setPostcode("10-100");
         addressDto.setNumber("5B");
+
         EventDto dto = new EventDto();
         dto.setName("NewTestEvent");
-        dto.setStartTime(LocalDateTime.now());
+        dto.setStartTime(data);
         dto.setAddress(addressDto);
         dto.setAdditionalInformation("AddInfo");
         dto.setEventType(EventType.PUBLIC);
@@ -77,45 +79,132 @@ class EventControllerIT extends BaseIT {
 
         String token = authenticateUser("testowy1", "password");
 
-        mockMvc.perform(get("/event/{eventId}", 10)
-                .header("Authorization", "Bearer " + token))
+        mockMvc.perform(post("/event")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("TestEvent10")))
+                .andExpect(jsonPath("$.name", is("NewTestEvent")))
                 .andDo(print());
     }
 
     @Test
     @Transactional
-    void updateEvent() {
+    void updateEvent() throws Exception {
+        LocalDateTime data = LocalDateTime.parse("2020-09-10T20:20");
+        AddressDto addressDto = new AddressDto();
+        addressDto.setCountry("Country");
+        addressDto.setCity("City");
+        addressDto.setLatitude(87.3f);
+        addressDto.setLongitude(132.3f);
+        addressDto.setStreet("Street");
+        addressDto.setPostcode("10-100");
+        addressDto.setNumber("5B");
+
+        EventDto dto = new EventDto();
+        dto.setName("UpdatedEvent");
+        dto.setStartTime(data);
+        dto.setAddress(addressDto);
+        dto.setAdditionalInformation("AddInfo");
+        dto.setEventType(EventType.PUBLIC);
+        dto.setCurrency("PLN");
+        dto.setOver(false);
+
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(put("/event/{eventId}", 10)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.name", is("UpdatedEvent")))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void deleteById() {
+    void deleteById() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(delete("/event/{eventId}", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Event deleted successfully")))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void leaveEvent() {
+    void leaveEvent() throws Exception {
+        String token = authenticateUser("testowy2", "password");
+
+        mockMvc.perform(delete("/event/{eventId}/leave", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(true))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void deleteUserFromEvent() {
+    void leaveEventLastAdmin() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(delete("/event/{eventId}/leave", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$",
+                        is("You are the last admin in this event. Before leaving give admin to another user.")))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void grantAdminForUser() {
+    void deleteUserFromEvent() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(delete("/event/{eventId}/user", 10)
+                .header("Authorization", "Bearer " + token)
+                .param("userToDeleteId", "14"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Successfully removed user from event")))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void isAdmin() {
+    void grantAdminForUser() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(put("/event/{eventId}/user/{userId}/grantAdmin", 10, 14)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Successfully granted admin to testowy2")))
+                .andDo(print());
     }
 
     @Test
     @Transactional
-    void findAllEventAdmins() {
+    void isAdmin() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(get("/event/{eventId}/isAdmin", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(true))
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    void findAllEventAdmins() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(get("/event/{eventId}/admin", 12)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andDo(print());
     }
 }

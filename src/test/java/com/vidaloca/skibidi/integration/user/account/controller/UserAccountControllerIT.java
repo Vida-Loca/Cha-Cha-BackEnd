@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.user.account.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.user.account.dto.NamesDto;
 import com.vidaloca.skibidi.user.account.dto.PasswordDto;
 import org.junit.jupiter.api.Test;

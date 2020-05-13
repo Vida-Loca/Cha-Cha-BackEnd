@@ -1,9 +1,6 @@
 package com.vidaloca.skibidi.event.exception.handler;
 
-import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
-import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
-import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
-import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
+import com.vidaloca.skibidi.event.exception.model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,6 +30,12 @@ public class EventExceptionHandler {
     @ExceptionHandler(UserIsNotAdminException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String getUserIsNotAdminException(UserIsNotAdminException ex){
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(LastAdminException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String getLastAdminException(LastAdminException ex){
         return ex.getMessage();
     }
 }

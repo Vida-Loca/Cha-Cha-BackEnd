@@ -1,7 +1,9 @@
-package com.vidaloca.skibidi;
+package com.vidaloca.skibidi.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vidaloca.skibidi.common.configuration.security.JwtTokenProvider;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
@@ -57,9 +59,10 @@ public abstract class BaseIT {
     protected String asJson(Object o) throws JsonProcessingException {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.setDateFormat(df);
         String jsonString = mapper.writeValueAsString(o);
-        mapper.setDateFormat(df);
         return jsonString;
     }
 

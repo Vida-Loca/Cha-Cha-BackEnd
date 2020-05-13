@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.event.open.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.user.model.User;

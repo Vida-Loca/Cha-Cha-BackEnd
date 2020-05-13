@@ -1,6 +1,6 @@
 package com.vidaloca.skibidi.integration.product.controller;
 
-import com.vidaloca.skibidi.BaseIT;
+import com.vidaloca.skibidi.integration.BaseIT;
 import com.vidaloca.skibidi.product.dto.ProductDto;
 import com.vidaloca.skibidi.product.model.Product;
 import com.vidaloca.skibidi.product.model.ProductCategory;
