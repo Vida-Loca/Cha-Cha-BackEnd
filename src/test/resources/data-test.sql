@@ -43,10 +43,13 @@ INSERT INTO product VALUES (11, 'FoodEvent11', 3.2, 2, 12, 10);
 INSERT INTO product VALUES (14, 'Food1Event11', 13.1, 1, 11, 10);
 /* event - id, info, currency, eventType, isOver, name, startTime, addressId
    event_user - id, isAdmin, eventId, userId */
-INSERT INTO event VALUES (12, 'info11', 'PLN', 'PRIVATE', false, 'TestEvent12', '2020-12-10T20:21', 10);
+INSERT INTO event VALUES (12, 'info12', 'PLN', 'PRIVATE', false, 'TestEvent12', '2020-12-10T20:21', 10);
 INSERT INTO event_user VALUES (15, true, 12, 10);
 INSERT INTO event_user VALUES (16, true, 12, 14);
 INSERT INTO event_user VALUES (17, true, 12, 15);
+/* event - id, info, currency, eventType, isOver, name, startTime, addressId
+   event_user - id, isAdmin, eventId, userId */
+INSERT INTO event VALUES (13, 'info13', 'PLN', 'PRIVATE', false, 'TestEvent13', '2020-11-12T20:21', 10);
 /* invitation - id, status, invitedId, invitorId */
 INSERT INTO invitation VALUES (10, 'PROCESSING', 12, 10);
 INSERT INTO invitation VALUES (11, 'PROCESSING', 10, 15);
