@@ -1,5 +1,4 @@
-
-INSERT INTO role VALUES (1, 'USER'), (2, 'ADMIN');
+INSERT INTO role VALUES (1, 'USER'), (2, 'ADMIN'), (3, 'BANNED');
 /*users - id, canChangePass, email, enabled, isBanned, isWarned, joined, name, password, picUrl, surname, username, roleId */
 INSERT INTO userr VALUES (10, false, 'test10@o2.pl', true, false, false, '2001-01-01T10:22', 'Name10', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl10', 'Surname10', 'testowy1', 1);
 INSERT INTO userr VALUES (11, true, 'test11@o2.pl', true, false, false, '2001-01-02T10:33', 'Name11', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl11', 'Surname11', 'changePass', 1);
