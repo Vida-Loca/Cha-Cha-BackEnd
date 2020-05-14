@@ -38,6 +38,7 @@ INSERT INTO product VALUES (13, 'Food1Event10', 2.5, 1, 13, 10);
 INSERT INTO event VALUES (11, 'info11', 'PLN', 'PUBLIC', false, 'TestEvent11', '2020-10-10T20:21', 11);
 INSERT INTO event_user VALUES (11, false, 11, 10);
 INSERT INTO event_user VALUES (12, true, 11, 11);
+INSERT INTO event_invitation VALUES (11, 1, '2020-08-14T20:21', 11, 14);
 /* product - id, name, price, quantity, eventUserId, productCategoryId */
 INSERT INTO product VALUES (11, 'FoodEvent11', 3.2, 2, 12, 10);
 INSERT INTO product VALUES (14, 'Food1Event11', 13.1, 1, 11, 10);
@@ -50,6 +51,18 @@ INSERT INTO event_user VALUES (17, true, 12, 15);
 /* event - id, info, currency, eventType, isOver, name, startTime, addressId
    event_user - id, isAdmin, eventId, userId */
 INSERT INTO event VALUES (13, 'info13', 'PLN', 'PRIVATE', false, 'TestEvent13', '2020-11-12T20:21', 10);
+/* event - id, info, currency, eventType, isOver, name, startTime, addressId
+   event_user - id, isAdmin, eventId, userId */
+INSERT INTO event VALUES (14, 'info14', 'PLN', 'PRIVATE', false, 'TestEvent14', '2020-11-14T20:21', 10);
+INSERT INTO event_user VALUES (18, true, 14, 10);
+INSERT INTO event_user VALUES (19, false, 14, 14);
+/* event_inv - id, status, date, eventID, userID */
+INSERT INTO event_invitation VALUES (10, 1, '2020-08-14T20:21', 14, 14);
+INSERT INTO event_invitation VALUES (12, 2, '2020-08-14T20:21', 14, 16);
+
+/* event_req - id, status, date, eventID, userID */
+INSERT INTO event_request VALUES (10, 1, '2020-08-14T20:21', 14, 15);
+INSERT INTO event_request VALUES (11, 2, '2020-08-14T20:21', 14, 11);
 /* invitation - id, status, invitedId, invitorId */
 INSERT INTO invitation VALUES (10, 'PROCESSING', 12, 10);
 INSERT INTO invitation VALUES (11, 'PROCESSING', 10, 15);

@@ -121,4 +121,27 @@ class ProductValueControllerIT extends BaseIT {
                 .andExpect(jsonPath("$", is("User with id: 11 is not in event with id: 10 and cannot make this action.")))
                 .andDo(print());
     }
+
+    @Test
+    @Transactional
+    void getAllUsersExpenses() throws Exception {
+        String token = authenticateUser("testowy1", "password");
+
+        mockMvc.perform(get("/event/{eventId}/users_expenses", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    void getAllUsersExpensesNotInEvent() throws Exception {
+        String token = authenticateUser("testowy4", "password");
+
+        mockMvc.perform(get("/event/{eventId}/users_expenses", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").value("User with id: 16 is not in event with id: 10 and cannot make this action."))
+                .andDo(print());
+    }
 }

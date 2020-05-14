@@ -1,7 +1,6 @@
 package com.vidaloca.skibidi.event.access.exception.handler;
 
 import com.vidaloca.skibidi.event.access.exception.*;
-import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,6 +40,12 @@ public class AccessExceptionHandler {
     @ExceptionHandler(IsNotProcessingException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public String getIsNotProcessingException(IsNotProcessingException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(UserCantRejectRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public String getUserCantRejectRequestException(UserCantRejectRequestException ex) {
         return ex.getMessage();
     }
 

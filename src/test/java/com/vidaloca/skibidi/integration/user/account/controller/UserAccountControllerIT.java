@@ -38,7 +38,7 @@ class UserAccountControllerIT extends BaseIT {
         mockMvc.perform(get("/user/event")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$", hasSize(4)))
                 .andDo(print());
     }
 
@@ -114,7 +114,7 @@ class UserAccountControllerIT extends BaseIT {
 
     @Test
     @Transactional
-    void resetPasswordPostInvalidEmail() throws Exception {
+    void resetPasswordPostEmailNotFound() throws Exception {
         String token = authenticateUser("testowy1", "password");
 
         mockMvc.perform(post("/user/resetPassword")

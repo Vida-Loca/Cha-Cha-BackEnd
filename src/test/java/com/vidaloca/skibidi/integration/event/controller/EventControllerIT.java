@@ -51,7 +51,7 @@ class EventControllerIT extends BaseIT {
         mockMvc.perform(get("/event")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$", hasSize(5)))
                 .andDo(print());
     }
 
@@ -82,14 +82,9 @@ class EventControllerIT extends BaseIT {
     @Transactional
     void addNewEvent() throws Exception {
         LocalDateTime data = LocalDateTime.parse("2020-09-10T20:20");
-        AddressDto addressDto = new AddressDto();
-        addressDto.setCountry("Country");
-        addressDto.setCity("City");
-        addressDto.setLatitude(87.3f);
-        addressDto.setLongitude(132.3f);
-        addressDto.setStreet("Street");
-        addressDto.setPostcode("10-100");
-        addressDto.setNumber("5B");
+        AddressDto addressDto = new AddressDto("Country", "City", "13-130",
+                "Street", "5B", 87.3f, 132.3f);
+
 
         EventDto dto = new EventDto();
         dto.setName("NewTestEvent");
@@ -238,7 +233,7 @@ class EventControllerIT extends BaseIT {
     @Test
     @Transactional
     void leaveEvent() throws Exception {
-        String token = authenticateUser("testowy2", "password");
+        String token = authenticateUser("testowy3", "password");
 
         mockMvc.perform(delete("/event/{eventId}/leave", 10)
                 .header("Authorization", "Bearer " + token))
