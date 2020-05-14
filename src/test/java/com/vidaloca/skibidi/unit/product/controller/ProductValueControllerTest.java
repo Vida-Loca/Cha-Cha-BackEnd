@@ -79,4 +79,11 @@ class ProductValueControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void getAllUsersExpenses() throws Exception {
+        mockMvc.perform(get("/event/{eventId}/users_expenses", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
