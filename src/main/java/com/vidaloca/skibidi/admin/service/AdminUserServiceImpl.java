@@ -69,8 +69,16 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public User punishUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        Role role = roleRepository.findByName("BANNED").orElse(null);
-        user.setRole(role);
+        Role role;
+        if (user.getRole().getName() == "USER") {
+            role = roleRepository.findByName("BANNED").orElse(null);
+            user.setRole(role);
+            user.setBanned(true);
+        } else if (user.getRole().getName() == "BANNED") {
+            role = roleRepository.findByName("USER").orElse(null);
+            user.setRole(role);
+            user.setBanned(false);
+        }
         return userRepository.save(user);
     }
 }

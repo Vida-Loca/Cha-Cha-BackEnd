@@ -32,4 +32,9 @@ public class AdminEventUserController {
     public boolean grantTakeEventAdmin(@PathVariable Long eventId, @PathVariable Long userId) {
         return eventUserService.grantTakeUserEventAdmin(eventId,userId);
     }
+
+    @GetMapping("/event/{eventId}/admins")
+    public List<User> findAllEventAdmins(@PathVariable Long eventId) {
+        return eventUserService.findAllEventAdmins(eventId);
+    }
 }
