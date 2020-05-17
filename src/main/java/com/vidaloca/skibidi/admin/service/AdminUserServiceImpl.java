@@ -70,11 +70,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     public User punishUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         Role role;
-        if (user.getRole().getName() == "USER") {
+        if (user.getRole().getId() == 1) {
             role = roleRepository.findByName("BANNED").orElse(null);
             user.setRole(role);
             user.setBanned(true);
-        } else if (user.getRole().getName() == "BANNED") {
+        } else if (user.getRole().getId() == 3) {
             role = roleRepository.findByName("USER").orElse(null);
             user.setRole(role);
             user.setBanned(false);

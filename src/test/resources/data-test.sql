@@ -7,6 +7,7 @@ INSERT INTO userr VALUES (13, false, 'toConfirm@o2.pl', false, false, false, '20
 INSERT INTO userr VALUES (14, false, 'test14@o2.pl', true, false, false, '2001-01-01T10:22', 'Name14', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl14', 'Surname14', 'testowy2', 1);
 INSERT INTO userr VALUES (15, false, 'test15@o2.pl', true, false, false, '2001-01-01T10:22', 'Name15', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl15', 'Surname15', 'testowy3', 1);
 INSERT INTO userr VALUES (16, false, 'test16@o2.pl', true, false, false, '2001-01-01T10:22', 'Name16', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl16', 'Surname16', 'testowy4', 1);
+INSERT INTO userr VALUES (17, false, 'test17@o2.pl', true, true, false, '2001-01-01T10:22', 'Name17', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl17', 'Surname17', 'testowy5', 3);
 
 INSERT INTO reset_password_token VALUES (10, '2020-10-10T20:21', 'valid', 10);
 INSERT INTO reset_password_token VALUES (11, '2000-10-10T20:21', 'expired', 10);

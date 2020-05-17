@@ -97,5 +97,21 @@ class AdminUserControllerIT extends BaseIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.banned").value(true))
                 .andDo(print());
+
+        assertEquals("BANNED", userRepository.findById(16L).get().getRole().getName());
+    }
+
+    @Test
+    @Transactional
+    void unbanUser() throws Exception {
+        String token = authenticateUser("admin1", "password");
+
+        mockMvc.perform(put("/admin/user/{id}/banishUser", 17)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.banned").value(false))
+                .andDo(print());
+
+        assertEquals("USER", userRepository.findById(16L).get().getRole().getName());
     }
 }
