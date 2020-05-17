@@ -121,7 +121,7 @@ public class ProductValueServiceImpl implements ProductValueService {
         UserExpenses userExpenses = new UserExpenses();
         for (EventUser eu : event.getEventUsers()){
             userExpenses.setEventUser(eu);
-            userExpenses.setExpenses(totalAmountOfCurrentUser(eventId,userId));
+            userExpenses.setExpenses(totalAmountOfCurrentUser(eventId,eu.getUser().getId()));
             userExpensesList.add(userExpenses);
         }
         return userExpensesList;
