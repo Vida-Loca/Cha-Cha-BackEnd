@@ -97,7 +97,10 @@ public class UserAccountServiceImpl implements UserAccountService {
         if (!passwordDto.getPassword().equals(passwordDto.getMatchingPassword())){
             throw new PasswordsNotMatchesException();
         }
-        user.setPassword(passwordDto.getPassword());
+        ResetPasswordToken passToken =
+                resetPasswordTokenRepository.findByToken(token);
+        resetPasswordTokenRepository.delete(passToken);
+        user.setPassword(passwordEncoder.encode(passwordDto.getPassword()));
         return userRepository.save(user);
 
     }

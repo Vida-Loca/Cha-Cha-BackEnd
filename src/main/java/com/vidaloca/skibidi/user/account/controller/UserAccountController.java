@@ -53,8 +53,8 @@ public class UserAccountController {
          return userAccountService.resetPassword(request,email);
     }
 
-    @PutMapping("/user/{userId}/changePassword")
-    public User resetPassword(@PathVariable Long userId, @RequestParam String token, @RequestBody PasswordDto passwordDto){
+    @PutMapping("/user/changePassword")
+    public User resetPassword(@RequestParam Long userId, @RequestParam String token, @RequestBody PasswordDto passwordDto){
         return userAccountService.changePassword(userId, token, passwordDto);
     }
 
