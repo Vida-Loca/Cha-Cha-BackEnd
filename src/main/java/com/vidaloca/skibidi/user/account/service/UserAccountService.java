@@ -22,9 +22,7 @@ public interface UserAccountService {
 
     String resetPassword (HttpServletRequest request, String email);
 
-    String resetPasswordConfirm (Long userId, String token);
-
-    User changePassword (Long userId, PasswordDto passwordDto) throws PasswordsNotMatchesException;
+    User changePassword (Long userId, String token, PasswordDto passwordDto);
 
 
 

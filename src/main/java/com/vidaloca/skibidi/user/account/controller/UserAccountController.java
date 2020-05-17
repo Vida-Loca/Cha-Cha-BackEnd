@@ -53,14 +53,9 @@ public class UserAccountController {
          return userAccountService.resetPassword(request,email);
     }
 
-    @GetMapping("/user/changePassword")
-    public String confirmResetPassword(@RequestParam Long userId, @RequestParam String token){
-        return userAccountService.resetPasswordConfirm(userId,token);
-    }
-
-    @PutMapping("/user/changePassword")
-    public User resetPassword(HttpServletRequest request, @RequestBody PasswordDto passwordDto) throws PasswordsNotMatchesException {
-        return userAccountService.changePassword(CurrentUser.currentUserId(request), passwordDto);
+    @PutMapping("/user/{userId}/changePassword")
+    public User resetPassword(@PathVariable Long userId, @RequestParam String token, @RequestBody PasswordDto passwordDto){
+        return userAccountService.changePassword(userId, token, passwordDto);
     }
 
 }

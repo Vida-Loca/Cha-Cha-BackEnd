@@ -5,6 +5,7 @@ import com.vidaloca.skibidi.friendship.exception.InvitationNotFoundException;
 import com.vidaloca.skibidi.friendship.exception.UserNotAllowedException;
 import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
+import com.vidaloca.skibidi.user.exception.TokenInvalidException;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,4 +37,11 @@ public class UserExceptionHandler {
     public String getPasswordNotMatchesException(PasswordsNotMatchesException ex){
         return ex.getMessage();
     }
+
+    @ExceptionHandler(TokenInvalidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String getTokenInvalidException(TokenInvalidException ex){
+        return ex.getMessage();
+    }
+
 }

@@ -11,8 +11,10 @@ import com.vidaloca.skibidi.user.account.model.ResetPasswordToken;
 import com.vidaloca.skibidi.user.account.repository.ResetPasswordTokenRepository;
 import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
+import com.vidaloca.skibidi.user.exception.TokenInvalidException;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
+import com.vidaloca.skibidi.user.registration.exception.TokenNotValidException;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -87,42 +89,32 @@ public class UserAccountServiceImpl implements UserAccountService {
         return "Check your mail box";
     }
 
-    @Override
-    public String resetPasswordConfirm(Long userId, String token) {
-        return validatePasswordResetToken(userId, token);
-    }
 
     @Override
-    public User changePassword(Long userId, PasswordDto passwordDto) throws PasswordsNotMatchesException {
+    public User changePassword(Long userId, String token, PasswordDto passwordDto) {
+        validatePasswordResetToken(userId,token);
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        if (!user.isCanChangePass())
-            return null;
-        if (passwordDto.getPassword().equals(passwordDto.getMatchingPassword())) {
-            user.setPassword(passwordEncoder.encode(passwordDto.getPassword()));
-        } else
+        if (!passwordDto.getPassword().equals(passwordDto.getMatchingPassword())){
             throw new PasswordsNotMatchesException();
-        user.setCanChangePass(false);
+        }
+        user.setPassword(passwordDto.getPassword());
         return userRepository.save(user);
+
     }
 
     private void createPasswordResetTokenForUser(User user, String token) {
         ResetPasswordToken myToken = new ResetPasswordToken(user,token);
         resetPasswordTokenRepository.save(myToken);
     }
-    private String validatePasswordResetToken(long id, String token) {
+    private void validatePasswordResetToken(Long id, String token) {
         ResetPasswordToken passToken =
                 resetPasswordTokenRepository.findByToken(token);
-        if ((passToken == null) || (passToken.getUser()
-                .getId() != id)) {
-            return "invalidToken";
+        if ((passToken == null) || (!passToken.getUser()
+                .getId().equals(id))) {
+            throw new TokenInvalidException("not valid");
         }
         if (passToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            return "expired";
+            throw new TokenInvalidException("expired");
         }
-
-        User user = passToken.getUser();
-        user.setCanChangePass(true);
-        userRepository.save(user);
-        return null;
     }
 }

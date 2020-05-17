@@ -118,10 +118,14 @@ public class ProductValueServiceImpl implements ProductValueService {
         if(eventUserRepository.findByUserAndEvent(user, event).isEmpty())
             throw new UserIsNotInEventException(user.getId(), event.getId());
         List<UserExpenses> userExpensesList = new ArrayList<>();
-        UserExpenses userExpenses = new UserExpenses();
         for (EventUser eu : event.getEventUsers()){
+            UserExpenses userExpenses = new UserExpenses();
             userExpenses.setEventUser(eu);
-            userExpenses.setExpenses(totalAmountOfCurrentUser(eventId,eu.getUser().getId()));
+            BigDecimal total = new BigDecimal("0.00");
+            for (Product p : eu.getProducts()){
+                total = total.add(p.getPrice().multiply(BigDecimal.valueOf(p.getQuantity())));
+            }
+            userExpenses.setExpenses(total);
             userExpensesList.add(userExpenses);
         }
         return userExpensesList;
