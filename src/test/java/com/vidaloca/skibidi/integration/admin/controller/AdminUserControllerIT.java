@@ -112,6 +112,6 @@ class AdminUserControllerIT extends BaseIT {
                 .andExpect(jsonPath("$.banned").value(false))
                 .andDo(print());
 
-        assertEquals("USER", userRepository.findById(16L).get().getRole().getName());
+        assertEquals("USER", userRepository.findById(17L).get().getRole().getName());
     }
 }
