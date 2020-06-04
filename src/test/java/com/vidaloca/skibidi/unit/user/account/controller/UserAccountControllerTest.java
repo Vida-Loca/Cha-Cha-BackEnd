@@ -103,22 +103,15 @@ class UserAccountControllerTest {
 
     @Test
     void confirmResetPassword() throws Exception {
-        mockMvc.perform(get("/user/changePassword")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("userId", "1")
-                .param("token", "token"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void testResetPassword() throws Exception {
         PasswordDto passwordDto = new PasswordDto();
         passwordDto.setPassword("pass");
         passwordDto.setPassword("pass");
 
         mockMvc.perform(put("/user/changePassword")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJson(passwordDto)))
+                .content(asJson(passwordDto))
+                .param("userId", "1")
+                .param("token", "token"))
                 .andExpect(status().isOk());
     }
 

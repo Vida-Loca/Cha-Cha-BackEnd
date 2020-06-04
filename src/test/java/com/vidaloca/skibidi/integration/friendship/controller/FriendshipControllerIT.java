@@ -22,7 +22,7 @@ class FriendshipControllerIT extends BaseIT {
                 .header("Authorization", "Bearer " + token)
                 .param("regex", "test"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$", hasSize(5)))
                 .andDo(print());
     }
 

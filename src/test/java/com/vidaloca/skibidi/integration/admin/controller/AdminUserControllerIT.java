@@ -22,7 +22,7 @@ class AdminUserControllerIT extends BaseIT {
         mockMvc.perform(get("/admin/getAllUsers")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(7)))
+                .andExpect(jsonPath("$", hasSize(8)))
                 .andDo(print());
     }
 

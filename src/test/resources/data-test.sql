@@ -1,13 +1,13 @@
 INSERT INTO role VALUES (1, 'USER'), (2, 'ADMIN'), (3, 'BANNED');
 /*users - id, canChangePass, email, enabled, isBanned, isWarned, joined, name, password, picUrl, surname, username, roleId */
-INSERT INTO userr VALUES (10, false, 'test10@o2.pl', true, false, false, '2001-01-01T10:22', 'Name10', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl10', 'Surname10', 'testowy1', 1);
-INSERT INTO userr VALUES (11, true, 'test11@o2.pl', true, false, false, '2001-01-02T10:33', 'Name11', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl11', 'Surname11', 'changePass', 1);
-INSERT INTO userr VALUES (12, false, 'admin1@o2.pl', true, false, false, '2001-01-03T10:33', 'Name12', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl12', 'Surname12', 'admin1', 2);
-INSERT INTO userr VALUES (13, false, 'toConfirm@o2.pl', false, false, false, '2001-01-03T10:33', 'Name13', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl13', 'Surname13', 'confirm', 1);
-INSERT INTO userr VALUES (14, false, 'test14@o2.pl', true, false, false, '2001-01-01T10:22', 'Name14', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl14', 'Surname14', 'testowy2', 1);
-INSERT INTO userr VALUES (15, false, 'test15@o2.pl', true, false, false, '2001-01-01T10:22', 'Name15', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl15', 'Surname15', 'testowy3', 1);
-INSERT INTO userr VALUES (16, false, 'test16@o2.pl', true, false, false, '2001-01-01T10:22', 'Name16', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl16', 'Surname16', 'testowy4', 1);
-INSERT INTO userr VALUES (17, false, 'test17@o2.pl', true, true, false, '2001-01-01T10:22', 'Name17', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl17', 'Surname17', 'testowy5', 3);
+INSERT INTO userr VALUES (10, 'test10@o2.pl', true, false, '2001-01-01T10:22', 'Name10', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl10', 'Surname10', 'testowy1', 1);
+INSERT INTO userr VALUES (11, 'test11@o2.pl', true, false, '2001-01-02T10:33', 'Name11', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl11', 'Surname11', 'changePass', 1);
+INSERT INTO userr VALUES (12, 'admin1@o2.pl', true, false, '2001-01-03T10:33', 'Name12', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl12', 'Surname12', 'admin1', 2);
+INSERT INTO userr VALUES (13, 'toConfirm@o2.pl', false, false, '2001-01-03T10:33', 'Name13', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl13', 'Surname13', 'confirm', 1);
+INSERT INTO userr VALUES (14, 'test14@o2.pl', true, false, '2001-01-01T10:22', 'Name14', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl14', 'Surname14', 'testowy2', 1);
+INSERT INTO userr VALUES (15, 'test15@o2.pl', true, false, '2001-01-01T10:22', 'Name15', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl15', 'Surname15', 'testowy3', 1);
+INSERT INTO userr VALUES (16, 'test16@o2.pl', true, false, '2001-01-01T10:22', 'Name16', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl16', 'Surname16', 'testowy4', 1);
+INSERT INTO userr VALUES (17, 'test17@o2.pl', true, true, '2001-01-01T10:22', 'Name17', '$2a$10$bMm8ygL4/mDV2Oevx6v4z.FLNDWdjlsajSHg7oAT.BcFRNYYeFZD2', 'picUrl17', 'Surname17', 'testowy5', 3);
 
 INSERT INTO reset_password_token VALUES (10, '2020-10-10T20:21', 'valid', 10);
 INSERT INTO reset_password_token VALUES (11, '2000-10-10T20:21', 'expired', 10);

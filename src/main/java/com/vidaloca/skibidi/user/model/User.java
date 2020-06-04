@@ -94,11 +94,6 @@ public class User {
     @Builder.Default
     private boolean enabled = false;
 
-    @JsonIgnore
-    @Builder.Default
-    private boolean canChangePass = false;
-    @Builder.Default
-    private boolean isWarned = false;
     @Builder.Default
     private boolean isBanned = false;
 

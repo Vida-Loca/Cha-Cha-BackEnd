@@ -11,6 +11,7 @@ import com.vidaloca.skibidi.user.account.repository.ResetPasswordTokenRepository
 import com.vidaloca.skibidi.user.account.service.UserAccountServiceImpl;
 import com.vidaloca.skibidi.user.exception.EmailNotFoundException;
 import com.vidaloca.skibidi.user.exception.PasswordsNotMatchesException;
+import com.vidaloca.skibidi.user.exception.TokenInvalidException;
 import com.vidaloca.skibidi.user.model.Role;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
@@ -198,121 +199,88 @@ class UserAccountServiceImplTest {
     }
 
     @Test
-    void resetPasswordConfirm() {
-        //given
-        ResetPasswordToken passwordToken = new ResetPasswordToken();
-        passwordToken.setId(1L);
-        passwordToken.setToken("TOKEN");
-        passwordToken.setUser(user);
-        passwordToken.setExpiryDate(LocalDateTime.MAX);
-
-        when(resetPasswordTokenRepository.findByToken(anyString())).thenReturn(passwordToken);
-
-        //when
-        String result = service.resetPasswordConfirm(user.getId(), "TOKEN");
-
-        //then
-        assertNull(result);
-        verify(resetPasswordTokenRepository, times(1)).findByToken(anyString());
-        verify(userRepository, times(1)).save(any(User.class));
-    }
-
-    @Test
-    void resetPasswordConfirmInvalid() {
-        //given
-        ResetPasswordToken passwordToken = new ResetPasswordToken();
-        passwordToken.setId(1L);
-        passwordToken.setToken("TOKEN");
-        passwordToken.setUser(user);
-        passwordToken.setExpiryDate(LocalDateTime.MIN);
-
-        when(resetPasswordTokenRepository.findByToken(anyString())).thenReturn(passwordToken);
-
-        //when
-        String result = service.resetPasswordConfirm(2L, "TOKEN");
-
-        //then
-        assertEquals("invalidToken", result);
-        then(resetPasswordTokenRepository).should().findByToken("TOKEN");
-        then(userRepository).shouldHaveNoInteractions();
-    }
-
-    @Test
-    void resetPasswordConfirmExpired() {
-        //given
-        ResetPasswordToken passwordToken = new ResetPasswordToken();
-        passwordToken.setId(1L);
-        passwordToken.setToken("TOKEN");
-        passwordToken.setUser(user);
-        passwordToken.setExpiryDate(LocalDateTime.MIN);
-
-        when(resetPasswordTokenRepository.findByToken(anyString())).thenReturn(passwordToken);
-
-        //when
-        String result = service.resetPasswordConfirm(user.getId(), "TOKEN");
-
-        //then
-        assertEquals("expired", result);
-        then(resetPasswordTokenRepository).should().findByToken("TOKEN");
-        then(userRepository).shouldHaveNoInteractions();
-    }
-
-    @Test
     void changePassword() throws PasswordsNotMatchesException {
         //given
         PasswordDto passwordDto = new PasswordDto();
         passwordDto.setPassword("password");
         passwordDto.setMatchingPassword("password");
-        user.setCanChangePass(true);
+        String token = "token";
+        ResetPasswordToken passwordToken = new ResetPasswordToken();
+        passwordToken.setUser(user);
+        passwordToken.setExpiryDate(LocalDateTime.MAX);
 
-        when(passwordEncoder.encode(passwordDto.getPassword())).thenReturn("password");
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        given(resetPasswordTokenRepository.findByToken("token")).willReturn(passwordToken);
+        given(passwordEncoder.encode(passwordDto.getPassword())).willReturn("password");
+        given(userRepository.save(user)).willReturn(user);
 
         //when
-        User returned = service.changePassword(user.getId(), passwordDto);
+        User returned = service.changePassword(1L, token, passwordDto);
 
         //then
         assertEquals("password", returned.getPassword());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(passwordEncoder, times(1)).encode(any(CharSequence.class));
-        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void changePasswordNotAllowed() throws PasswordsNotMatchesException {
+    void changePasswordTokenExpired() throws PasswordsNotMatchesException {
         //given
         PasswordDto passwordDto = new PasswordDto();
         passwordDto.setPassword("password");
         passwordDto.setMatchingPassword("password");
-        user.setCanChangePass(false);
+
+        String token = "token";
+        ResetPasswordToken passwordToken = new ResetPasswordToken();
+        passwordToken.setUser(user);
+        passwordToken.setExpiryDate(LocalDateTime.MIN);
+
+        given(resetPasswordTokenRepository.findByToken("token")).willReturn(passwordToken);
 
         //when
-        User returned = service.changePassword(user.getId(), passwordDto);
+        Exception result = assertThrows(TokenInvalidException.class, () -> {
+            service.changePassword(1L, token, passwordDto);
+        });
 
         //then
-        assertNull(returned);
-        then(userRepository).should().findById(anyLong());
-        then(passwordEncoder).shouldHaveNoInteractions();
-        then(userRepository).shouldHaveNoMoreInteractions();
+        assertEquals("Token expired", result.getMessage());
     }
 
     @Test
-    void changePasswordNotMatching() throws PasswordsNotMatchesException {
+    void changePasswordTokenNotValid() throws PasswordsNotMatchesException {
         //given
         PasswordDto passwordDto = new PasswordDto();
         passwordDto.setPassword("password");
         passwordDto.setMatchingPassword("not_matching");
-        user.setCanChangePass(true);
+        String token = "token";
+
+        given(resetPasswordTokenRepository.findByToken("token")).willReturn(null);
+
+        //when
+        Throwable result = assertThrows(TokenInvalidException.class, () -> {
+            service.changePassword(1L, token, passwordDto);
+        });
+
+        //then
+        assertEquals("Token not valid", result.getMessage());
+    }
+
+    @Test
+    void changePasswordNotMatches() throws PasswordsNotMatchesException {
+        //given
+        PasswordDto passwordDto = new PasswordDto();
+        passwordDto.setPassword("password");
+        passwordDto.setMatchingPassword("notMatch");
+        String token = "token";
+        ResetPasswordToken passwordToken = new ResetPasswordToken();
+        passwordToken.setUser(user);
+        passwordToken.setExpiryDate(LocalDateTime.MAX);
+
+        given(resetPasswordTokenRepository.findByToken("token")).willReturn(passwordToken);
 
         //when
         Throwable result = assertThrows(PasswordsNotMatchesException.class, () -> {
-            service.changePassword(1L, passwordDto);
+            service.changePassword(1L, token, passwordDto);
         });
 
         //then
         assertEquals("Passwords not matches", result.getMessage());
-        then(userRepository).should().findById(anyLong());
-        then(passwordEncoder).shouldHaveNoInteractions();
-        then(userRepository).shouldHaveNoMoreInteractions();
     }
 }

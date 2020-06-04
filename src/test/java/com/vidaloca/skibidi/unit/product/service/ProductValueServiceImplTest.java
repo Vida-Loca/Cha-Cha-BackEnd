@@ -252,9 +252,9 @@ class ProductValueServiceImplTest {
 
         //then
         assertNotNull(result);
-        then(userRepository).should(times(2)).findById(anyLong());
-        then(eventRepository).should(times(2)).findById(anyLong());
-        then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));
+        then(userRepository).should(times(1)).findById(anyLong());
+        then(eventRepository).should(times(1)).findById(anyLong());
+        then(eventUserRepository).should(times(1)).findByUserAndEvent(any(User.class), any(Event.class));
     }
 
     @Test
