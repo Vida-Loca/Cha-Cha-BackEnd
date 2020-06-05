@@ -13,7 +13,6 @@ import java.util.List;
 @RestControllerAdvice
 public class MainExceptionHandler {
 
-
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public List<String> getConstraintViolationException(ConstraintViolationException ex) {

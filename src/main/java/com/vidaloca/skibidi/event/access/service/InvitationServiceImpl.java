@@ -1,8 +1,8 @@
 package com.vidaloca.skibidi.event.access.service;
 
 import com.vidaloca.skibidi.event.access.exception.InvitationNotFoundException;
-import com.vidaloca.skibidi.event.access.exception.IsNotProcessingException;
 import com.vidaloca.skibidi.event.access.exception.UserCantInviteToEventException;
+import com.vidaloca.skibidi.event.access.exception.InvitationIsNotProcessingException;
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
 import com.vidaloca.skibidi.event.access.repository.EventInvitationRepository;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
@@ -13,14 +13,12 @@ import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
-import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -80,7 +78,7 @@ public class InvitationServiceImpl implements InvitationService {
                 ()->new InvitationNotFoundException(invitationId));
         User currentUser = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         if (!invitation.getAccessStatus().equals(AccessStatus.PROCESSING))
-            throw new IsNotProcessingException("Invitation",invitationId); // Ned to add exception;
+            throw new InvitationIsNotProcessingException(invitationId);
         invitation.setAccessStatus(AccessStatus.ACCEPTED);
         eventUserRepository.save(EventUser.builder().event(invitation.getEvent()).user(currentUser).build());
         return eventInvitationRepository.save(invitation);
@@ -92,7 +90,7 @@ public class InvitationServiceImpl implements InvitationService {
                 ()->new InvitationNotFoundException(invitationId));
         User currentUser = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         if (!invitation.getAccessStatus().equals(AccessStatus.PROCESSING) || invitation.getUser()!=currentUser)
-            throw new IsNotProcessingException("Invitation",invitationId); // Ned to add exception;
+            throw new InvitationIsNotProcessingException(invitationId);
         invitation.setAccessStatus(AccessStatus.REJECTED);
         return eventInvitationRepository.save(invitation);
 

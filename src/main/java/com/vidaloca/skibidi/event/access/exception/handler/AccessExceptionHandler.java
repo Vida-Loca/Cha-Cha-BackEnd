@@ -37,9 +37,16 @@ public class AccessExceptionHandler {
     public String getUserCantAcceptRequestException(UserCantAcceptRequestException ex) {
         return ex.getMessage();
     }
-    @ExceptionHandler(IsNotProcessingException.class)
+
+    @ExceptionHandler(InvitationIsNotProcessingException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
-    public String getIsNotProcessingException(IsNotProcessingException ex) {
+    public String getInvitationIsNotProcessingException(InvitationIsNotProcessingException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(RequestIsNotProcessingException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public String getRequestIsNotProcessingException(RequestIsNotProcessingException ex) {
         return ex.getMessage();
     }
 

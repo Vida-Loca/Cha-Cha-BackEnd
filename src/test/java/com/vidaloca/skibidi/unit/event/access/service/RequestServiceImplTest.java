@@ -276,7 +276,7 @@ class RequestServiceImplTest {
         given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
 
         //when
-        Exception result = assertThrows(IsNotProcessingException.class, () -> {
+        Exception result = assertThrows(RequestIsNotProcessingException.class, () -> {
             service.rejectRequest(1L, 1L);
         });
 
@@ -363,7 +363,7 @@ class RequestServiceImplTest {
         given(eventUserRepository.findByUserAndEvent(user, event)).willReturn(Optional.of(eventUser));
 
         //when
-        Exception result = assertThrows(IsNotProcessingException.class, () -> {
+        Exception result = assertThrows(RequestIsNotProcessingException.class, () -> {
             service.acceptRequest(1L, 1L);
         });
 

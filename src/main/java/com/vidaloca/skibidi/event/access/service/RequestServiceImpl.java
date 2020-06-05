@@ -1,10 +1,6 @@
 package com.vidaloca.skibidi.event.access.service;
 
-import com.vidaloca.skibidi.event.access.exception.IsNotProcessingException;
-import com.vidaloca.skibidi.event.access.exception.RequestNotFoundException;
-import com.vidaloca.skibidi.event.access.exception.UserCantAcceptRequestException;
-import com.vidaloca.skibidi.event.access.exception.UserCantRequestToEventException;
-import com.vidaloca.skibidi.event.access.exception.UserCantRejectRequestException;
+import com.vidaloca.skibidi.event.access.exception.*;
 import com.vidaloca.skibidi.event.access.model.EventRequest;
 import com.vidaloca.skibidi.event.access.repository.EventRequestRepository;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
@@ -82,7 +78,7 @@ public class RequestServiceImpl implements RequestService {
         if (!eventUser.isAdmin())
             throw new UserCantRejectRequestException(currentUserId);
         if (!request.getAccessStatus().equals(AccessStatus.PROCESSING))
-            throw new IsNotProcessingException("Request", requestId);
+            throw new RequestIsNotProcessingException(requestId);
         request.setAccessStatus(AccessStatus.REJECTED);
         return eventRequestRepository.save(request);
     }
@@ -97,7 +93,7 @@ public class RequestServiceImpl implements RequestService {
         if (!eventUser.isAdmin() && !event.getEventType().canUserAcceptRequest())
             throw new UserCantAcceptRequestException(currentUserId);
         if (!request.getAccessStatus().equals(AccessStatus.PROCESSING))
-            throw new IsNotProcessingException("Request", requestId);
+            throw new RequestIsNotProcessingException(requestId);
         request.setAccessStatus(AccessStatus.ACCEPTED);
         EventUser eventUser2 = EventUser.builder().user(request.getUser()).event(event).build();
         eventUserRepository.save(eventUser2);

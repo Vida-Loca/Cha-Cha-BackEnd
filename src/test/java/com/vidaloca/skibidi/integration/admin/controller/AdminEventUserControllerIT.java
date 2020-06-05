@@ -49,4 +49,16 @@ class AdminEventUserControllerIT extends BaseIT {
                 .andExpect(jsonPath("$").value(true))
                 .andDo(print());
     }
+
+    @Test
+    @Transactional
+    void findAllEventAdmins() throws Exception {
+        String token = authenticateUser("admin1", "password");
+
+        mockMvc.perform(get("/admin/event/{eventId}/admins", 10)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andDo(print());
+    }
 }

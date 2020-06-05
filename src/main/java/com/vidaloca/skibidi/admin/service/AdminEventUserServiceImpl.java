@@ -45,7 +45,7 @@ public class AdminEventUserServiceImpl implements AdminEventUserService {
         return "Successfully removed user from event";
     }
 
-    // Function below returns actuall isAdmin status after change by admin
+    // Function below returns actual isAdmin status after change by admin
     @Override
     public boolean grantTakeUserEventAdmin(Long eventId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));

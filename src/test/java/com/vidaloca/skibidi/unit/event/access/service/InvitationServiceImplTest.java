@@ -1,7 +1,7 @@
 package com.vidaloca.skibidi.unit.event.access.service;
 
+import com.vidaloca.skibidi.event.access.exception.InvitationIsNotProcessingException;
 import com.vidaloca.skibidi.event.access.exception.InvitationNotFoundException;
-import com.vidaloca.skibidi.event.access.exception.IsNotProcessingException;
 import com.vidaloca.skibidi.event.access.exception.UserCantInviteToEventException;
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
 import com.vidaloca.skibidi.event.access.repository.EventInvitationRepository;
@@ -242,7 +242,7 @@ class InvitationServiceImplTest {
         given(eventInvitationRepository.findById(1L)).willReturn(Optional.of(eventInvitation));
 
         //when
-        Exception result = assertThrows(IsNotProcessingException.class, () -> {
+        Exception result = assertThrows(InvitationIsNotProcessingException.class, () -> {
             service.acceptInvitation(1L, 1L);
         });
 
@@ -305,7 +305,7 @@ class InvitationServiceImplTest {
         given(eventInvitationRepository.findById(1L)).willReturn(Optional.of(eventInvitation));
 
         //when
-        Exception result = assertThrows(IsNotProcessingException.class, () -> {
+        Exception result = assertThrows(InvitationIsNotProcessingException.class, () -> {
             service.rejectInvitation(1L, 1L);
         });
 

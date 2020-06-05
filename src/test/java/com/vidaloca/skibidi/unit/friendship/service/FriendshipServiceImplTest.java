@@ -215,7 +215,7 @@ class FriendshipServiceImplTest {
         });
 
         //then
-        assertEquals("Invitatnion of users with ids: 1 and 2 already exists. AccessStatus : Accepted",
+        assertEquals("Invitation of users with ids: 1 and 2 already exists. AccessStatus : Accepted",
                 result.getMessage());
         then(userRepository).should(times(2)).findById(anyLong());
         then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
@@ -241,7 +241,7 @@ class FriendshipServiceImplTest {
         });
 
         //then
-        assertEquals("Invitatnion of users with ids: 1 and 2 already exists. AccessStatus : Processing",
+        assertEquals("Invitation of users with ids: 1 and 2 already exists. AccessStatus : Processing",
                 result.getMessage());
         then(userRepository).should(times(2)).findById(anyLong());
         then(relationRepository).should().findByUserAndRelatedUserId(any(User.class), anyLong());
