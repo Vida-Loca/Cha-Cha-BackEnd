@@ -113,12 +113,22 @@ public class FriendshipServiceImpl implements FriendshipService {
             throw new UserNotAllowedException(invitedId, "accept");
         invitation.setInvitationStatus(InvitationStatus.ACCEPTED);
         invitationRepository.save(invitation);
-        Relation relation1 = Relation.builder().user(invitation.getInvitor()).
+        Optional<Relation> relation = relationRepository.findByUserAndRelatedUserId(invitation.getInvitor(),invitation.getInvited().getId());
+        Optional<Relation> relation2 = relationRepository.findByUserAndRelatedUserId(invitation.getInvited(),invitation.getInvitor().getId());
+        if (relation.isPresent() && relation2.isPresent()){
+            Relation rel= relation.get();
+            rel.setRelationStatus(RelationStatus.FRIENDS);
+            relationRepository.save(rel);
+            Relation rel2 = relation.get();
+            rel2.setRelationStatus(RelationStatus.FRIENDS);
+            return relationRepository.save(rel2);
+        }
+        Relation r1 = Relation.builder().user(invitation.getInvitor()).
                 relatedUserId(invited.getId()).relationStatus(RelationStatus.FRIENDS).build();
-        relationRepository.save(relation1);
-        Relation relation2 = Relation.builder().user(invited).relatedUserId(invitation.getInvitor().getId()).
+        relationRepository.save(r1);
+        Relation r2= Relation.builder().user(invited).relatedUserId(invitation.getInvitor().getId()).
                 relationStatus(RelationStatus.FRIENDS).build();
-        return relationRepository.save(relation2);
+        return relationRepository.save(r2);
     }
 
     @Override
