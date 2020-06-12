@@ -91,11 +91,7 @@ public class EventUserServiceImpl implements EventUserService {
         User user = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         EventUser eu = eventUserRepository.findByUserAndEvent(user, event).orElseThrow(() -> new UserIsNotInEventException(user.getId(), event.getId()));
-        int counter = 0;
-        for (EventUser e : event.getEventUsers()){
-            if(e.isAdmin())
-                counter++;
-        }
+        long counter = event.getEventUsers().stream().filter(EventUser::isAdmin).count();
         if (eu.isAdmin() && counter < 2 )
             throw new LastAdminException();
         event.getEventUsers().removeIf(eventUser -> eventUser.getUser().equals(user));

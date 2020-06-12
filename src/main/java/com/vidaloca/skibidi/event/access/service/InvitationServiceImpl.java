@@ -14,6 +14,7 @@ import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
 import com.vidaloca.skibidi.event.repository.EventRepository;
 import com.vidaloca.skibidi.event.repository.EventUserRepository;
+import com.vidaloca.skibidi.friendship.model.Invitation;
 import com.vidaloca.skibidi.user.exception.UserNotFoundException;
 import com.vidaloca.skibidi.user.model.User;
 import com.vidaloca.skibidi.user.repository.UserRepository;
@@ -51,6 +52,12 @@ public class InvitationServiceImpl implements InvitationService {
         Optional<EventUser> eu2 = eventUserRepository.findByUserAndEvent(user,event);
         if (eu2.isPresent())
             throw new UserActuallyInEventException(user.getUsername());
+        Optional<EventInvitation> inv = eventInvitationRepository.findByUserAndEvent(user,event);
+        if (inv.isPresent() && ( eu.isAdmin() || eu.getEvent().getEventType().canUserInvite()) ){
+            EventInvitation invitation = inv.get();
+            invitation.setAccessStatus(AccessStatus.PROCESSING);
+            return eventInvitationRepository.save(invitation);
+        }
         if (eu.isAdmin() || eu.getEvent().getEventType().canUserInvite())
             return eventInvitationRepository.save(
                     EventInvitation.builder().event(event).user(user).build());
@@ -96,15 +103,16 @@ public class InvitationServiceImpl implements InvitationService {
         return eventInvitationRepository.save(invitation);
 
     }
-    @Override
+  /*  @Override
     public void cancelInvitation(Long invitationId, Long currentUserId){
         EventInvitation invitation = eventInvitationRepository.findById(invitationId).orElseThrow(
                 ()->new InvitationNotFoundException(invitationId));
         User currentUser = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
         Event event = invitation.getEvent();
         EventUser eventUser = eventUserRepository.findByUserAndEvent(currentUser,event).orElseThrow(() -> new UserIsNotInEventException(currentUserId,event.getId()));
-        if (!eventUser.isAdmin())
-            throw new UserIsNotAdminException(currentUserId);
-        eventInvitationRepository.delete(invitation);
-    }
+      *//*  if (!eventUser.isAdmin())
+            throw new UserIsNotAdminException(currentUserId);*//*
+        event.getEventInvitations().remove(invitation);
+        eventRepository.save(event);
+    }*/
 }

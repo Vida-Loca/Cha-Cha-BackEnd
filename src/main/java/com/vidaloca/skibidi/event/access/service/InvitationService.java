@@ -17,7 +17,9 @@ public interface InvitationService {
 
     EventInvitation rejectInvitation(Long invitationId, Long currentUserId);
 
+/*
     void cancelInvitation(Long invitationId, Long currentUserId);
+*/
 
 
 }
