@@ -119,7 +119,7 @@ public class FriendshipServiceImpl implements FriendshipService {
             Relation rel= relation.get();
             rel.setRelationStatus(RelationStatus.FRIENDS);
             relationRepository.save(rel);
-            Relation rel2 = relation.get();
+            Relation rel2 = relation2.get();
             rel2.setRelationStatus(RelationStatus.FRIENDS);
             return relationRepository.save(rel2);
         }
