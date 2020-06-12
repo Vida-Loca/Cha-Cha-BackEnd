@@ -30,8 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
             Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
             System.out.println(grantedAuthorities);
-            return new org.springframework.security.core.userdetails.User
-                    (user.getUsername(), user.getPassword(), grantedAuthorities);
+            return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.isEnabled(),true,true,true, grantedAuthorities);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
