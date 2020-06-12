@@ -8,6 +8,7 @@ import com.vidaloca.skibidi.event.access.repository.EventInvitationRepository;
 import com.vidaloca.skibidi.event.access.status.AccessStatus;
 import com.vidaloca.skibidi.event.exception.model.EventNotFoundException;
 import com.vidaloca.skibidi.event.exception.model.UserActuallyInEventException;
+import com.vidaloca.skibidi.event.exception.model.UserIsNotAdminException;
 import com.vidaloca.skibidi.event.exception.model.UserIsNotInEventException;
 import com.vidaloca.skibidi.event.model.Event;
 import com.vidaloca.skibidi.event.model.EventUser;
@@ -94,5 +95,16 @@ public class InvitationServiceImpl implements InvitationService {
         invitation.setAccessStatus(AccessStatus.REJECTED);
         return eventInvitationRepository.save(invitation);
 
+    }
+    @Override
+    public void cancelInvitation(Long invitationId, Long currentUserId){
+        EventInvitation invitation = eventInvitationRepository.findById(invitationId).orElseThrow(
+                ()->new InvitationNotFoundException(invitationId));
+        User currentUser = userRepository.findById(currentUserId).orElseThrow(() -> new UserNotFoundException(currentUserId));
+        Event event = invitation.getEvent();
+        EventUser eventUser = eventUserRepository.findByUserAndEvent(currentUser,event).orElseThrow(() -> new UserIsNotInEventException(currentUserId,event.getId()));
+        if (!eventUser.isAdmin())
+            throw new UserIsNotAdminException(currentUserId);
+        eventInvitationRepository.delete(invitation);
     }
 }

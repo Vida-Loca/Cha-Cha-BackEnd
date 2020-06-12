@@ -44,5 +44,9 @@ public class InvitationController {
         return invitationService.rejectInvitation(invitationId,CurrentUser.currentUserId(request));
     }
 
+    @DeleteMapping("/event/invite/{invitationId}/cancel")
+    public void cancelInvitation(@PathVariable Long invitationId, HttpServletRequest request){
+      invitationService.cancelInvitation(invitationId,CurrentUser.currentUserId(request));
+    }
 
 }
