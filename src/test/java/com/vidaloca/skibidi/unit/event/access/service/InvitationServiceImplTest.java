@@ -132,7 +132,7 @@ class InvitationServiceImplTest {
         then(userRepository).should(times(2)).findById(anyLong());
         then(eventRepository).should().findById(anyLong());
         then(eventUserRepository).should(times(2)).findByUserAndEvent(any(User.class), any(Event.class));
-        then(eventInvitationRepository).shouldHaveNoInteractions();
+        then(eventInvitationRepository).should().findByUserAndEvent(any(User.class), any(Event.class));
     }
 
     @Test

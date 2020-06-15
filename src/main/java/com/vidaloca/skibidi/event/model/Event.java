@@ -8,10 +8,7 @@ import com.vidaloca.skibidi.address.model.Address;
 import com.vidaloca.skibidi.event.access.model.EventInvitation;
 import com.vidaloca.skibidi.event.access.model.EventRequest;
 import com.vidaloca.skibidi.event.type.EventType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -22,7 +19,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "event")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
